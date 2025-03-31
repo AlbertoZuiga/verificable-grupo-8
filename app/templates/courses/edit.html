@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Editar Curso</h1>
+
+<form action="{{ url_for('course.edit', id=course.id) }}" method="POST">
+    <div>
+        <label for="title">Título del Curso</label>
+        <input type="text" id="title" name="title" value="{{ course.title }}" required>
+    </div>
+    <button type="submit">Actualizar</button>
+</form>
+
+<a href="{{ url_for('course.index') }}">Volver al listado</a>
+
+{% endblock %}
