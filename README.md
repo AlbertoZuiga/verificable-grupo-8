@@ -42,13 +42,13 @@ Sigue estos pasos para configurar el entorno y ejecutar la aplicación:
 
    - Ejecuta el script para crear el esquema de la base de datos:
      ```bash
-     python3 seed.py
+     python3 app/seed.py
      ```
 
 6. **Iniciar la aplicación**:
 
    ```bash
-   python3 app.py
+   python3 run.py
    ```
 
 7. **Acceder a la aplicación**:
@@ -62,18 +62,26 @@ La estructura del proyecto es la siguiente:
 
 ```
 proyecto-verificable/
-├── app.py                # Archivo principal para iniciar la aplicación Flask.
+├── run.py                # Archivo principal para iniciar la aplicación Flask.
 ├── config.py             # Configuración de la base de datos y otras variables.
-├── models.py             # Definición de los modelos de la base de datos.
-├── routes.py             # Definición de las rutas de la aplicación.
-├── seed.py               # Script para insertar datos iniciales en la base de datos.
-├── schema.sql            # Archivo para definir el esquema de la base de datos.
+├── app/                  # Carpeta principal de la aplicación.
+│   ├── __init__.py       # Inicialización de la aplicación Flask.
+│   ├── models/           # Carpeta con los modelos de la base de datos.
+│   │   └── course.py     # Modelo del curso.
+│   ├── routes/           # Carpeta con las rutas de la aplicación.
+│   │   ├── __init__.py   # Rutas principales.
+│   │   └── course_routes.py # Rutas relacionadas con los cursos.
+│   ├── templates/        # Carpeta con las plantillas HTML.
+│   │   ├── base.html     # Plantilla base para la aplicación.
+│   │   ├── index.html    # Página de inicio.
+│   │   └── courses/      # Carpeta con plantillas relacionadas con cursos.
+│   │       ├── index.html # Página para listar los cursos.
+│   │       ├── create.html # Página para crear un curso.
+│   │       ├── edit.html # Página para editar un curso.
+│   │       └── show.html # Página para mostrar detalles de un curso.
+│   └── seed.py           # Script para insertar datos iniciales en la base de datos.
 ├── requirements.txt      # Lista de dependencias necesarias para el proyecto.
 ├── .gitignore            # Archivos y carpetas ignorados por Git.
-├── templates/            # Carpeta con las plantillas HTML.
-│   ├── base.html         # Plantilla base para la aplicación.
-│   ├── index.html        # Página de inicio.
-│   └── courses.html      # Página para listar los cursos.
 └── README.md             # Documentación del proyecto.
 ```
 
@@ -84,6 +92,6 @@ proyecto-verificable/
 - **Dependencias**: Todas las dependencias necesarias están listadas en `requirements.txt`.
 - **Base de Datos**: Asegúrate de que la base de datos esté configurada correctamente antes de ejecutar la aplicación.
 - **Plantillas HTML**: Las plantillas están en la carpeta `templates/` y utilizan Jinja2 para la renderización dinámica.
-- **Scripts Útiles**: Usa `seed.py` para inicializar datos en la base de datos.
+- **Scripts Útiles**: Usa `app/seed.py` para inicializar datos en la base de datos.
 
 ¡Disfruta trabajando con este proyecto y no dudes en contribuir!

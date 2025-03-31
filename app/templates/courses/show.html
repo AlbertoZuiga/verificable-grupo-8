@@ -1,14 +1,21 @@
-extends <base href="{{ url_for('static', filename='base.html') }}">
+{% extends "base.html" %}
 
 {% block title %}Curso: {{ course.title }}{% endblock %}
+
 {% block content %}
-<h1>Detalles del Curso</h1>
-<p><strong>Título:</strong> {{ course.title }}</p>
+  <div class="container">
+    <h1 class="mb-4 text-primary">Detalles del Curso</h1>
 
-<a href="{{ url_for('course.index') }}">Volver al listado</a>
-<a href="{{ url_for('course.edit', id=course.id) }}">Editar</a>
-<a href="{{ url_for('course.delete', id=course.id) }}">Eliminar</a>
+    <div class="card shadow-lg">
+      <div class="card-body">
+        <h5 class="card-title text-dark"><strong>Título:</strong> {{ course.title }}</h5>
 
-
+        <div class="mt-4">
+          <a href="{{ url_for('course.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
+          <a href="{{ url_for('course.edit', id=course.id) }}" class="btn btn-warning text-dark">✏ Editar</a>
+          <a href="{{ url_for('course.delete', id=course.id) }}" class="btn btn-danger">🗑 Eliminar</a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
-
