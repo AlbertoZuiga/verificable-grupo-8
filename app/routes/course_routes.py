@@ -14,10 +14,6 @@ def show(id):
     course = Course.query.get_or_404(id)
     return render_template('courses/show.html', course=course)
 
-def index():
-    courses = Course.query.all()
-    return render_template('courses/index.html', courses=courses)
-
 @course_bp.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':

@@ -1,35 +1,48 @@
-import sys
-import os
-
-# Agregar el directorio raíz al PYTHONPATH para encontrar 'app'
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from app import create_app, db  # ✅ Importa create_app y db correctamente
+from app import create_app, db  # Importa la función para crear la app
 from app.models.course import Course
+from app.models.course_instance import CourseInstance, SemesterEnum
 
 def seed_data():
-    """ Inserta datos en la base de datos si no existen. """
-    app = create_app()  # ✅ Crear la instancia de la app
-    with app.app_context():  # ✅ Asegurar que estamos dentro del contexto de la app
-        try:
-            if Course.query.first():  # Verifica si ya hay datos
-                print("📌 Datos ya existen. No se agregaron duplicados.")
-                return
+    print("Seeding database...")
 
-            courses = [
-                Course(title="Desarrollo de Software Verificable"),
-                Course(title="Almacenamiento y Procesamiento Masivo de Datos"),
-                Course(title="Software Design"),
-            ]
+    # Crear cursos de ejemplo
+    courses_data = [
+        {"title": "Matemáticas Avanzadas"},
+        {"title": "Programación en Python"},
+        {"title": "Historia Universal"}
+    ]
 
-            db.session.add_all(courses)
-            db.session.commit()
+    courses = []
+    for data in courses_data:
+        course = Course.query.filter_by(title=data["title"]).first()
+        if not course:
+            course = Course(title=data["title"], description=data["description"])
+            db.session.add(course)
+        else:
+            print(f"El curso '{data['title']}' ya existe, no se añadirá de nuevo.")
+        
+        courses.append(course)
 
-            print("✅ Seed ejecutado correctamente.")
+    db.session.commit()  # Guardar todos los cursos antes de crear instancias
 
-        except Exception as e:
-            db.session.rollback()
-            print(f"❌ Error al ejecutar seed: {e}")
+    if len(courses) < 3:
+        print("Error: No se pudieron obtener todos los cursos correctamente.")
+        return
+
+    # Crear instancias de cursos
+    instances = [
+        CourseInstance(course_id=courses[0].id, year=2024, semester=1),
+        CourseInstance(course_id=courses[0].id, year=2024, semester=2),
+        CourseInstance(course_id=courses[1].id, year=2024, semester=1),
+        CourseInstance(course_id=courses[2].id, year=2023, semester=2),
+    ]
+
+    db.session.add_all(instances)
+    db.session.commit()
+
+    print("Seeding completed!")
 
 if __name__ == "__main__":
-    seed_data()
+    app = create_app()  # Inicializar la aplicación Flask correctamente
+    with app.app_context():  # Asegurar el contexto de la aplicación
+        seed_data()
