@@ -16,7 +16,7 @@ Sigue estos pasos para configurar el entorno y ejecutar la aplicación:
 2. **Crear un entorno virtual**:
 
    ```bash
-   python3 -m venv venv
+   python3 -m venv venv   # En Windows: python -m venv venv
    source venv/bin/activate  # En Windows: venv\Scripts\activate
    ```
 
