@@ -17,5 +17,17 @@
         </div>
       </div>
     </div>
+
+    <h3 class="mt-5 text-primary">Instancias del curso</h3>
+    <div class="list-group mt-3">
+      {% for instance in course.instances %}
+        <a href="{{ url_for('course_instance.show', id=instance.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          <span><strong>{{ instance.year }}</strong> - {{ instance.semester }}</span>
+          <span class="badge bg-primary">Ver</span>
+        </a>
+      {% else %}
+        <p class="text-muted">No hay instancias disponibles.</p>
+      {% endfor %}
+    </div>
   </div>
 {% endblock %}

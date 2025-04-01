@@ -28,4 +28,16 @@
       </div>
     </div>
   </div>
+
+  <h3 class="mt-5 text-primary">Secciones</h3>
+    <div class="list-group mt-3">
+      {% for section in course_instance.sections %}  
+        <a href="{{ url_for('section.show', id=section.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          <span><strong>{{ section.code }}</strong></span>
+          <span class="badge bg-primary">Ver</span>
+        </a>
+      {% else %}
+        <p class="text-muted">No hay instancias disponibles.</p>
+      {% endfor %}
+    </div>
 {% endblock %}
