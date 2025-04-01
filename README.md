@@ -1,4 +1,4 @@
-# Proyecto Verificable - Kanwas
+# Proyecto Verificable - Kanvas
 
 Este repositorio contiene una plataforma educativa desarrollada con Flask. A continuación, se detallan los pasos para configurar el proyecto, su estructura y notas adicionales.
 

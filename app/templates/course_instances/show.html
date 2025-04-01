@@ -4,7 +4,7 @@
 
 {% block content %}
   <div class="container mt-5">
-    <h1 class="mb-4 text-primary">Detalles del Curso</h1>
+    <h1 class="mb-4 text-primary">Detalles de Instancia</h1>
 
     <div class="card shadow-lg">
       <div class="card-body">
@@ -34,7 +34,7 @@
       {% for section in course_instance.sections %}  
         <a href="{{ url_for('section.show', id=section.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
           <span><strong>{{ section.code }}</strong></span>
-          <span class="badge bg-primary">Ver</span>
+          <span class="btn btn-sm btn-primary">Ver</span>
         </a>
       {% else %}
         <p class="text-muted">No hay instancias disponibles.</p>

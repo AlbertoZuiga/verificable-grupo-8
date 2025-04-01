@@ -2,7 +2,6 @@ from app import create_app, db
 
 app = create_app()
 
-# Crear la base de datos si no existe
 with app.app_context():
     db.create_all()
 

@@ -1,12 +1,10 @@
-from app import create_app, db  # Importa la instancia de SQLAlchemy
+from app import create_app, db
 
 def reset_db():
-    """Elimina todas las tablas y las vuelve a crear."""
-    
-    app = create_app()  # Inicializa la aplicación Flask correctamente
+    app = create_app()
     with app.app_context():
-        db.drop_all()  # Elimina todas las tablas
-        db.create_all()  # Vuelve a crear todas las tablas
+        db.drop_all()
+        db.create_all()
         print("Base de datos reseteada con éxito.")
 
 if __name__ == "__main__":

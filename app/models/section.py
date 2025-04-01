@@ -9,9 +9,6 @@ class WeightingType(enum.Enum):
         return self.name
 
 class Section(db.Model):
-    """
-    Represents a section of a course instance.
-    """
     __tablename__ = 'sections'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)

@@ -14,7 +14,7 @@ class CourseInstance(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
     course = db.relationship('Course', backref='instances')
     year = db.Column(db.Integer, nullable=False, index=True)
-    semester = db.Column(db.Integer, nullable=False)  # También puedes usar Enum aquí
+    semester = db.Column(db.Integer, nullable=False)
 
     __table_args__ = (CheckConstraint('semester IN (1, 2)', name='valid_semester'),)
 
