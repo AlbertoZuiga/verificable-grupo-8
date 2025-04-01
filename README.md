@@ -92,6 +92,7 @@ proyecto-verificable/
 - **Dependencias**: Todas las dependencias necesarias están listadas en `requirements.txt`.
 - **Base de Datos**: La base de datos se crea automáticamente al iniciar la aplicación si no existe.
 - **Plantillas HTML**: Las plantillas están en la carpeta `templates/` y utilizan Jinja2 para la renderización dinámica.
-- **Scripts Útiles**: Usa `app/seed.py` para inicializar datos en la base de datos.
+- **Scripts Útiles**: Usa `python3 -m app.seed` para inicializar datos en la base de datos.
+- **Scripts Útiles**: Usa `python3 -m app.reset` para reiniciar la base de datos.
 
 ¡Disfruta trabajando con este proyecto y no dudes en contribuir!

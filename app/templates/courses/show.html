@@ -18,6 +18,18 @@
       </div>
     </div>
 
+    <h3 class="mt-5 text-primary">Requisitos</h3>
+    <div class="list-group mt-3">
+      {% for requisite in course.prerequisites %}
+        <a href="{{ url_for('course.show', id=requisite.course_requisite.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          <span><strong>{{ requisite.course_requisite.title }}</strong></span>
+          <span class="badge bg-primary">Ver</span>
+        </a>
+      {% else %}
+        <p class="text-muted">No hay requisitos disponibles.</p>
+      {% endfor %}
+    </div>
+
     <h3 class="mt-5 text-primary">Instancias del curso</h3>
     <div class="list-group mt-3">
       {% for instance in course.instances %}
