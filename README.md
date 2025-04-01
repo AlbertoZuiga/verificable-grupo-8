@@ -1,4 +1,4 @@
-# Proyecto Verificable - Plataforma Educativa
+# Proyecto Verificable - Kanwas
 
 Este repositorio contiene una plataforma educativa desarrollada con Flask. A continuación, se detallan los pasos para configurar el proyecto, su estructura y notas adicionales.
 
@@ -40,10 +40,7 @@ Sigue estos pasos para configurar el entorno y ejecutar la aplicación:
 
 5. **Inicializar la base de datos**:
 
-   - Ejecuta el script para crear el esquema de la base de datos:
-     ```bash
-     python3 app/seed.py
-     ```
+   - La base de datos se crea automáticamente al iniciar la aplicación si no existe.
 
 6. **Iniciar la aplicación**:
 
@@ -67,19 +64,22 @@ proyecto-verificable/
 ├── app/                  # Carpeta principal de la aplicación.
 │   ├── __init__.py       # Inicialización de la aplicación Flask.
 │   ├── models/           # Carpeta con los modelos de la base de datos.
-│   │   └── course.py     # Modelo del curso.
+│   │   ├── __init__.py   # Inicialización de modelos.
+│   │   ├── course.py     # Modelo del curso.
+│   │   ├── course_instance.py # Modelo de instancias de cursos.
+│   │   └── section.py    # Modelo de secciones.
 │   ├── routes/           # Carpeta con las rutas de la aplicación.
 │   │   ├── __init__.py   # Rutas principales.
 │   │   └── course_routes.py # Rutas relacionadas con los cursos.
 │   ├── templates/        # Carpeta con las plantillas HTML.
 │   │   ├── base.html     # Plantilla base para la aplicación.
 │   │   ├── index.html    # Página de inicio.
+│   │   ├── partials/     # Plantillas parciales como el navbar.
 │   │   └── courses/      # Carpeta con plantillas relacionadas con cursos.
 │   │       ├── index.html # Página para listar los cursos.
 │   │       ├── create.html # Página para crear un curso.
-│   │       ├── edit.html # Página para editar un curso.
-│   │       └── show.html # Página para mostrar detalles de un curso.
-│   └── seed.py           # Script para insertar datos iniciales en la base de datos.
+│   │       └── edit.html # Página para editar un curso.
+│   ├── seed.py           # Script para insertar datos iniciales en la base de datos.
 ├── requirements.txt      # Lista de dependencias necesarias para el proyecto.
 ├── .gitignore            # Archivos y carpetas ignorados por Git.
 └── README.md             # Documentación del proyecto.
@@ -90,7 +90,7 @@ proyecto-verificable/
 ## Notas Adicionales
 
 - **Dependencias**: Todas las dependencias necesarias están listadas en `requirements.txt`.
-- **Base de Datos**: Asegúrate de que la base de datos esté configurada correctamente antes de ejecutar la aplicación.
+- **Base de Datos**: La base de datos se crea automáticamente al iniciar la aplicación si no existe.
 - **Plantillas HTML**: Las plantillas están en la carpeta `templates/` y utilizan Jinja2 para la renderización dinámica.
 - **Scripts Útiles**: Usa `app/seed.py` para inicializar datos en la base de datos.
 

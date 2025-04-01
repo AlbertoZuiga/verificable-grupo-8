@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Cursos{% endblock %}
+
+{% block content%}
+<div class="container">
+  <h1 class="mb-4 text-primary">Lista de Cursos</h1>
+
+  {% if sections %}
+  <ul class="list-group">
+    {% for section in sections %}
+    <li
+      class="list-group-item d-flex justify-content-between align-items-center"
+    >
+      <strong class="text-dark">{{ section.course_instance.course.title }}</strong>
+      <strong class="text-dark">{{ section.course_instance.year }}</strong>
+      <strong class="text-dark">{{ section.course_instance.semester }}</strong>
+      <strong class="text-dark">{{ section.code }}</strong>
+      <div>
+        <a
+          href="{{ url_for('section.show', id=section.id) }}"
+          class="btn btn-sm btn-info text-white"
+          aria-label="Ver curso {{ section.title }}"
+        >
+          Ver
+        </a>
+        <a
+          href="{{ url_for('section.edit', id=section.id) }}"
+          class="btn btn-sm btn-warning text-dark"
+          aria-label="Editar curso {{ section.title }}"
+        >
+          Editar
+        </a>
+        <a
+          href="{{ url_for('section.delete', id=section.id) }}"
+          class="btn btn-sm btn-danger"
+          aria-label="Eliminar curso {{ section.title }}"
+        >
+          Eliminar
+        </a>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="alert alert-warning">No hay cursos disponibles.</p>
+  {% endif %}
+
+  <a href="{{ url_for('section.create') }}" class="btn btn-success mt-4"
+    >➕ Crear nuevo curso</a
+  >
+</div>
+{% endblock %}

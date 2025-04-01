@@ -6,7 +6,7 @@
         href="{{ url_for('main.index') }}"
         aria-label="Ir a la página de inicio"
       >
-        Plataforma Educativa
+        Kanwas
       </a>
       <button
         class="navbar-toggler"
@@ -24,15 +24,6 @@
           <li class="nav-item">
             <a
               class="nav-link"
-              href="{{ url_for('main.index') }}"
-              aria-label="Ir a la página de inicio"
-            >
-              Inicio
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link"
               href="{{ url_for('course.index') }}"
               aria-label="Ver cursos disponibles"
             >
@@ -43,9 +34,18 @@
             <a
               class="nav-link"
               href="{{ url_for('course_instance.index') }}"
-              aria-label="Ver cursos disponibles"
+              aria-label="Ver instancias de cursos disponibles"
             >
               Instancias Cursos
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="{{ url_for('section.index') }}"
+              aria-label="Ver secciones disponibles"
+            >
+              Secciones
             </a>
           </li>
         </ul>

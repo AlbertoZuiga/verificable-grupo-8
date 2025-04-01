@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="mb-4 text-primary">Detalles de la Sección</h1>
+    <div class="card shadow-lg p-4">
+      <p><strong>Instancia del Curso:</strong> {{ section.course_instance.course.title }} - {{ section.course_instance.year }} (Semestre {{ section.course_instance.semester }})</p>
+      <p><strong>Código de Sección:</strong> {{ section.code }}</p>
+      <p><strong>Tipo de Ponderación:</strong> {{ section.weighting_type }}</p>
+      
+      <div class="mt-4 d-flex justify-content-between">
+        <a href="{{ url_for('section.index') }}" class="btn btn-secondary">
+          ⬅ Volver al listado
+        </a>
+        <div class="btn-group" role="group">
+          <a href="{{ url_for('section.edit', id=section.id) }}" class="btn btn-warning text-dark">
+            ✏ Editar
+          </a>
+          <a href="{{ url_for('section.delete', id=section.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este curso?');">
+            🗑 Eliminar
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

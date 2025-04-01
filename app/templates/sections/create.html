@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="mb-4 text-primary">Crear Sección</h1>
+
+    <div class="card shadow-lg p-4">
+      <form action="{{ url_for('section.create') }}" method="POST">
+        <div class="mb-3">
+          <label for="course_instance_id" class="form-label">Instancia del Curso</label>
+          <select class="form-select" id="course_instance_id" name="course_instance_id" required>
+            <option selected>Seleccionar instancia</option>
+            {% for instance in course_instances %}
+              <option value="{{ instance.id }}">{{ instance.course.title }} - {{ instance.year }} (Semestre {{ instance.semester }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <div class="mb-3">
+          <label for="code" class="form-label">Código de Sección</label>
+          <input 
+            type="text" 
+            id="code" 
+            name="code" 
+            class="form-control" 
+            required>
+        </div>
+        
+        <div class="mb-3">
+          <label for="weighting_type" class="form-label">Tipo de Ponderación</label>
+          <select class="form-select" id="weighting_type" name="weighting_type" required>
+            <option selected>Seleccionar tipo</option>
+              {% for type in weighting_types %}
+                <option value="{{ type.name }}">{{ type.value }}</option>
+              {% endfor %}
+          </select>
+        </div>
+
+        <a href="{{ url_for('section.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
+        <button type="submit" class="btn btn-primary">💾 Crear</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}
