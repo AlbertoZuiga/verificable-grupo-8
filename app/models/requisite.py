@@ -7,9 +7,10 @@ class Requisite(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
     course_requisite_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
 
+    __table_args__ = (db.UniqueConstraint('course_id', 'course_requisite_id', name='uq_course_requisite'),)
+
     course = db.relationship('Course', foreign_keys=[course_id], back_populates='prerequisites', overlaps="course_requisite,requisites_as_main")
     course_requisite = db.relationship('Course', foreign_keys=[course_requisite_id], back_populates='requisites_as_main', overlaps="course,prerequisites")
     
-
     def __repr__(self):
         return f"<Requisite id={self.id}, course_id={self.course_id}, course_requisite_id={self.course_requisite_id}>"

@@ -12,7 +12,14 @@ def index():
 @course_bp.route('/<int:id>')
 def show(id):
     course = Course.query.get_or_404(id)
-    return render_template('courses/show.html', course=course)
+
+    requisite_ids = {requisite.course_requisite_id for requisite in course.prerequisites}  
+    courses = Course.query.filter(
+        Course.id != id,
+        Course.id.notin_(requisite_ids)
+    ).all()
+
+    return render_template('courses/show.html', course=course, courses=courses)
 
 @course_bp.route('/create', methods=['GET', 'POST'])
 def create():

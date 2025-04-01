@@ -2,7 +2,7 @@ from app import create_app, db
 from app.models.course import Course
 from app.models.course_instance import CourseInstance, SemesterEnum
 from app.models.section import Section, WeightingType
-from app.models.requisites import Requisite
+from app.models.requisite import Requisite
 from app.models.user import User
 
 def seed_data():

@@ -23,7 +23,7 @@ Sigue estos pasos para configurar el entorno y ejecutar la aplicación:
 3. **Instalar las dependencias**:
 
    ```bash
-   pip3 install -r requirements.txt
+   pip install -r requirements.txt
    ```
 
 4. **Configurar la base de datos**:
@@ -40,15 +40,25 @@ Sigue estos pasos para configurar el entorno y ejecutar la aplicación:
 
 5. **Inicializar la base de datos**:
 
-   - La base de datos se crea automáticamente al iniciar la aplicación si no existe.
+   - Usa el script `reset.py` para eliminar y volver a crear las tablas:
+     ```bash
+     python app/reset.py
+     ```
 
-6. **Iniciar la aplicación**:
+6. **Insertar datos iniciales**:
+
+   - Usa el script `seed.py` para poblar la base de datos con datos iniciales:
+     ```bash
+     python app/seed.py
+     ```
+
+7. **Iniciar la aplicación**:
 
    ```bash
-   python3 run.py
+   python run.py
    ```
 
-7. **Acceder a la aplicación**:
+8. **Acceder a la aplicación**:
    Abre tu navegador y ve a [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
 ---
@@ -67,18 +77,23 @@ proyecto-verificable/
 │   │   ├── __init__.py   # Inicialización de modelos.
 │   │   ├── course.py     # Modelo del curso.
 │   │   ├── course_instance.py # Modelo de instancias de cursos.
-│   │   └── section.py    # Modelo de secciones.
+│   │   ├── requisite.py  # Modelo de requisitos de cursos.
+│   │   ├── section.py    # Modelo de secciones.
+│   │   └── user.py       # Modelo de usuarios.
 │   ├── routes/           # Carpeta con las rutas de la aplicación.
 │   │   ├── __init__.py   # Rutas principales.
-│   │   └── course_routes.py # Rutas relacionadas con los cursos.
+│   │   ├── course_routes.py # Rutas relacionadas con los cursos.
+│   │   ├── course_instance_routes.py # Rutas relacionadas con instancias de cursos.
+│   │   ├── section_routes.py # Rutas relacionadas con secciones.
+│   │   └── requisite_routes.py # Rutas relacionadas con requisitos.
 │   ├── templates/        # Carpeta con las plantillas HTML.
 │   │   ├── base.html     # Plantilla base para la aplicación.
 │   │   ├── index.html    # Página de inicio.
-│   │   ├── partials/     # Plantillas parciales como el navbar.
-│   │   └── courses/      # Carpeta con plantillas relacionadas con cursos.
-│   │       ├── index.html # Página para listar los cursos.
-│   │       ├── create.html # Página para crear un curso.
-│   │       └── edit.html # Página para editar un curso.
+│   │   ├── partials/     # Plantillas parciales como el navbar y footer.
+│   │   ├── courses/      # Plantillas relacionadas con cursos.
+│   │   ├── course_instances/ # Plantillas relacionadas con instancias de cursos.
+│   │   └── sections/     # Plantillas relacionadas con secciones.
+│   ├── reset.py          # Script para reiniciar la base de datos.
 │   ├── seed.py           # Script para insertar datos iniciales en la base de datos.
 ├── requirements.txt      # Lista de dependencias necesarias para el proyecto.
 ├── .gitignore            # Archivos y carpetas ignorados por Git.
@@ -90,9 +105,10 @@ proyecto-verificable/
 ## Notas Adicionales
 
 - **Dependencias**: Todas las dependencias necesarias están listadas en `requirements.txt`.
-- **Base de Datos**: La base de datos se crea automáticamente al iniciar la aplicación si no existe.
+- **Base de Datos**: Usa `reset.py` para reiniciar la base de datos y `seed.py` para poblarla con datos iniciales.
 - **Plantillas HTML**: Las plantillas están en la carpeta `templates/` y utilizan Jinja2 para la renderización dinámica.
-- **Scripts Útiles**: Usa `python3 -m app.seed` para inicializar datos en la base de datos.
-- **Scripts Útiles**: Usa `python3 -m app.reset` para reiniciar la base de datos.
+- **Scripts Útiles**:
+  - `python app/reset.py`: Reinicia la base de datos.
+  - `python app/seed.py`: Inserta datos iniciales en la base de datos.
 
 ¡Disfruta trabajando con este proyecto y no dudes en contribuir!
