@@ -19,7 +19,7 @@ def show(id):
 def create():
     if request.method == 'POST':
         title = request.form['title']
-        weight = request.form['weight']
+        weighing = request.form['weighing']
         weighing_system = request.form['weighing_system']
         section_id = request.form['section_id']
         
@@ -27,7 +27,7 @@ def create():
             return "Invalid section ID", 400
         
 
-        evaluation = Evaluation(title=title, weight=weight, weighing_system=weighing_system, section_id=section_id)
+        evaluation = Evaluation(title=title, weighing=weighing, weighing_system=weighing_system, section_id=section_id)
         try:
             db.session.add(evaluation)
             db.session.commit()
@@ -44,7 +44,7 @@ def edit(id):
     evaluation = Evaluation.query.get_or_404(id)
     if request.method == 'POST':
         evaluation.title = request.form['title']
-        evaluation.weight = request.form['weight']
+        evaluation.weighing = request.form['weighing']
         evaluation.weighing_system = request.form['weighing_system']
         section_id = request.form['section_id']
         

@@ -6,7 +6,7 @@ class WeighingType(enum.Enum):
     WEIGHT = "Peso"
 
     def __str__(self):
-        return self.name
+        return self.value
 
 class Section(db.Model):
     __tablename__ = 'sections'

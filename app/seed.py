@@ -1,7 +1,7 @@
 import random
 from app import create_app, db
 from app.models.course import Course
-from app.models.course_instance import CourseInstance, SemesterEnum
+from app.models.course_instance import CourseInstance, Semester
 from app.models.section import Section, WeighingType
 from app.models.requisite import Requisite
 from app.models.user import User
@@ -68,7 +68,7 @@ def seed_data():
             course_instance = CourseInstance(
                 course_id=course.id,
                 year=random.randint(2015, 2025),
-                semester=random.choice([SemesterEnum.FIRST.value, SemesterEnum.SECOND.value])
+                semester=random.choice([Semester.FIRST, Semester.SECOND])
             )
             db.session.add(course_instance)
 
@@ -106,12 +106,12 @@ def seed_data():
             evaluation = Evaluation(
                 section_id=section.id,
                 title=title,
-                weight=random.randint(10, 50),
+                weighing=random.randint(10, 50),
                 weighing_system=random.choice([WeighingType.PERCENTAGE, WeighingType.WEIGHT])
             )
             db.session.add(evaluation)
         
-        evaluation = Evaluation(section_id=section.id, title="Examen", weight=30, weighing_system=WeighingType.WEIGHT)
+        evaluation = Evaluation(section_id=section.id, title="Examen", weighing=30, weighing_system=WeighingType.WEIGHT)
         db.session.add(evaluation)
     db.session.commit()
 

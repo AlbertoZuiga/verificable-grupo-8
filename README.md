@@ -15,10 +15,16 @@ Sigue estos pasos para configurar el entorno y ejecutar la aplicación:
 
 2. **Crear un entorno virtual**:
 
-   ```bash
-   python3 -m venv venv   # En Windows: python -m venv venv
-   source venv/bin/activate  # En Windows: venv\Scripts\activate
-   ```
+   - En Linux/macOS:
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+   - En Windows (CMD o PowerShell):
+     ```powershell
+     python -m venv venv
+     venv\Scripts\activate
+     ```
 
 3. **Instalar las dependencias**:
 
@@ -41,22 +47,37 @@ Sigue estos pasos para configurar el entorno y ejecutar la aplicación:
 5. **Inicializar la base de datos**:
 
    - Usa el script `reset.py` para eliminar y volver a crear las tablas:
-     ```bash
-     python app/reset.py
-     ```
+     - En Linux/macOS:
+       ```bash
+       python3 app/reset.py
+       ```
+     - En Windows:
+       ```powershell
+       python app\reset.py
+       ```
 
 6. **Insertar datos iniciales**:
 
    - Usa el script `seed.py` para poblar la base de datos con datos iniciales:
-     ```bash
-     python app/seed.py
-     ```
+     - En Linux/macOS:
+       ```bash
+       python3 app/seed.py
+       ```
+     - En Windows:
+       ```powershell
+       python app\seed.py
+       ```
 
 7. **Iniciar la aplicación**:
 
-   ```bash
-   python run.py
-   ```
+   - En Linux/macOS:
+     ```bash
+     python3 run.py
+     ```
+   - En Windows:
+     ```powershell
+     python run.py
+     ```
 
 8. **Acceder a la aplicación**:
    Abre tu navegador y ve a [http://127.0.0.1:5000](http://127.0.0.1:5000).
@@ -107,8 +128,10 @@ proyecto-verificable/
 - **Dependencias**: Todas las dependencias necesarias están listadas en `requirements.txt`.
 - **Base de Datos**: Usa `reset.py` para reiniciar la base de datos y `seed.py` para poblarla con datos iniciales.
 - **Plantillas HTML**: Las plantillas están en la carpeta `templates/` y utilizan Jinja2 para la renderización dinámica.
-- **Scripts Útiles**:
+- **Scripts - **Scripts \u00dátiles**:
   - `python app/reset.py`: Reinicia la base de datos.
   - `python app/seed.py`: Inserta datos iniciales en la base de datos.
+  - `python -m flask shell`: Acceder a la shell interactiva de Flask.
 
 ¡Disfruta trabajando con este proyecto y no dudes en contribuir!
+
