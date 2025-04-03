@@ -9,7 +9,7 @@ Sigue estos pasos para configurar el entorno y ejecutar la aplicación:
 1. **Clonar el repositorio**:
 
    ```bash
-   git clone <URL_DEL_REPOSITORIO>
+   git clone https://github.com/AlbertoZuiga/verificable-grupo-8.git
    cd proyecto-verificable
    ```
 
@@ -94,26 +94,33 @@ proyecto-verificable/
 ├── config.py                                # Configuración de la base de datos y otras variables.
 ├── app/                                     # Carpeta principal de la aplicación.
 │   ├── __init__.py                          # Inicialización de la aplicación Flask.
+│   ├── console.py                           # Script para abrir la consola interactiva de Flask.
 │   ├── models/                              # Carpeta con los modelos de la base de datos.
 │   │   ├── __init__.py                      # Inicialización de modelos.
 │   │   ├── course.py                        # Modelo del curso.
 │   │   ├── course_instance.py               # Modelo de instancias de cursos.
 │   │   ├── requisite.py                     # Modelo de requisitos de cursos.
 │   │   ├── section.py                       # Modelo de secciones.
+│   │   ├── evaluation.py                    # Modelo de evaluaciones.
+│   │   ├── evaluation_instance.py           # Modelo de instancias de evaluaciones.
 │   │   └── user.py                          # Modelo de usuarios.
 │   ├── routes/                              # Carpeta con las rutas de la aplicación.
 │   │   ├── __init__.py                      # Rutas principales.
 │   │   ├── course_routes.py                 # Rutas relacionadas con los cursos.
 │   │   ├── course_instance_routes.py        # Rutas relacionadas con instancias de cursos.
 │   │   ├── section_routes.py                # Rutas relacionadas con secciones.
-│   │   └── requisite_routes.py              # Rutas relacionadas con requisitos.
+│   │   ├── requisite_routes.py              # Rutas relacionadas con requisitos.
+│   │   ├── evaluation_routes.py             # Rutas relacionadas con evaluaciones.
+│   │   └── evaluation_instance_routes.py    # Rutas relacionadas con instancias de evaluaciones.
 │   ├── templates/                           # Carpeta con las plantillas HTML.
 │   │   ├── base.html                        # Plantilla base para la aplicación.
 │   │   ├── index.html                       # Página de inicio.
 │   │   ├── partials/                        # Plantillas parciales como el navbar y footer.
 │   │   ├── courses/                         # Plantillas relacionadas con cursos.
 │   │   ├── course_instances/                # Plantillas relacionadas con instancias de cursos.
-│   │   └── sections/                        # Plantillas relacionadas con secciones.
+│   │   ├── sections/                        # Plantillas relacionadas con secciones.
+│   │   ├── evaluations/                     # Plantillas relacionadas con evaluaciones.
+│   │   └── evaluation_instances/            # Plantillas relacionadas con instancias de evaluaciones.
 │   ├── reset.py                             # Script para reiniciar la base de datos.
 │   ├── seed.py                              # Script para insertar datos iniciales en la base de datos.
 ├── requirements.txt                         # Lista de dependencias necesarias para el proyecto.

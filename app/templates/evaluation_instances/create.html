@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva instancia de Evaluación{% endblock %} 
+
+{% block content %}
+<div class="container">
+  <h1 class="mb-4 text-primary">Nueva instancia de Evaluación</h1>
+  <div class="card shadow-lg p-4">
+    <form action="{{ url_for('evaluation_instance.create') }}" method="POST">
+      <div class="mb-3">
+        <label for="evaluation_id" class="form-label">Sección</label>
+        <select class="form-select" id="evaluation_id" name="evaluation_id" required>
+          {% for evaluation in evaluations %}
+          <option value="{{ evaluation.id }}">
+            {{ evaluation.title }} - {{ evaluation.section.course_instance.course.title }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="title" class="form-label">Título de la Instancia de Evaluación</label>
+        <input type="text" id="title" name="title" class="form-control" required/>
+      </div>
+
+      <div class="mb-3">
+        <label for="instance_weighing" class="form-label">Ponderación</label>
+        <input type="number" id="instance_weighing" name="instance_weighing" class="form-control" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="optional" class="form-label">¿Es opcional?</label>
+        <input type="checkbox" name="optional" id="optional" class="form-check-input">
+      </div>
+
+      <a href="{{ url_for('evaluation_instance.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
+      <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -4,3 +4,4 @@ from app.models.section import Section
 from app.models.user import User
 from app.models.requisite import Requisite
 from app.models.evaluation import Evaluation
+from app.models.evaluation_instance import EvaluationInstance

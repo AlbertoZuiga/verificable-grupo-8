@@ -6,6 +6,7 @@ from app.models.section import Section, WeighingType
 from app.models.requisite import Requisite
 from app.models.user import User
 from app.models.evaluation import Evaluation
+from app.models.evaluation_instance import EvaluationInstance
 
 def seed_data():
     print("Seeding database...")
@@ -114,6 +115,20 @@ def seed_data():
         evaluation = Evaluation(section_id=section.id, title="Examen", weighing=30, weighing_system=WeighingType.WEIGHT)
         db.session.add(evaluation)
     db.session.commit()
+    
+    evaluations = Evaluation.query.where(Evaluation.title != "Examen").all()
+    for evaluation in evaluations:
+        for i in range(random.randint(2, 7)):
+            evaluation_instance = EvaluationInstance(title=f'{evaluation.title} {i+1}', instance_weighing=random.randint(10, 50), optional=False, evaluation_id=evaluation.id)
+            db.session.add(evaluation_instance)
+    db.session.commit()
+            
+    exams = Evaluation.query.where(Evaluation.title == "Examen").all()
+    for exam in exams:
+        evaluation_instance = EvaluationInstance(title=exam.title, instance_weighing=1, optional=False, evaluation_id=evaluation.id)
+        db.session.add(evaluation_instance)
+
+    db.session.commit()    
 
     print("Seeding completed!")
 
