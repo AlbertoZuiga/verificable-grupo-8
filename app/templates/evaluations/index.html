@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluaciones{% endblock %}
+
+{% block content%}
+<div class="container">
+  <h1 class="mb-4 text-primary">Lista de Evaluaciones</h1>
+
+  {% if evaluations %}
+  <ul class="list-group">
+    {% for evaluation in evaluations %}
+    <li
+      class="list-group-item d-flex justify-content-between align-items-center"
+    >
+      <strong class="text-dark">{{ evaluation.title }} {{ evaluation.section.course_instance.course.title }} ({{ evaluation.section.course_instance.year }}-{{ evaluation.section.course_instance.semester }})</strong>
+      <strong class="text-dark">{{ evaluation.weigh }}</strong>
+      <strong class="text-dark">{{ evaluation.weighting_system }}</strong>
+      <div>
+        <a
+          href="{{ url_for('evaluation.show', id=evaluation.id) }}"
+          class="btn btn-sm btn-info text-white"
+          aria-label="Ver evaluación {{ evaluation.title }}"
+        >
+          Ver
+        </a>
+        <a
+          href="{{ url_for('evaluation.edit', id=evaluation.id) }}"
+          class="btn btn-sm btn-warning text-dark"
+          aria-label="Editar evaluación {{ evaluation.title }}"
+        >
+          Editar
+        </a>
+        <a
+          href="{{ url_for('evaluation.delete', id=evaluation.id) }}"
+          class="btn btn-sm btn-danger"
+          aria-label="Eliminar curso {{ evaluation.title }}"
+        >
+          Eliminar
+        </a>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="alert alert-warning">No hay cursos disponibles.</p>
+  {% endif %}
+
+  <a href="{{ url_for('evaluation.create') }}" class="btn btn-success mt-4"
+    >➕ Crear nueva evaluacion</a
+  >
+</div>
+{% endblock %}

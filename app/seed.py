@@ -4,6 +4,7 @@ from app.models.course_instance import CourseInstance, SemesterEnum
 from app.models.section import Section, WeightingType
 from app.models.requisite import Requisite
 from app.models.user import User
+from app.models.evaluation import Evaluation
 
 def seed_data():
     print("Seeding database...")
@@ -103,6 +104,19 @@ def seed_data():
 
     db.session.add_all(requisites)
     db.session.commit()
+
+    evaluations = [
+        Evaluation(section_id=sections[0].id, title="Examen", weight=30, weighting_system=WeightingType.PERCENTAGE),
+        Evaluation(section_id=sections[0].id, title="Tareas", weight=20, weighting_system=WeightingType.PERCENTAGE),
+        Evaluation(section_id=sections[1].id, title="Proyecto", weight=50, weighting_system=WeightingType.WEIGHTS),
+        Evaluation(section_id=sections[1].id, title="Examen", weight=50, weighting_system=WeightingType.WEIGHTS),
+        Evaluation(section_id=sections[2].id, title="Examen", weight=40, weighting_system=WeightingType.PERCENTAGE),
+        Evaluation(section_id=sections[2].id, title="Tareas", weight=60, weighting_system=WeightingType.PERCENTAGE),
+    ]
+
+    db.session.add_all(evaluations)
+    db.session.commit()
+
 
     print("Seeding completed!")
 
