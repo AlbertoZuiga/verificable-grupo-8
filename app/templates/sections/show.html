@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Sección: {{ section.course_instance.course.title }} ({{section.code}}){% endblock %}
+
 {% block content %}
   <div class="container">
     <h1 class="mb-4 text-primary">Detalles de la Sección</h1>

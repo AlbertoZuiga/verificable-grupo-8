@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Detalles del Curso: {{ course_instance.course.title }}{% endblock %}
+{% block title %}{{ course_instance.course.title }} ({{course_instance.year}}-{{course_instance.semester}}){% endblock %}
 
 {% block content %}
   <div class="container mt-5">

@@ -69,35 +69,35 @@ La estructura del proyecto es la siguiente:
 
 ```
 proyecto-verificable/
-├── run.py                # Archivo principal para iniciar la aplicación Flask.
-├── config.py             # Configuración de la base de datos y otras variables.
-├── app/                  # Carpeta principal de la aplicación.
-│   ├── __init__.py       # Inicialización de la aplicación Flask.
-│   ├── models/           # Carpeta con los modelos de la base de datos.
-│   │   ├── __init__.py   # Inicialización de modelos.
-│   │   ├── course.py     # Modelo del curso.
-│   │   ├── course_instance.py # Modelo de instancias de cursos.
-│   │   ├── requisite.py  # Modelo de requisitos de cursos.
-│   │   ├── section.py    # Modelo de secciones.
-│   │   └── user.py       # Modelo de usuarios.
-│   ├── routes/           # Carpeta con las rutas de la aplicación.
-│   │   ├── __init__.py   # Rutas principales.
-│   │   ├── course_routes.py # Rutas relacionadas con los cursos.
-│   │   ├── course_instance_routes.py # Rutas relacionadas con instancias de cursos.
-│   │   ├── section_routes.py # Rutas relacionadas con secciones.
-│   │   └── requisite_routes.py # Rutas relacionadas con requisitos.
-│   ├── templates/        # Carpeta con las plantillas HTML.
-│   │   ├── base.html     # Plantilla base para la aplicación.
-│   │   ├── index.html    # Página de inicio.
-│   │   ├── partials/     # Plantillas parciales como el navbar y footer.
-│   │   ├── courses/      # Plantillas relacionadas con cursos.
-│   │   ├── course_instances/ # Plantillas relacionadas con instancias de cursos.
-│   │   └── sections/     # Plantillas relacionadas con secciones.
-│   ├── reset.py          # Script para reiniciar la base de datos.
-│   ├── seed.py           # Script para insertar datos iniciales en la base de datos.
-├── requirements.txt      # Lista de dependencias necesarias para el proyecto.
-├── .gitignore            # Archivos y carpetas ignorados por Git.
-└── README.md             # Documentación del proyecto.
+├── run.py                                   # Archivo principal para iniciar la aplicación Flask.
+├── config.py                                # Configuración de la base de datos y otras variables.
+├── app/                                     # Carpeta principal de la aplicación.
+│   ├── __init__.py                          # Inicialización de la aplicación Flask.
+│   ├── models/                              # Carpeta con los modelos de la base de datos.
+│   │   ├── __init__.py                      # Inicialización de modelos.
+│   │   ├── course.py                        # Modelo del curso.
+│   │   ├── course_instance.py               # Modelo de instancias de cursos.
+│   │   ├── requisite.py                     # Modelo de requisitos de cursos.
+│   │   ├── section.py                       # Modelo de secciones.
+│   │   └── user.py                          # Modelo de usuarios.
+│   ├── routes/                              # Carpeta con las rutas de la aplicación.
+│   │   ├── __init__.py                      # Rutas principales.
+│   │   ├── course_routes.py                 # Rutas relacionadas con los cursos.
+│   │   ├── course_instance_routes.py        # Rutas relacionadas con instancias de cursos.
+│   │   ├── section_routes.py                # Rutas relacionadas con secciones.
+│   │   └── requisite_routes.py              # Rutas relacionadas con requisitos.
+│   ├── templates/                           # Carpeta con las plantillas HTML.
+│   │   ├── base.html                        # Plantilla base para la aplicación.
+│   │   ├── index.html                       # Página de inicio.
+│   │   ├── partials/                        # Plantillas parciales como el navbar y footer.
+│   │   ├── courses/                         # Plantillas relacionadas con cursos.
+│   │   ├── course_instances/                # Plantillas relacionadas con instancias de cursos.
+│   │   └── sections/                        # Plantillas relacionadas con secciones.
+│   ├── reset.py                             # Script para reiniciar la base de datos.
+│   ├── seed.py                              # Script para insertar datos iniciales en la base de datos.
+├── requirements.txt                         # Lista de dependencias necesarias para el proyecto.
+├── .gitignore                               # Archivos y carpetas ignorados por Git.
+└── README.md                                # Documentación del proyecto.
 ```
 
 ---

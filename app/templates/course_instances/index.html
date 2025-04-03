@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Cursos{% endblock %}
+{% block title %}Instancias de Cursos{% endblock %}
 
 {% block content%}
 <div class="container">
-  <h1 class="mb-4 text-primary">Lista de Cursos</h1>
+  <h1 class="mb-4 text-primary">Lista de Instancias de Cursos</h1>
 
   {% if course_instances %}
   <ul class="list-group">
@@ -46,7 +46,7 @@
   {% endif %}
 
   <a href="{{ url_for('course_instance.create') }}" class="btn btn-success mt-4"
-    >➕ Crear nueva instancia</a
+    >➕ Crear nueva instancia de curso</a
   >
 </div>
 {% endblock %}
