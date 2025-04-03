@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app import db
 from app.models.course_instance import CourseInstance
-from app.models.section import Section, WeightingType
+from app.models.section import Section, WeighingType
 
 section_bp = Blueprint('section', __name__, url_prefix='/sections')
 
@@ -20,12 +20,12 @@ def create():
     if request.method == 'POST':
         course_instance_id = request.form['course_instance_id']
         code = request.form['code']
-        weighting_type = request.form['weighting_type']
+        weighing_type = request.form['weighing_type']
         
-        if not course_instance_id or not code or not weighting_type:
+        if not course_instance_id or not code or not weighing_type:
             print("Todos los campos son obligatorios.")
         else:
-            new_section = Section(course_instance_id=course_instance_id, code=code, weighting_type=weighting_type)
+            new_section = Section(course_instance_id=course_instance_id, code=code, weighing_type=weighing_type)
             try:
                 db.session.add(new_section)
                 db.session.commit()
@@ -39,7 +39,7 @@ def create():
 
     context = {
         "course_instances": course_instances,
-        "weighting_types": WeightingType
+        "weighing_types": WeighingType
     }
     return render_template('sections/create.html', **context)
 
@@ -50,15 +50,15 @@ def edit(id):
     if request.method == 'POST':
         course_instance_id = request.form['course_instance_id']
         code = request.form['code']
-        weighting_type = request.form['weighting_type']
+        weighing_type = request.form['weighing_type']
         
-        if not course_instance_id or not code or not weighting_type:
+        if not course_instance_id or not code or not weighing_type:
             print("Todos los campos son obligatorios.")
         else:
             try:
                 section.course_instance_id = course_instance_id
                 section.code = code
-                section.weighting_type = weighting_type
+                section.weighing_type = weighing_type
                 
                 db.session.commit()
                 print("Sección actualizada exitosamente.")
@@ -71,7 +71,7 @@ def edit(id):
 
     context = {
         "course_instances": course_instances,
-        "weighting_types": WeightingType
+        "weighing_types": WeighingType
     }
     return render_template('sections/edit.html', section=section, **context)
 

@@ -1,7 +1,7 @@
 from app import db
 import enum
 
-class WeightingType(enum.Enum):
+class WeighingType(enum.Enum):
     PERCENTAGE = "Porcentaje"
     WEIGHT = "Peso"
 
@@ -15,7 +15,7 @@ class Section(db.Model):
     course_instance_id = db.Column(db.Integer, db.ForeignKey('course_instances.id'), nullable=False, index=True)
     course_instance = db.relationship('CourseInstance', backref='sections')
     code = db.Column(db.Integer, nullable=False, index=True, unique=True)
-    weighting_type = db.Column(db.Enum(WeightingType), nullable=False)
+    weighing_type = db.Column(db.Enum(WeighingType), nullable=False)
 
     def __repr__(self):
-        return f"<Section id={self.id}, code={self.code}, weighting_type={self.weighting_type}>"
+        return f"<Section id={self.id}, code={self.code}, weighing_type={self.weighing_type}>"

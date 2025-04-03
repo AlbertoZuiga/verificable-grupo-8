@@ -2,7 +2,7 @@ import random
 from app import create_app, db
 from app.models.course import Course
 from app.models.course_instance import CourseInstance, SemesterEnum
-from app.models.section import Section, WeightingType
+from app.models.section import Section, WeighingType
 from app.models.requisite import Requisite
 from app.models.user import User
 from app.models.evaluation import Evaluation
@@ -82,7 +82,7 @@ def seed_data():
                 code = random.randint(100, 999)
                 if not Section.query.filter_by(code=code).first():
                     unique_code = True
-            section = Section(course_instance_id=instance.id, code=code, weighting_type=random.choice([WeightingType.PERCENTAGE, WeightingType.WEIGHT]))
+            section = Section(course_instance_id=instance.id, code=code, weighing_type=random.choice([WeighingType.PERCENTAGE, WeighingType.WEIGHT]))
             db.session.add(section)
 
     db.session.commit()
@@ -98,7 +98,7 @@ def seed_data():
                 db.session.add(requisite)
     db.session.commit()
 
-    evaluations = ["Tareas", "Proyecto", "Controles"]
+    evaluations = ["Tareas", "Proyecto", "Controles", "Pruebas"]
     sections = Section.query.all()
     for section in sections:
         selected_evaluations = random.sample(evaluations, 2)
@@ -107,11 +107,11 @@ def seed_data():
                 section_id=section.id,
                 title=title,
                 weight=random.randint(10, 50),
-                weighting_system=random.choice([WeightingType.PERCENTAGE, WeightingType.WEIGHT])
+                weighing_system=random.choice([WeighingType.PERCENTAGE, WeighingType.WEIGHT])
             )
             db.session.add(evaluation)
         
-        evaluation = Evaluation(section_id=section.id, title="Examen", weight=30, weighting_system=WeightingType.WEIGHT)
+        evaluation = Evaluation(section_id=section.id, title="Examen", weight=30, weighing_system=WeighingType.WEIGHT)
         db.session.add(evaluation)
     db.session.commit()
 

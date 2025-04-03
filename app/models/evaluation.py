@@ -1,5 +1,5 @@
 from app import db
-from app.models.section import WeightingType
+from app.models.section import WeighingType
 
 class Evaluation(db.Model):
     __tablename__ = 'evaluations'
@@ -10,8 +10,8 @@ class Evaluation(db.Model):
     section = db.relationship('Section', backref='evaluations')
     
     title = db.Column(db.String(100), nullable=False)
-    weight = db.Column(db.Integer, nullable=False)
-    weighting_system = db.Column(db.Enum(WeightingType), nullable=False)
+    weighing = db.Column(db.Integer, nullable=False)
+    weighing_system = db.Column(db.Enum(WeighingType), nullable=False)
 
     def __repr__(self):
-        return f"<Evaluation id={self.id}, title={self.title}, weighting_system={self.weighting_system}>"
+        return f"<Evaluation id={self.id}, title={self.title}, weighing_system={self.weighing_system}>"

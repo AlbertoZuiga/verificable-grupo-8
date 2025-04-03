@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app import db
 from app.models.evaluation import Evaluation
-from app.models.section import Section, WeightingType
+from app.models.section import Section, WeighingType
 
 evaluation_bp = Blueprint('evaluation', __name__, url_prefix='/evaluations')
 
@@ -20,14 +20,14 @@ def create():
     if request.method == 'POST':
         title = request.form['title']
         weight = request.form['weight']
-        weighting_system = request.form['weighting_system']
+        weighing_system = request.form['weighing_system']
         section_id = request.form['section_id']
         
         if Section.query.get(section_id) is None:
             return "Invalid section ID", 400
         
 
-        evaluation = Evaluation(title=title, weight=weight, weighting_system=weighting_system, section_id=section_id)
+        evaluation = Evaluation(title=title, weight=weight, weighing_system=weighing_system, section_id=section_id)
         try:
             db.session.add(evaluation)
             db.session.commit()
@@ -37,7 +37,7 @@ def create():
             print(f"Error Creating evaluation: {e}")
     
     sections = Section.query.all()
-    return render_template('evaluations/create.html', sections=sections, weighting_types=WeightingType)
+    return render_template('evaluations/create.html', sections=sections, weighing_types=WeighingType)
 
 @evaluation_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):
@@ -45,7 +45,7 @@ def edit(id):
     if request.method == 'POST':
         evaluation.title = request.form['title']
         evaluation.weight = request.form['weight']
-        evaluation.weighting_system = request.form['weighting_system']
+        evaluation.weighing_system = request.form['weighing_system']
         section_id = request.form['section_id']
         
         if Section.query.get(section_id) is None:
@@ -61,7 +61,7 @@ def edit(id):
             print(f"Error updating evaluation: {e}")
     
     sections = Section.query.all()
-    return render_template('evaluations/edit.html', evaluation=evaluation, sections=sections, weighting_types=WeightingType)
+    return render_template('evaluations/edit.html', evaluation=evaluation, sections=sections, weighing_types=WeighingType)
 
 @evaluation_bp.route('/delete/<int:id>')
 def delete(id):

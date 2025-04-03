@@ -14,7 +14,7 @@
     >
       <strong class="text-dark">{{ evaluation.title }} {{ evaluation.section.course_instance.course.title }} ({{ evaluation.section.course_instance.year }}-{{ evaluation.section.course_instance.semester }})</strong>
       <strong class="text-dark">{{ evaluation.weigh }}</strong>
-      <strong class="text-dark">{{ evaluation.weighting_system }}</strong>
+      <strong class="text-dark">{{ evaluation.weighing_system }}</strong>
       <div>
         <a
           href="{{ url_for('evaluation.show', id=evaluation.id) }}"
@@ -45,8 +45,6 @@
   <p class="alert alert-warning">No hay evaluaciones disponibles.</p>
   {% endif %}
 
-  <a href="{{ url_for('evaluation.create') }}" class="btn btn-success mt-4"
-    >➕ Crear nueva evaluacion</a
-  >
+  <a href="{{ url_for('evaluation.create') }}" class="btn btn-success mt-4">➕ Crear nueva evaluacion</a>
 </div>
 {% endblock %}

@@ -24,10 +24,10 @@
         </div>
         
         <div class="mb-3">
-          <label for="weighting_type" class="form-label">Tipo de Ponderación</label>
-          <select class="form-select" id="weighting_type" name="weighting_type" required>
-            {% for type in weighting_types %}
-              <option value="{{ type.name }}" {% if type.name == section.weighting_type %}selected{% endif %}>{{ type.value }}</option>
+          <label for="weighing_type" class="form-label">Tipo de Ponderación</label>
+          <select class="form-select" id="weighing_type" name="weighing_type" required>
+            {% for type in weighing_types %}
+              <option value="{{ type.name }}" {% if type.name == section.weighing_type %}selected{% endif %}>{{ type.value }}</option>
             {% endfor %}
           </select>
         </div>

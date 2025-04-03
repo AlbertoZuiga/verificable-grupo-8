@@ -1,5 +1,4 @@
 from app import db
-from app.models.course import Course
 from sqlalchemy import CheckConstraint
 from enum import Enum
 
