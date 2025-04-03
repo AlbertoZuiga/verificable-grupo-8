@@ -1,3 +1,4 @@
+import random
 from app import create_app, db
 from app.models.course import Course
 from app.models.course_instance import CourseInstance, SemesterEnum
@@ -17,18 +18,18 @@ def seed_data():
         {"first_name": "Luis", "last_name": "Martínez", "email": "luis.martinez@example.com", "university_entry_date": "2020-07-01"},
     ]
 
-    for data in users_data:
-        user = User.query.filter_by(email=data["email"]).first()
+    for user_data in users_data:
+        user = User.query.filter_by(email=user_data["email"]).first()
         if not user:
             user = User(
-                first_name=data["first_name"],
-                last_name=data["last_name"],
-                email=data["email"],
-                university_entry_date=data["university_entry_date"]
+                first_name=user_data["first_name"],
+                last_name=user_data["last_name"],
+                email=user_data["email"],
+                university_entry_date=user_data["university_entry_date"]
             )
             db.session.add(user)
         else:
-            print(f"El usuario con email '{data['email']}' ya existe, no se añadirá de nuevo.")
+            print(f"El usuario con email '{user_data['email']}' ya existe, no se añadirá de nuevo.")
 
     db.session.commit()
 
@@ -46,13 +47,13 @@ def seed_data():
     ]
 
     courses = []
-    for data in courses_data:
-        course = Course.query.filter_by(title=data["title"]).first()
+    for course_data in courses_data:
+        course = Course.query.filter_by(title=course_data["title"]).first()
         if not course:
-            course = Course(title=data["title"])
+            course = Course(title=course_data["title"])
             db.session.add(course)
         else:
-            print(f"El curso '{data['title']}' ya existe, no se añadirá de nuevo.")
+            print(f"El curso '{course_data['title']}' ya existe, no se añadirá de nuevo.")
         
         courses.append(course)
 
@@ -62,61 +63,57 @@ def seed_data():
         print("Error: No se pudieron obtener todos los cursos correctamente.")
         return
 
-    instances = [
-        CourseInstance(course_id=courses[0].id, year=2024, semester=1),
-        CourseInstance(course_id=courses[1].id, year=2024, semester=1),
-        CourseInstance(course_id=courses[2].id, year=2023, semester=2),
-        CourseInstance(course_id=courses[3].id, year=2024, semester=2),
-        CourseInstance(course_id=courses[4].id, year=2023, semester=1),
-        CourseInstance(course_id=courses[5].id, year=2023, semester=2),
-        CourseInstance(course_id=courses[6].id, year=2024, semester=1),
-        CourseInstance(course_id=courses[7].id, year=2024, semester=2),
-        CourseInstance(course_id=courses[8].id, year=2023, semester=1),
-        CourseInstance(course_id=courses[9].id, year=2023, semester=2),
-    ]
+    for course in courses:
+        for i in range(random.randint(1, 5)):
+            course_instance = CourseInstance(
+                course_id=course.id,
+                year=random.randint(2015, 2025),
+                semester=random.choice([SemesterEnum.FIRST.value, SemesterEnum.SECOND.value])
+            )
+            db.session.add(course_instance)
 
-    db.session.add_all(instances)
+    db.session.commit()
+    
+    course_instances = CourseInstance.query.all()
+    for instance in course_instances:
+        for i in range(random.randint(1, 3)):
+            unique_code = False
+            while not unique_code:
+                code = random.randint(100, 999)
+                if not Section.query.filter_by(code=code).first():
+                    unique_code = True
+            section = Section(course_instance_id=instance.id, code=code, weighting_type=random.choice([WeightingType.PERCENTAGE, WeightingType.WEIGHT]))
+            db.session.add(section)
+
     db.session.commit()
 
-    sections = [
-        Section(course_instance_id=instances[0].id, code=101, weighting_type=WeightingType.PERCENTAGE),
-        Section(course_instance_id=instances[1].id, code=102, weighting_type=WeightingType.WEIGHTS),
-        Section(course_instance_id=instances[2].id, code=201, weighting_type=WeightingType.PERCENTAGE),
-        Section(course_instance_id=instances[3].id, code=301, weighting_type=WeightingType.WEIGHTS),
-        Section(course_instance_id=instances[4].id, code=401, weighting_type=WeightingType.PERCENTAGE),
-        Section(course_instance_id=instances[5].id, code=501, weighting_type=WeightingType.WEIGHTS),
-        Section(course_instance_id=instances[6].id, code=601, weighting_type=WeightingType.PERCENTAGE),
-        Section(course_instance_id=instances[7].id, code=701, weighting_type=WeightingType.WEIGHTS),
-        Section(course_instance_id=instances[8].id, code=801, weighting_type=WeightingType.PERCENTAGE),
-        Section(course_instance_id=instances[9].id, code=901, weighting_type=WeightingType.WEIGHTS),
-    ]
+    for course in courses:
+        possible_prerequisites = [c for c in courses if c.id != course.id]
+        num_prerequisites = random.randint(1, min(3, len(possible_prerequisites)))
 
-    db.session.add_all(sections)
+        selected_prerequisites = random.sample(possible_prerequisites, num_prerequisites)
+        for prerequisite in selected_prerequisites:
+            if not Requisite.query.filter_by(course_id=course.id, course_requisite_id=prerequisite.id).first():
+                requisite = Requisite(course_id=course.id, course_requisite_id=prerequisite.id)
+                db.session.add(requisite)
     db.session.commit()
 
-    requisites = [
-        Requisite(course_id=courses[0].id, course_requisite_id=courses[1].id),
-        Requisite(course_id=courses[1].id, course_requisite_id=courses[2].id),
-        Requisite(course_id=courses[3].id, course_requisite_id=courses[4].id),
-        Requisite(course_id=courses[5].id, course_requisite_id=courses[6].id),
-        Requisite(course_id=courses[7].id, course_requisite_id=courses[8].id),
-    ]
-
-    db.session.add_all(requisites)
+    evaluations = ["Tareas", "Proyecto", "Controles"]
+    sections = Section.query.all()
+    for section in sections:
+        selected_evaluations = random.sample(evaluations, 2)
+        for title in selected_evaluations:
+            evaluation = Evaluation(
+                section_id=section.id,
+                title=title,
+                weight=random.randint(10, 50),
+                weighting_system=random.choice([WeightingType.PERCENTAGE, WeightingType.WEIGHT])
+            )
+            db.session.add(evaluation)
+        
+        evaluation = Evaluation(section_id=section.id, title="Examen", weight=30, weighting_system=WeightingType.WEIGHT)
+        db.session.add(evaluation)
     db.session.commit()
-
-    evaluations = [
-        Evaluation(section_id=sections[0].id, title="Examen", weight=30, weighting_system=WeightingType.PERCENTAGE),
-        Evaluation(section_id=sections[0].id, title="Tareas", weight=20, weighting_system=WeightingType.PERCENTAGE),
-        Evaluation(section_id=sections[1].id, title="Proyecto", weight=50, weighting_system=WeightingType.WEIGHTS),
-        Evaluation(section_id=sections[1].id, title="Examen", weight=50, weighting_system=WeightingType.WEIGHTS),
-        Evaluation(section_id=sections[2].id, title="Examen", weight=40, weighting_system=WeightingType.PERCENTAGE),
-        Evaluation(section_id=sections[2].id, title="Tareas", weight=60, weighting_system=WeightingType.PERCENTAGE),
-    ]
-
-    db.session.add_all(evaluations)
-    db.session.commit()
-
 
     print("Seeding completed!")
 

@@ -3,7 +3,7 @@ import enum
 
 class WeightingType(enum.Enum):
     PERCENTAGE = "Porcentaje"
-    WEIGHTS = "Peso"
+    WEIGHT = "Peso"
 
     def __str__(self):
         return self.name

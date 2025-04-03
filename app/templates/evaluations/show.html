@@ -10,7 +10,7 @@
       <p><strong>Ramo:</strong> {{ evaluation.section.course_instance.course.title }} ({{ evaluation.section.course_instance.year }}-{{ evaluation.section.course_instance.semester }})</p>
       <p><strong>Seccion:</strong> {{ evaluation.section.code }}</p>
       <p><strong>Tipo de Ponderación:</strong> {{ evaluation.weighting_system }}</p>
-      <p><strong>Peso:</strong> {{ evaluation.weight }}</p>
+      <p><strong>Ponderación:</strong> {{ evaluation.weight }}</p>
       
       <div class="mt-4 d-flex justify-content-between">
         <a href="{{ url_for('evaluation.index') }}" class="btn btn-secondary">
