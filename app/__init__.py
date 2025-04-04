@@ -2,15 +2,17 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
 
-db = SQLAlchemy()
+kanvas_db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-    db.init_app(app)
+    kanvas_db.init_app(app)
 
     from app.routes import blueprints
     for bp in blueprints:
         app.register_blueprint(bp)
 
     return app
+
+app = create_app()

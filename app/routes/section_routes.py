@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from app import db
+from app import kanvas_db
 from app.models.course_instance import CourseInstance
 from app.models.section import Section, WeighingType
 
@@ -27,12 +27,12 @@ def create():
         else:
             new_section = Section(course_instance_id=course_instance_id, code=code, weighing_type=weighing_type)
             try:
-                db.session.add(new_section)
-                db.session.commit()
+                kanvas_db.session.add(new_section)
+                kanvas_db.session.commit()
                 print("Seccion creada exitosamente")
                 return redirect(url_for('section.index'))
             except Exception as e:
-                db.session.rollback()
+                kanvas_db.session.rollback()
                 print(f"Error al crear la seccion: {str(e)}")
 
     course_instances = CourseInstance.query.all()
@@ -60,11 +60,11 @@ def edit(id):
                 section.code = code
                 section.weighing_type = weighing_type
                 
-                db.session.commit()
+                kanvas_db.session.commit()
                 print("Sección actualizada exitosamente.")
                 return redirect(url_for('section.index'))
             except Exception as e:
-                db.session.rollback()
+                kanvas_db.session.rollback()
                 print(f"Error al editar la sección: {str(e)}")
 
     course_instances = CourseInstance.query.all()
@@ -79,9 +79,9 @@ def edit(id):
 def delete(id):
     section = Section.query.get_or_404(id)
     try:
-        db.session.delete(section)
-        db.session.commit()
+        kanvas_db.session.delete(section)
+        kanvas_db.session.commit()
     except Exception as e:
-        db.session.rollback()
+        kanvas_db.session.rollback()
         print(f"Error deleting section: {e}")
     return redirect(url_for('section.index'))

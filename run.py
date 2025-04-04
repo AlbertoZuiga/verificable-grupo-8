@@ -1,9 +1,7 @@
-from app import create_app, db
-
-app = create_app()
+from app import app, kanvas_db
 
 with app.app_context():
-    db.create_all()
+    kanvas_db.create_all()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

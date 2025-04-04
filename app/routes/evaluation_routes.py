@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from app import db
+from app import kanvas_db
 from app.models.evaluation import Evaluation
 from app.models.section import Section, WeighingType
 
@@ -29,11 +29,11 @@ def create():
 
         evaluation = Evaluation(title=title, weighing=weighing, weighing_system=weighing_system, section_id=section_id)
         try:
-            db.session.add(evaluation)
-            db.session.commit()
+            kanvas_db.session.add(evaluation)
+            kanvas_db.session.commit()
             return redirect(url_for('evaluation.show', id=evaluation.id))
         except Exception as e:
-            db.session.rollback()
+            kanvas_db.session.rollback()
             print(f"Error Creating evaluation: {e}")
     
     sections = Section.query.all()
@@ -54,10 +54,10 @@ def edit(id):
         evaluation.section_id = section_id
         
         try:
-            db.session.commit()
+            kanvas_db.session.commit()
             return redirect(url_for('evaluation.show', id=evaluation.id))
         except Exception as e:
-            db.session.rollback()
+            kanvas_db.session.rollback()
             print(f"Error updating evaluation: {e}")
     
     sections = Section.query.all()
@@ -67,9 +67,9 @@ def edit(id):
 def delete(id):
     evaluation = Evaluation.query.get_or_404(id)
     try:
-        db.session.delete(evaluation)
-        db.session.commit()
+        kanvas_db.session.delete(evaluation)
+        kanvas_db.session.commit()
     except Exception as e:
-        db.session.rollback()
+        kanvas_db.session.rollback()
         print(f"Error deleting evaluation: {e}")
     return redirect(url_for('evaluation.index'))

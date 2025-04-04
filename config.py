@@ -12,3 +12,5 @@ class Config:
     SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.urandom(24)
+    
+    DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")

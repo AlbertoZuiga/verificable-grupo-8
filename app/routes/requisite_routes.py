@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from app import db
+from app import kanvas_db
 from app.models.course import Course
 from app.models.requisite import Requisite
 
@@ -17,11 +17,11 @@ def create():
     new_requisite = Requisite(course_id=course_id, course_requisite_id=requisite_id)
 
     try:
-        db.session.add(new_requisite)
-        db.session.commit()
+        kanvas_db.session.add(new_requisite)
+        kanvas_db.session.commit()
         print("Requisito añadido con éxito.")
     except Exception as e:
-        db.session.rollback()
+        kanvas_db.session.rollback()
         print(f"Error al crear el requisito: {e}")
 
     return redirect(url_for('course.show', id=course_id))
@@ -32,11 +32,11 @@ def delete(id):
     course_id = requisite.course_id
     
     try:
-        db.session.delete(requisite)
-        db.session.commit()
+        kanvas_db.session.delete(requisite)
+        kanvas_db.session.commit()
         print("Requisito eliminado con éxito.")
     except Exception as e:
-        db.session.rollback()
+        kanvas_db.session.rollback()
         print(f"Error al eliminar el requisito: {e}")
     
     return redirect(url_for('course.show', id=course_id))

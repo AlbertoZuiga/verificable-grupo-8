@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from app import db
+from app import kanvas_db
 from app.models.course import Course
 from app.models.course_instance import CourseInstance
 
@@ -28,12 +28,12 @@ def create():
         else:
             new_course_instance = CourseInstance(course_id=course_id, year=year, semester=semester)
             try:
-                db.session.add(new_course_instance)
-                db.session.commit()
+                kanvas_db.session.add(new_course_instance)
+                kanvas_db.session.commit()
                 print("Instancia del curso creada exitosamente.")
                 return redirect(url_for('course_instance.index'))
             except Exception as e:
-                db.session.rollback()
+                kanvas_db.session.rollback()
                 print(f"Error al crear la instancia del curso: {str(e)}")
 
     courses = Course.query.all()
@@ -56,11 +56,11 @@ def edit(id):
             course_instance.year = year
             course_instance.semester = semester
             try:
-                db.session.commit()
+                kanvas_db.session.commit()
                 print("Instancia del curso editada exitosamente.")
                 return redirect(url_for('course_instance.index'))
             except Exception as e:
-                db.session.rollback()
+                kanvas_db.session.rollback()
                 print(f"Error al editar la instancia del curso: {str(e)}")
     
     courses = Course.query.all()
@@ -70,9 +70,9 @@ def edit(id):
 def delete(id):
     course_instance = CourseInstance.query.get_or_404(id)
     try:
-        db.session.delete(course_instance)
-        db.session.commit()
+        kanvas_db.session.delete(course_instance)
+        kanvas_db.session.commit()
     except Exception as e:
-        db.session.rollback()
+        kanvas_db.session.rollback()
         print(f"Error deleting course_instance: {e}")
     return redirect(url_for('course_instance.index'))

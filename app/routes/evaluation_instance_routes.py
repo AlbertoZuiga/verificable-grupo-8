@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from app import db
+from app import kanvas_db
 from app.models.evaluation_instance import EvaluationInstance
 from app.models.evaluation import Evaluation
 
@@ -29,11 +29,11 @@ def create():
         evaluation_instance = EvaluationInstance(title=title, instance_weighing=instance_weighing, optional=optional, evaluation_id=evaluation_id)
 
         try:
-            db.session.add(evaluation_instance)
-            db.session.commit()
+            kanvas_db.session.add(evaluation_instance)
+            kanvas_db.session.commit()
             return redirect(url_for('evaluation_instance.show', id=evaluation_instance.id))
         except Exception as e:
-            db.session.rollback()
+            kanvas_db.session.rollback()
             print(f"Error creating evaluation_instance: {e}")
     
     evaluations = Evaluation.query.all()
@@ -55,10 +55,10 @@ def edit(id):
         evaluation_instance.evaluation_id = evaluation_id
 
         try:
-            db.session.commit()
+            kanvas_db.session.commit()
             return redirect(url_for('evaluation_instance.show', id=evaluation_instance.id))
         except Exception as e:
-            db.session.rollback()
+            kanvas_db.session.rollback()
             print(f"Error updating evaluation_instance: {e}")
     
     evaluations = Evaluation.query.all()
@@ -68,9 +68,9 @@ def edit(id):
 def delete(id):
     evaluation_instance = EvaluationInstance.query.get_or_404(id)
     try:
-        db.session.delete(evaluation_instance)
-        db.session.commit()
+        kanvas_db.session.delete(evaluation_instance)
+        kanvas_db.session.commit()
     except Exception as e:
-        db.session.rollback()
+        kanvas_db.session.rollback()
         print(f"Error deleting evaluation_instance: {e}")
     return redirect(url_for('evaluation_instance.index'))

@@ -1,16 +1,16 @@
-from app import db
+from app import kanvas_db
 
-class EvaluationInstance(db.Model):
+class EvaluationInstance(kanvas_db.Model):
     __tablename__ = 'evaluation_instances'
 
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)
     
-    evaluation_id = db.Column(db.Integer, db.ForeignKey('evaluations.id'), nullable=False, index=True)
-    evaluation = db.relationship('Evaluation', backref='instances')
+    evaluation_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('evaluations.id'), nullable=False, index=True)
+    evaluation = kanvas_db.relationship('Evaluation', backref='instances')
     
-    title = db.Column(db.String(100), nullable=False)
-    instance_weighing = db.Column(db.Integer, nullable=False)
-    optional = db.Column(db.Boolean, default=False, nullable=False)
+    title = kanvas_db.Column(kanvas_db.String(100), nullable=False)
+    instance_weighing = kanvas_db.Column(kanvas_db.Integer, nullable=False)
+    optional = kanvas_db.Column(kanvas_db.Boolean, default=False, nullable=False)
 
     def __repr__(self):
         return f"<EvaluationInstance id={self.id}, title={self.title}, weighing={self.weighing}>"
