@@ -1,5 +1,5 @@
 import random
-from app import create_app, db
+from app import app, kanvas_db
 from app.models.course import Course
 from app.models.course_instance import CourseInstance, Semester
 from app.models.section import Section, WeighingType
@@ -8,8 +8,8 @@ from app.models.user import User
 from app.models.evaluation import Evaluation
 from app.models.evaluation_instance import EvaluationInstance
 
-def seed_data():
-    print("Seeding database...")
+def seed_database():
+    print("Creando datos...")
 
     users_data = [
         {"first_name": "Juan", "last_name": "Pérez", "email": "juan.perez@example.com", "university_entry_date": "2020-01-15"},
@@ -28,11 +28,11 @@ def seed_data():
                 email=user_data["email"],
                 university_entry_date=user_data["university_entry_date"]
             )
-            db.session.add(user)
+            kanvas_db.session.add(user)
         else:
-            print(f"El usuario con email '{user_data['email']}' ya existe, no se añadirá de nuevo.")
+            print(f"\tEl usuario con email '{user_data['email']}' ya existe, no se añadirá de nuevo.")
 
-    db.session.commit()
+    kanvas_db.session.commit()
 
     courses_data = [
         {"title": "Matemáticas Avanzadas"},
@@ -52,13 +52,13 @@ def seed_data():
         course = Course.query.filter_by(title=course_data["title"]).first()
         if not course:
             course = Course(title=course_data["title"])
-            db.session.add(course)
+            kanvas_db.session.add(course)
         else:
-            print(f"El curso '{course_data['title']}' ya existe, no se añadirá de nuevo.")
+            print(f"\tEl curso '{course_data['title']}' ya existe, no se añadirá de nuevo.")
         
         courses.append(course)
 
-    db.session.commit()
+    kanvas_db.session.commit()
 
     if len(courses) < len(courses_data):
         print("Error: No se pudieron obtener todos los cursos correctamente.")
@@ -71,9 +71,9 @@ def seed_data():
                 year=random.randint(2015, 2025),
                 semester=random.choice([Semester.FIRST, Semester.SECOND])
             )
-            db.session.add(course_instance)
+            kanvas_db.session.add(course_instance)
 
-    db.session.commit()
+    kanvas_db.session.commit()
     
     course_instances = CourseInstance.query.all()
     for instance in course_instances:
@@ -84,9 +84,9 @@ def seed_data():
                 if not Section.query.filter_by(code=code).first():
                     unique_code = True
             section = Section(course_instance_id=instance.id, code=code, weighing_type=random.choice([WeighingType.PERCENTAGE, WeighingType.WEIGHT]))
-            db.session.add(section)
+            kanvas_db.session.add(section)
 
-    db.session.commit()
+    kanvas_db.session.commit()
 
     for course in courses:
         possible_prerequisites = [c for c in courses if c.id != course.id]
@@ -96,8 +96,8 @@ def seed_data():
         for prerequisite in selected_prerequisites:
             if not Requisite.query.filter_by(course_id=course.id, course_requisite_id=prerequisite.id).first():
                 requisite = Requisite(course_id=course.id, course_requisite_id=prerequisite.id)
-                db.session.add(requisite)
-    db.session.commit()
+                kanvas_db.session.add(requisite)
+    kanvas_db.session.commit()
 
     evaluations = ["Tareas", "Proyecto", "Controles", "Pruebas"]
     sections = Section.query.all()
@@ -110,29 +110,28 @@ def seed_data():
                 weighing=random.randint(10, 50),
                 weighing_system=random.choice([WeighingType.PERCENTAGE, WeighingType.WEIGHT])
             )
-            db.session.add(evaluation)
+            kanvas_db.session.add(evaluation)
         
         evaluation = Evaluation(section_id=section.id, title="Examen", weighing=30, weighing_system=WeighingType.WEIGHT)
-        db.session.add(evaluation)
-    db.session.commit()
+        kanvas_db.session.add(evaluation)
+    kanvas_db.session.commit()
     
     evaluations = Evaluation.query.where(Evaluation.title != "Examen").all()
     for evaluation in evaluations:
         for i in range(random.randint(2, 7)):
             evaluation_instance = EvaluationInstance(title=f'{evaluation.title} {i+1}', instance_weighing=random.randint(10, 50), optional=False, evaluation_id=evaluation.id)
-            db.session.add(evaluation_instance)
-    db.session.commit()
+            kanvas_db.session.add(evaluation_instance)
+    kanvas_db.session.commit()
             
     exams = Evaluation.query.where(Evaluation.title == "Examen").all()
     for exam in exams:
         evaluation_instance = EvaluationInstance(title=exam.title, instance_weighing=1, optional=False, evaluation_id=evaluation.id)
-        db.session.add(evaluation_instance)
+        kanvas_db.session.add(evaluation_instance)
 
-    db.session.commit()    
+    kanvas_db.session.commit()    
 
-    print("Seeding completed!")
+    print("Datos creados correctamente!")
 
 if __name__ == "__main__":
-    app = create_app()
     with app.app_context():
-        seed_data()
+        seed_database()
