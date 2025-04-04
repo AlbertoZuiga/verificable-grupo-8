@@ -152,6 +152,7 @@ verificable-grupo-8/
 │   │   ├── requisite_routes.py
 │   │   ├── evaluation_routes.py
 │   │   └── evaluation_instance_routes.py
+│   │   └── user_routes.py
 │   ├── static/                # Archivos estáticos (CSS, JS, imágenes)
 │   └── templates/             # Plantillas HTML con Jinja2
 │       ├── base.html
@@ -163,6 +164,7 @@ verificable-grupo-8/
 │       ├── sections/
 │       ├── evaluations/
 │       └── evaluation_instances/
+│       └── users/
 └── 
 ```
 

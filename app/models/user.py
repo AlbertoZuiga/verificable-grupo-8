@@ -7,7 +7,7 @@ class User(kanvas_db.Model):
     first_name = kanvas_db.Column(kanvas_db.String(100), nullable=False)
     last_name = kanvas_db.Column(kanvas_db.String(100), nullable=False)
     email = kanvas_db.Column(kanvas_db.String(120), nullable=False, unique=True, index=True)
-    university_entry_date = kanvas_db.Column(kanvas_db.Date, nullable=False)
+    university_entry_year = kanvas_db.Column(kanvas_db.Integer, nullable=False)
 
     def __repr__(self):
         return f"<User id={self.id}, name={self.name}, email={self.email}>"

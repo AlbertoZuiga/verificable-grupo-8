@@ -12,11 +12,11 @@ def seed_database():
     print("Creando datos...")
 
     users_data = [
-        {"first_name": "Juan", "last_name": "Pérez", "email": "juan.perez@example.com", "university_entry_date": "2020-01-15"},
-        {"first_name": "María", "last_name": "González", "email": "maria.gonzalez@example.com", "university_entry_date": "2019-08-20"},
-        {"first_name": "Carlos", "last_name": "Ramírez", "email": "carlos.ramirez@example.com", "university_entry_date": "2021-03-10"},
-        {"first_name": "Ana", "last_name": "López", "email": "ana.lopez@example.com", "university_entry_date": "2022-09-05"},
-        {"first_name": "Luis", "last_name": "Martínez", "email": "luis.martinez@example.com", "university_entry_date": "2020-07-01"},
+        {"first_name": "Juan", "last_name": "Pérez", "email": "juan.perez@example.com", "university_entry_year": 2020},
+        {"first_name": "María", "last_name": "González", "email": "maria.gonzalez@example.com", "university_entry_year": 2019},
+        {"first_name": "Carlos", "last_name": "Ramírez", "email": "carlos.ramirez@example.com", "university_entry_year": 2021},
+        {"first_name": "Ana", "last_name": "López", "email": "ana.lopez@example.com", "university_entry_year": 2022},
+        {"first_name": "Luis", "last_name": "Martínez", "email": "luis.martinez@example.com", "university_entry_year": 2020},
     ]
 
     for user_data in users_data:
@@ -26,7 +26,7 @@ def seed_database():
                 first_name=user_data["first_name"],
                 last_name=user_data["last_name"],
                 email=user_data["email"],
-                university_entry_date=user_data["university_entry_date"]
+                university_entry_year=user_data["university_entry_year"]
             )
             kanvas_db.session.add(user)
         else:

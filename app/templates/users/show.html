@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% block title %}Perfil de {{ user.first_name }} {{
+user.last_name }}{% endblock %} {% block content %}
+<div class="container py-5">
+  <h1 class="mb-4 text-primary">📄 Perfil del Usuario</h1>
+
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body">
+      <dl class="row">
+        <dt class="col-sm-4 text-muted">Nombre completo:</dt>
+        <dd class="col-sm-8">{{ user.first_name }} {{ user.last_name }}</dd>
+
+        <dt class="col-sm-4 text-muted">Correo electrónico:</dt>
+        <dd class="col-sm-8">{{ user.email }}</dd>
+
+        <dt class="col-sm-4 text-muted">Año de ingreso:</dt>
+        <dd class="col-sm-8">{{ user.university_entry_year }}</dd>
+      </dl>
+
+      <div class="mt-4 d-flex flex-wrap gap-2">
+        <a href="{{ url_for('user.index') }}" class="btn btn-secondary">
+          ⬅ Volver
+        </a>
+        <a
+          href="{{ url_for('user.edit', id=user.id) }}"
+          class="btn btn-primary"
+        >
+          ✏ Editar
+        </a>
+        <a
+          href="{{ url_for('user.delete', id=user.id) }}"
+          class="btn btn-danger"
+          onclick="return confirm('¿Estás seguro de eliminar este usuario?')"
+        >
+          🗑 Eliminar
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

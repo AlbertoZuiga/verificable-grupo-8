@@ -5,5 +5,7 @@ from app.routes.section_routes import section_bp
 from app.routes.requisite_routes import requisite_bp
 from app.routes.evaluation_routes import evaluation_bp
 from app.routes.evaluation_instance_routes import evaluation_instance_bp
+from app.routes.auth_routes import auth_bp
+from app.routes.user_routes import user_bp
 
-blueprints = [main_bp, course_bp, course_instance_bp, section_bp, requisite_bp, evaluation_bp, evaluation_instance_bp]
+blueprints = [main_bp, course_bp, course_instance_bp, section_bp, requisite_bp, evaluation_bp, evaluation_instance_bp, auth_bp, user_bp]

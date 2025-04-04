@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block email %}Usuarios{% endblock %}
+
+{% block content%}
+<div class="container">
+  <h1 class="mb-4 text-primary">Lista de Usuarios</h1>
+
+  {% if users %}
+    <ul class="list-group">
+        {% for user in users %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+        <strong class="text-dark">{{ user.first_name }}</strong>
+        <strong class="text-dark">{{ user.last_name }}</strong>
+        <strong class="text-dark">{{ user.email }}</strong>
+        <div>
+            <a href="{{ url_for('user.show', id=user.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver usuario {{ user.email }}">
+            Ver
+            </a>
+            <a href="{{ url_for('user.edit', id=user.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar usuario {{ user.email }}">
+            Editar
+            </a>
+            <a href="{{ url_for('user.delete', id=user.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar usuario {{ user.email }}">
+            Eliminar
+            </a>
+        </div>
+        </li>
+        {% endfor %}
+    </ul>
+  {% else %}
+    <p class="alert alert-warning">No hay usuarios disponibles.</p>
+  {% endif %}
+
+  <a href="{{ url_for('user.create') }}" class="btn btn-success mt-4">➕ Crear nuevo usuario</a>
+</div>
+{% endblock %}
