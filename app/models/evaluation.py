@@ -15,3 +15,7 @@ class Evaluation(kanvas_db.Model):
 
     def __repr__(self):
         return f"<Evaluation id={self.id}, title={self.title}, weighing_system={self.weighing_system}>"
+
+    @property
+    def total_weighing(self):
+        return sum(instance.weighing for instance in self.instances)

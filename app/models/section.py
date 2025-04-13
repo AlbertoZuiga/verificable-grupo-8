@@ -26,4 +26,4 @@ class Section(kanvas_db.Model):
     
     @property
     def total_weighing(self):
-        return sum(e.weighing for e in self.evaluations)
+        return sum(evaluation.weighing for evaluation in self.evaluations)

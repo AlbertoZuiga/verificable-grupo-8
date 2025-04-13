@@ -1,18 +1,14 @@
-{% extends "base.html" %} {% block title %}Evaluación: {{evaluation.title}}{%
-endblock %} {% block content %}
+{% extends "base.html" %}
+
+{% block title %}Evaluación: {{evaluation.title}}{% endblock %}
+
+{% block content %}
 <div class="container">
-  <h1 class="mb-4 text-primary">Detalles de la Evaluación</h1>
+  <h1 class="mb-4 text-primary">{{ evaluation.title }}</h1>
   <div class="card shadow-lg p-4">
-    <p><strong>Nombre:</strong> {{ evaluation.title }}</p>
-    <p>
-      <strong>Ramo:</strong> {{ evaluation.section.course_instance.course.title
-      }} ({{ evaluation.section.course_instance.year }}-{{
-      evaluation.section.course_instance.semester }})
-    </p>
+    <p><strong>Ramo:</strong> {{ evaluation.section.course_instance.course.title}} ({{ evaluation.section.course_instance.year }}-{{ evaluation.section.course_instance.semester }})</p>
     <p><strong>Seccion:</strong> {{ evaluation.section.code }}</p>
-    <p>
-      <strong>Tipo de Ponderación:</strong> {{ evaluation.weighing_system }}
-    </p>
+    <p><strong>Tipo de Ponderación:</strong> {{ evaluation.weighing_system }}</p>
     <p><strong>Ponderación:</strong> {{ evaluation.weighing }}</p>
 
     <div class="mt-4 d-flex justify-content-between">
@@ -20,21 +16,35 @@ endblock %} {% block content %}
         ⬅ Volver al listado
       </a>
       <div class="btn-group" role="group">
-        <a
-          href="{{ url_for('evaluation.edit', id=evaluation.id) }}"
-          class="btn btn-warning text-dark"
-        >
+        <a href="{{ url_for('evaluation.edit', id=evaluation.id) }}" class="btn btn-warning text-dark">
           ✏ Editar
         </a>
-        <a
-          href="{{ url_for('evaluation.delete', id=evaluation.id) }}"
-          class="btn btn-danger"
-          onclick="return confirm('¿Estás seguro de que deseas eliminar este curso?');"
-        >
+        <a href="{{ url_for('evaluation.delete', id=evaluation.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este curso?');">
           🗑 Eliminar
         </a>
       </div>
     </div>
+  </div>
+
+
+
+  <h3 class="mt-5 text-primary">Tareas</h3>
+  <div class="list-group mt-3 shadow-sm rounded-3">
+    {% for instance in evaluation.instances %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ instance.title }}</strong>
+          {% if evaluation.weighing_system == WeighingType.WEIGHT %}
+            <span class="badge bg-primary ms-2">{{ instance.instance_weighing }}/{{ evaluation.total_weighing }}</span>
+          {% else %}
+            <span class="badge bg-primary ms-2">{{ instance.instance_weighing }}%</span>
+          {% endif %}
+        </div>
+        <a href="{{ url_for('course_instance.show', id=instance.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+      </div>    
+    {% else %}
+      <p class="text-muted">No hay tareas para esta evaluación.</p>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}

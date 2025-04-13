@@ -13,7 +13,7 @@ def index():
 @evaluation_bp.route('/<int:id>')
 def show(id):
     evaluation = Evaluation.query.get_or_404(id)
-    return render_template('evaluations/show.html', evaluation=evaluation)
+    return render_template('evaluations/show.html', evaluation=evaluation, WeighingType=WeighingType)
 
 @evaluation_bp.route('/create', methods=['GET', 'POST'])
 def create():
