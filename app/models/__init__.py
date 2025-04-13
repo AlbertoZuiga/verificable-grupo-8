@@ -5,3 +5,4 @@ from app.models.user import User
 from app.models.requisite import Requisite
 from app.models.evaluation import Evaluation
 from app.models.evaluation_instance import EvaluationInstance
+from app.models.user_section import UserSection
