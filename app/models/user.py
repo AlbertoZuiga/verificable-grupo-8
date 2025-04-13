@@ -1,7 +1,6 @@
 from app import kanvas_db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.models.user_section import UserSection
 
 class User(UserMixin, kanvas_db.Model):
     __tablename__ = 'users'
@@ -15,6 +14,9 @@ class User(UserMixin, kanvas_db.Model):
 
     user_sections = kanvas_db.relationship('UserSection', back_populates='user')
     sections = kanvas_db.relationship('Section', secondary='user_sections', viewonly=True, back_populates='users')
+    
+    user_evaluation_instances = kanvas_db.relationship('UserEvaluationInstance', back_populates='user')
+    evaluation_instances = kanvas_db.relationship('EvaluationInstance', secondary='user_evaluation_instances', viewonly=True, back_populates='users')
 
     def __repr__(self):
         return f"<User id={self.id}, name={self.first_name} {self.last_name}, email={self.email}>"

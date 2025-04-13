@@ -18,4 +18,4 @@ class Evaluation(kanvas_db.Model):
 
     @property
     def total_weighing(self):
-        return sum(instance.weighing for instance in self.instances)
+        return sum(instance.instance_weighing for instance in self.instances)
