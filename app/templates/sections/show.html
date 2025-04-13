@@ -4,11 +4,7 @@ block content %}
 <div class="container">
   <h1 class="mb-4 text-primary">Detalles de la Sección</h1>
   <div class="card shadow-lg p-4">
-    <p>
-      <strong>Instancia del Curso:</strong> {{
-      section.course_instance.course.title }} - {{ section.course_instance.year
-      }} (Semestre {{ section.course_instance.semester }})
-    </p>
+    <p><strong>Instancia del Curso:</strong> {{ section.course_instance.course.title }} - {{ section.course_instance.year }} (Semestre {{ section.course_instance.semester }})</p>
     <p><strong>Código de Sección:</strong> {{ section.code }}</p>
     <p><strong>Tipo de Ponderación:</strong> {{ section.weighing_type }}</p>
 

@@ -39,6 +39,19 @@
               Instancias Evaluaciones
             </a>
           </li>
+
+          {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('auth.logout') }}" aria-label="Cerrar sesión">Cerrar sesión</a>
+            </li>
+            <li class="nav-item">
+              <span class="nav-link disabled">{{ current_user.first_name }} {{ current_user.last_name }}</span>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('auth.login') }}" aria-label="Iniciar sesión">Iniciar sesión</a>
+            </li>
+          {% endif %}
         </ul>
       </div>
     </div>
