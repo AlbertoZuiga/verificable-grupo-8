@@ -12,22 +12,24 @@ def seed_database():
     print("Creando datos...")
 
     users_data = [
-        {"first_name": "Juan", "last_name": "Pérez", "email": "juan.perez@example.com", "university_entry_year": 2020},
-        {"first_name": "María", "last_name": "González", "email": "maria.gonzalez@example.com", "university_entry_year": 2019},
-        {"first_name": "Carlos", "last_name": "Ramírez", "email": "carlos.ramirez@example.com", "university_entry_year": 2021},
-        {"first_name": "Ana", "last_name": "López", "email": "ana.lopez@example.com", "university_entry_year": 2022},
-        {"first_name": "Luis", "last_name": "Martínez", "email": "luis.martinez@example.com", "university_entry_year": 2020},
+        {"first_name": "Juan", "last_name": "Pérez", "email": "juan.perez@example.com", "password": "password", "university_entry_year": 2020},
+        {"first_name": "María", "last_name": "González", "email": "maria.gonzalez@example.com", "password": "password", "university_entry_year": 2019},
+        {"first_name": "Carlos", "last_name": "Ramírez", "email": "carlos.ramirez@example.com", "password": "password", "university_entry_year": 2021},
+        {"first_name": "Ana", "last_name": "López", "email": "ana.lopez@example.com", "password": "password", "university_entry_year": 2022},
+        {"first_name": "Luis", "last_name": "Martínez", "email": "luis.martinez@example.com", "password": "password", "university_entry_year": 2020},
     ]
 
     for user_data in users_data:
         user = User.query.filter_by(email=user_data["email"]).first()
         if not user:
+            print(f"\tCreando usuario: {user_data['first_name']} {user_data['last_name']}")
             user = User(
                 first_name=user_data["first_name"],
                 last_name=user_data["last_name"],
                 email=user_data["email"],
                 university_entry_year=user_data["university_entry_year"]
             )
+            user.set_password(user_data["password"])
             kanvas_db.session.add(user)
         else:
             print(f"\tEl usuario con email '{user_data['email']}' ya existe, no se añadirá de nuevo.")
