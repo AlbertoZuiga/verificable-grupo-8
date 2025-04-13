@@ -23,3 +23,7 @@ class Section(kanvas_db.Model):
 
     def __repr__(self):
         return f"<Section id={self.id}, code={self.code}, weighing_type={self.weighing_type}>"
+    
+    @property
+    def total_weighing(self):
+        return sum(e.weighing for e in self.evaluations)

@@ -27,5 +27,24 @@
       </div>
     </div>
   </div>
+
+  <h3 class="mt-5 text-primary">Evaluaciones</h3>
+  <div class="list-group mt-3 shadow-sm rounded-3">
+    {% for evaluation in section.evaluations %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ evaluation.title }}</strong>
+          {% if section.weighing_type == WeighingType.WEIGHT %}
+            <span class="badge bg-primary ms-2">{{ evaluation.weighing }}/{{ section.total_weighing }}</span>
+          {% else %}
+            <span class="badge bg-primary ms-2">{{ evaluation.weighing }}%</span>
+          {% endif %}
+        </div>
+        <a href="{{ url_for('evaluation.show', id=evaluation.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+      </div>    
+    {% else %}
+      <p class="text-muted">No hay evaluaciones para esta sección.</p>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}

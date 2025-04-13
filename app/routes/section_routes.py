@@ -13,7 +13,7 @@ def index():
 @section_bp.route('/<int:id>')
 def show(id):
     section = Section.query.get_or_404(id)
-    return render_template('sections/show.html', section=section)
+    return render_template('sections/show.html', section=section, WeighingType=WeighingType)
 
 @section_bp.route('/create', methods=['GET', 'POST'])
 def create():
