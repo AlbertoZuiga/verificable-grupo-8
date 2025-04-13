@@ -40,7 +40,7 @@
             <span class="badge bg-primary ms-2">{{ instance.instance_weighing }}%</span>
           {% endif %}
         </div>
-        <a href="{{ url_for('course_instance.show', id=instance.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+        <a href="{{ url_for('evaluation_instance.show', id=instance.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
       </div>    
     {% else %}
       <p class="text-muted">No hay tareas para esta evaluación.</p>

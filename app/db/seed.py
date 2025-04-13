@@ -118,10 +118,11 @@ def seed_database():
         kanvas_db.session.add(evaluation)
     kanvas_db.session.commit()
     
+    singular_evaluations = {"Tareas":"Tarea", "Proyecto":"Proyecto", "Controles":"Control", "Pruebas":"Prueba"}
     evaluations = Evaluation.query.where(Evaluation.title != "Examen").all()
     for evaluation in evaluations:
         for i in range(random.randint(2, 7)):
-            evaluation_instance = EvaluationInstance(title=f'{evaluation.title} {i+1}', instance_weighing=random.randint(10, 50), optional=False, evaluation_id=evaluation.id)
+            evaluation_instance = EvaluationInstance(title=f'{singular_evaluations[evaluation.title]} {i+1}', instance_weighing=random.randint(10, 50), optional=False, evaluation_id=evaluation.id)
             kanvas_db.session.add(evaluation_instance)
     kanvas_db.session.commit()
             
