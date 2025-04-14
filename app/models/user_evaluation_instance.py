@@ -11,4 +11,4 @@ class UserEvaluationInstance(kanvas_db.Model):
     evaluation_instance = kanvas_db.relationship('EvaluationInstance', back_populates='user_evaluation_instances')
 
     def __repr__(self):
-        return f"<UserSection user_id={self.user_id} section_id={self.section_id} role={self.role}>"
+        return f"<UserEvaluationInstance user_id={self.user_id} evaluation_instance_id={self.evaluation_instance_id} grade={self.grade}>"

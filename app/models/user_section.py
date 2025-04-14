@@ -2,9 +2,9 @@ from app import kanvas_db
 from enum import Enum
 
 class SectionRole(Enum):
-    STUDENT = "ESTUDIANTE"
-    ASSISTANT = "AYUDANTE"
-    TEACHER = "PROFESOR"
+    STUDENT = "Estudiante"
+    ASSISTANT = "Ayudante"
+    TEACHER = "Profesor"
     
     def __str__(self):
         return self.value
