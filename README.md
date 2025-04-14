@@ -135,41 +135,68 @@ verificable-grupo-8/
 │   │   └── setup.py
 │   ├── models/                # Modelos de SQLAlchemy
 │   │   ├── __init__.py
-│   │   ├── course.py
+│   │   ├── course_grade.py
 │   │   ├── course_instance.py
-│   │   ├── evaluation.py
+│   │   ├── course.py
 │   │   ├── evaluation_instance.py
+│   │   ├── evaluation.py
 │   │   ├── requisite.py
 │   │   ├── section.py
+│   │   ├── user_evaluation_instance.py
+│   │   ├── user_section.py
 │   │   └── user.py
 │   ├── routes/                # Endpoints de la aplicación
 │   │   ├── __init__.py
 │   │   ├── auth_routes.py
-│   │   ├── main_routes.py
-│   │   ├── course_routes.py
 │   │   ├── course_instance_routes.py
-│   │   ├── section_routes.py
-│   │   ├── requisite_routes.py
-│   │   ├── evaluation_routes.py
+│   │   ├── course_routes.py
 │   │   └── evaluation_instance_routes.py
-│   │   └── user_routes.py
+│   │   ├── evaluation_routes.py
+│   │   ├── main_routes.py
+│   │   ├── requisite_routes.py
+│   │   ├── section_routes.py
+│   │   ├── user_routes.py
+│   │   └── user_section_routes.py
 │   ├── static/                # Archivos estáticos (CSS, JS, imágenes)
 │   └── templates/             # Plantillas HTML con Jinja2
 │       ├── base.html
 │       ├── auth/
+│       ├── course_instances/
+│       ├── courses/
+│       ├── evaluation_instances/
+│       ├── evaluations/
 │       ├── main/
 │       ├── partials/
-│       ├── courses/
-│       ├── course_instances/
 │       ├── sections/
-│       ├── evaluations/
-│       └── evaluation_instances/
+│       ├── user_sections/
 │       └── users/
 └── 
 ```
 
 ---
+## 📚 Funcionalidades Principales
 
+### Gestión de Usuarios
+- Crear, editar y eliminar usuarios.
+- Asignar usuarios a secciones con roles específicos (Estudiante, Ayudante, Profesor).
+
+### Gestión de Cursos
+- Crear, editar y eliminar cursos.
+- Definir requisitos entre cursos.
+
+### Gestión de Secciones
+- Crear secciones asociadas a instancias de cursos.
+- Asignar usuarios a secciones.
+
+### Gestión de Evaluaciones
+- Crear evaluaciones y asociarlas a secciones.
+- Definir ponderaciones y sistemas de evaluación.
+
+### Gestión de Instancias de Evaluaciones
+- Crear instancias de evaluaciones (e.g., tareas, pruebas).
+- Calificar a los estudiantes en cada instancia.
+
+---
 ## 📝 Notas Adicionales
 - **Dependencias**: Están especificadas en `requirements.txt`.
 - **Base de Datos**: Usa `reset.py` para reiniciar y `seed.py` para cargar datos iniciales.
