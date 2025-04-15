@@ -24,6 +24,7 @@ def create():
             email=request.form['email'],
             university_entry_year=request.form['university_entry_year']
         )
+        new_user.set_password(request.form['password'])
         kanvas_db.session.add(new_user)
         kanvas_db.session.commit()
         return redirect(url_for('user.index'))

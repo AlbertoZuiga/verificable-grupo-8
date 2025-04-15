@@ -3,7 +3,7 @@ from app import kanvas_db
 from app.models.evaluation_instance import EvaluationInstance
 from app.models.evaluation import Evaluation
 from app.models.user_evaluation_instance import UserEvaluationInstance
-from app.models.user_section import UserSection
+from app.models.user_section import UserSection, SectionRole
 from app.models.user import User
 
 evaluation_instance_bp = Blueprint('evaluation_instance', __name__, url_prefix='/evaluation_instances')
@@ -18,7 +18,7 @@ def show(id):
     evaluation_instance = EvaluationInstance.query.get_or_404(id)
 
     section_id = evaluation_instance.evaluation.section.id
-    student_ids = kanvas_db.session.query(UserSection.user_id).filter_by(section_id=section_id, role='ESTUDIANTE').subquery()
+    student_ids = kanvas_db.session.query(UserSection.user_id).filter_by(section_id=section_id, role=SectionRole.STUDENT).subquery()
     users = User.query.filter(User.id.in_(student_ids)).all()
     
     user_evaluation_instances = UserEvaluationInstance.query.filter_by(evaluation_instance_id=id).all()
