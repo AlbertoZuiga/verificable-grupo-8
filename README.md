@@ -112,7 +112,11 @@ Puedes hacerlo ejecutando los siguientes scripts:
 Abre tu navegador y ve a [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
 ---
+## Aspectos de flujo a notar
 
+- Para agregar usuarios a una sección y asignarle un rol (profesor, ayudante, estudiante) en esa sección, se debe apretar el botón "ver usuarios", y luego abajo está la opción de agregar usuarios. Al agregar este usuario, se le podrá asignar un rol.
+- Muchas instancias de objetos no se pueden borrar por diseño de proyecto. Primero se deben borrar a manos los objetos relacionados
+- Para calificar a los estudiantes hay que ir a las instancias de las evaluaciones, entrar a una, y en esa página se podrá ver el listado de los estudiantes que corresponden a la sección de la evaluación. En ese mismo listado se permite calificar.
 ## 🗂 Estructura del Proyecto
 
 La estructura del proyecto es la siguiente:
