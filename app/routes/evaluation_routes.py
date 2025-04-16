@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import kanvas_db
 from app.models.evaluation import Evaluation
 from app.models.section import Section, WeighingType
@@ -71,5 +71,9 @@ def delete(id):
         kanvas_db.session.commit()
     except Exception as e:
         kanvas_db.session.rollback()
+        flash("No se puede eliminar porque tiene instancias de evaluación asociadas.", "error")
         print(f"Error deleting evaluation: {e}")
+        return redirect(url_for('evaluation.show', id=id))
+    
+
     return redirect(url_for('evaluation.index'))

@@ -17,7 +17,9 @@
           <div>
             <a href="{{ url_for('section.show', id=section.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver curso {{ section.title }}"> Ver </a>
             <a href="{{ url_for('section.edit', id=section.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar curso {{ section.title }}"> Editar </a>
-            <a href="{{ url_for('section.delete', id=section.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar curso {{ section.title }}"> Eliminar </a>
+            <form action="{{ url_for('section.delete', id=section.id) }}" method="POST" style="display:inline;" >
+              <button type="submit" class="btn btn-sm btn-danger" aria-label="Eliminar sección {{ section.title }}">Eliminar</button>
+            </form>
           </div>
         </li>
       {% endfor %}

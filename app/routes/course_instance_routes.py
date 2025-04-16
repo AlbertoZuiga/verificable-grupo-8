@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import kanvas_db
 from app.models.course import Course
 from app.models.course_instance import CourseInstance
@@ -66,13 +66,17 @@ def edit(id):
     courses = Course.query.all()
     return render_template('course_instances/edit.html', course_instance=course_instance, courses=courses)
 
-@course_instance_bp.route('/delete/<int:id>')
+@course_instance_bp.route('/delete/<int:id>', methods=['POST'])
 def delete(id):
     course_instance = CourseInstance.query.get_or_404(id)
     try:
         kanvas_db.session.delete(course_instance)
         kanvas_db.session.commit()
+        flash("Instancia del curso eliminada con éxito.", "success")
     except Exception as e:
         kanvas_db.session.rollback()
+        flash("No se puede eliminar esta instancia porque tiene elementos asociados. Elimínalos primero.", "danger")
         print(f"Error deleting course_instance: {e}")
+        return redirect(url_for('course_instance.show', id=id))
+    
     return redirect(url_for('course_instance.index'))

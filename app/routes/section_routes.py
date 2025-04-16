@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import kanvas_db
 from app.models.course_instance import CourseInstance
 from app.models.section import Section, WeighingType
@@ -75,13 +75,17 @@ def edit(id):
     }
     return render_template('sections/edit.html', section=section, **context)
 
-@section_bp.route('/delete/<int:id>')
+@section_bp.route('/delete/<int:id>', methods=['POST'])
 def delete(id):
     section = Section.query.get_or_404(id)
     try:
         kanvas_db.session.delete(section)
         kanvas_db.session.commit()
+        flash("Sección eliminada con éxito.", "success")
     except Exception as e:
         kanvas_db.session.rollback()
+        flash("No se puede eliminar esta sección porque tiene elementos asociados. Elimínalos primero.", "danger")
         print(f"Error deleting section: {e}")
+        return redirect(url_for('section.show', id=id))
+    
     return redirect(url_for('section.index'))
