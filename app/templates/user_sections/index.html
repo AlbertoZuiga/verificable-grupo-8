@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ section.course_instance.course.name }} ({{ section.code }}) Usuarios{% endblock %}
+{% block title %} {{ section.course_instance.course.name }} ({{ section.code }}) Usuarios {% endblock %}
 
 {% block content %}
+
 <div class="container">
   <h1 class="mb-4 text-primary">Usuarios en la Sección {{ section.code }}</h1>
 
@@ -15,9 +16,7 @@
             <span class="badge bg-secondary ms-2">{{ us.role.value }}</span>
           </div>
           <form action="{{ url_for('user_section.remove_user', section_id=section.id, user_id=us.user_id) }}" method="POST" class="d-inline">
-            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este usuario de la sección?')">
-              Eliminar
-            </button>
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este usuario de la sección?')"> Eliminar </button>
           </form>
         </li>
       {% endfor %}
@@ -31,4 +30,5 @@
     <a href="{{ url_for('user_section.add_user', section_id=section.id) }}" class="btn btn-success">➕ Agregar Usuario</a>
   </div>
 </div>
+
 {% endblock %}

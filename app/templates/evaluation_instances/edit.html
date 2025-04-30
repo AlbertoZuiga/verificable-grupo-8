@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Editar Instancia de Evaluación{% endblock %} 
+{% block title %} Editar Instancia de Evaluación {% endblock %} 
 
 {% block content %}
+
 <div class="container">
   <h1 class="mb-4 text-primary">Editar Instancia de Evaluación</h1>
   <div class="card shadow-lg p-4">
@@ -11,9 +12,9 @@
         <label for="evaluation_id" class="form-label">Sección</label>
         <select class="form-select" id="evaluation_id" name="evaluation_id" required>
           {% for evaluation in evaluations %}
-          <option value="{{ evaluation.id }}" {% if evaluation.id == evaluation_instance.evaluation_id %}selected{% endif %}>
-            {{ evaluation.title }} - {{ evaluation.section.course_instance.course.title }}
-          </option>
+            <option value="{{ evaluation.id }}" {% if evaluation.id == evaluation_instance.evaluation_id %}selected{% endif %}>
+              {{ evaluation.title }} - {{ evaluation.section.course_instance.course.title }}
+            </option>
           {% endfor %}
         </select>
       </div>
@@ -38,4 +39,5 @@
     </form>
   </div>
 </div>
+
 {% endblock %}

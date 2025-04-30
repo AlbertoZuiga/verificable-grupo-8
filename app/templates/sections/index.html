@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Secciones{% endblock %}
+{% block title %} Secciones {% endblock %}
 
 {% block content%}
+
 <div class="container">
   <h1 class="mb-4 text-primary">Lista de Secciones</h1>
 
@@ -30,4 +31,5 @@
 
   <a href="{{ url_for('section.create') }}" class="btn btn-success mt-4">➕ Crear nueva sección</a>
 </div>
+
 {% endblock %}

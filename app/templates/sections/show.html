@@ -1,8 +1,9 @@
 {% extends "base.html" %} 
 
-{% block title %}Sección: {{section.course_instance.course.title }} ({{section.code}}){% endblock %}
+{% block title %} Sección: {{section.course_instance.course.title }} ({{section.code}}) {% endblock %}
 
 {% block content %}
+
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     <div class="mt-3">
@@ -59,4 +60,5 @@
     {% endfor %}
   </div>
 </div>
+
 {% endblock %}

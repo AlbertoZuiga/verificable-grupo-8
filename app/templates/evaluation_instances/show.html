@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Evaluación: {{evaluation_instance.title}}{% endblock %}
+{% block title %} Evaluación: {{evaluation_instance.title}} {% endblock %}
 
 {% block content %}
+
 <div class="container">
   <h1 class="mb-4 text-primary">Detalles de la Evaluación</h1>
   <div class="card shadow-lg p-4">
@@ -47,4 +48,5 @@
     <p>No hay estudiantes</p>
   {% endif %}
 </div>
+
 {% endblock %}

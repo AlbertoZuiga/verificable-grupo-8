@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Calificar a {{ user.first_name }} {{ user.last_name }}{% endblock %}
+{% block title %} Calificar a {{ user.first_name }} {{ user.last_name }} {% endblock %}
 
 {% block content %}
+
 <div class="container mt-4">
   <h2>Calificar a {{ user.first_name }} {{ user.last_name }}</h2>
   <p><strong>Evaluación:</strong> {{ evaluation_instance.title }}</p>
@@ -19,4 +20,5 @@
     <a href="{{ url_for('evaluation_instance.show', id=evaluation_instance.id) }}" class="btn btn-secondary">⬅ Volver</a>
   </form>
 </div>
+
 {% endblock %}

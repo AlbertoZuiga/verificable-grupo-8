@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Evaluación: {{evaluation.title}}{% endblock %}
+{% block title %} Evaluación: {{evaluation.title}} {% endblock %}
 
 {% block content %}
+
 <div class="container">
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
@@ -16,6 +17,7 @@
     </div>
   {% endif %}
   {% endwith %} 
+
   <h1 class="mb-4 text-primary">{{ evaluation.title }}</h1>
   <div class="card shadow-lg p-4">
     <p><strong>Ramo:</strong> {{ evaluation.section.course_instance.course.title}} ({{ evaluation.section.course_instance.year }}-{{ evaluation.section.course_instance.semester }})</p>
@@ -24,20 +26,15 @@
     <p><strong>Ponderación:</strong> {{ evaluation.weighing }}</p>
 
     <div class="mt-4 d-flex justify-content-between">
-      <a href="{{ url_for('evaluation.index') }}" class="btn btn-secondary">
-        ⬅ Volver al listado
-      </a>
+      <a href="{{ url_for('evaluation.index') }}" class="btn btn-secondary"> ⬅ Volver al listado </a>
       <div class="btn-group" role="group">
-        <a href="{{ url_for('evaluation.edit', id=evaluation.id) }}" class="btn btn-warning text-dark">
-          ✏ Editar
-        </a>
+        <a href="{{ url_for('evaluation.edit', id=evaluation.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
         <form action="{{ url_for('evaluation.delete', id=evaluation.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta evaluación?');">
           <button type="submit" class="btn btn-danger">🗑 Eliminar</button>
         </form>
       </div>
     </div>
   </div>
-
 
 
   <h3 class="mt-5 text-primary">Tareas</h3>

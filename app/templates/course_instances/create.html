@@ -1,45 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %}Nueva Instancia de Curso{% endblock %}
+{% block title %} Nueva Instancia de Curso {% endblock %}
 
 {% block content %}
-  <div class="container">
-    <h1 class="mb-4 text-primary">Crear Instancia</h1>
 
-    <div class="card shadow-lg p-4">
-      <form action="{{ url_for('course_instance.create') }}" method="POST">
-        <div class="mb-3">
+<div class="container">
+  <h1 class="mb-4 text-primary">Crear Instancia</h1>
 
-          <label for="course_id" class="form-label">Curso</label>
-          <select class="form-select" aria-label="Default select example" id="course_id" name="course_id" required1>
-            <option selected>Seleccionar curso</option>
-            {% for course in courses %}
-              <option value="{{ course.id }}">{{ course.title }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="mb-3">
-          <label for="year" class="form-label">Año</label>
-          <input 
-            type="text" 
-            id="year" 
-            name="year" 
-            class="form-control" 
-            required>
-        </div>
-        <div class="mb-3">
-          <label for="semester" class="form-label">Semestre</label>
-          <input 
-            type="text" 
-            id="semester" 
-            name="semester" 
-            class="form-control" 
-            required>
-        </div>
+  <div class="card shadow-lg p-4">
+    <form action="{{ url_for('course_instance.create') }}" method="POST">
+      <div class="mb-3">
 
-        <a href="{{ url_for('course_instance.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
-        <button type="submit" class="btn btn-primary">💾 Crear</button>
-      </form>
-    </div>
+        <label for="course_id" class="form-label">Curso</label>
+        <select class="form-select" aria-label="Default select example" id="course_id" name="course_id" required1>
+          <option selected>Seleccionar curso</option>
+          {% for course in courses %}
+            <option value="{{ course.id }}">{{ course.title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="year" class="form-label">Año</label>
+        <input type="number" id="year" name="year" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label for="semester" class="form-label">Semestre (1 o 2)</label>
+        <input type="number" id="semester" name="semester" class="form-control" required>
+      </div>
+
+      <a href="{{ url_for('course_instance.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
+      <button type="submit" class="btn btn-primary">💾 Crear</button>
+    </form>
   </div>
+</div>
+
 {% endblock %}
