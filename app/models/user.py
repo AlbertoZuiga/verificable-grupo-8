@@ -10,7 +10,6 @@ class User(UserMixin, kanvas_db.Model):
     password_hash = kanvas_db.Column(kanvas_db.String(256), nullable=False)
     first_name = kanvas_db.Column(kanvas_db.String(100), nullable=False)
     last_name = kanvas_db.Column(kanvas_db.String(100), nullable=False)
-    university_entry_year = kanvas_db.Column(kanvas_db.Integer, nullable=False)
 
     user_sections = kanvas_db.relationship('UserSection', back_populates='user', cascade='all, delete-orphan')
     sections = kanvas_db.relationship('Section', secondary='user_sections', viewonly=True, back_populates='users')
