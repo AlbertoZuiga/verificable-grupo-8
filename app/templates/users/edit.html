@@ -23,11 +23,6 @@
       <input type="email" class="form-control" id="email" name="email" value="{{user.email}}" required/>
     </div>
 
-    <div class="mb-3">
-      <label for="university_entry_year" class="form-label">Año de ingreso</label>
-      <input type="number" class="form-control" id="university_entry_year" name="university_entry_year" value="{{user.university_entry_year}}" required/>
-    </div>
-
     <div class="d-flex gap-2 mt-4">
       <a href="{{ url_for('user.index') }}" class="btn btn-secondary">⬅ Cancelar</a>
       <button type="submit" class="btn btn-success">💾 Guardar</button>

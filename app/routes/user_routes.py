@@ -21,8 +21,7 @@ def create():
         new_user = User(
             first_name=request.form['first_name'],
             last_name=request.form['last_name'],
-            email=request.form['email'],
-            university_entry_year=request.form['university_entry_year']
+            email=request.form['email']
         )
         new_user.set_password(request.form['password'])
         kanvas_db.session.add(new_user)
@@ -37,7 +36,6 @@ def edit(id):
         user.first_name = request.form['first_name']
         user.last_name = request.form['last_name']
         user.email = request.form['email']
-        user.university_entry_year = request.form['university_entry_year']
         kanvas_db.session.commit()
         return redirect(url_for('user.index'))
     return render_template('users/edit.html', user=user)

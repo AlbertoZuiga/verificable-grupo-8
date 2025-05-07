@@ -1,10 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app import kanvas_db
-from app.models.evaluation_instance import EvaluationInstance
-from app.models.evaluation import Evaluation
-from app.models.user_evaluation_instance import UserEvaluationInstance
-from app.models.user_section import UserSection, SectionRole
-from app.models.user import User
+from app.models import EvaluationInstance, Evaluation, StudentEvaluationInstance, StudentSection, User
 
 evaluation_instance_bp = Blueprint('evaluation_instance', __name__, url_prefix='/evaluation_instances')
 
@@ -18,13 +14,13 @@ def show(id):
     evaluation_instance = EvaluationInstance.query.get_or_404(id)
 
     section_id = evaluation_instance.evaluation.section.id
-    student_ids = kanvas_db.session.query(UserSection.user_id).filter_by(section_id=section_id, role=SectionRole.STUDENT).subquery()
-    users = User.query.filter(User.id.in_(student_ids)).all()
+    student_sections = StudentSection.query.filter_by(section_id=section_id).all()
+    students = [student_section.student for student_section in student_sections]
     
-    user_evaluation_instances = UserEvaluationInstance.query.filter_by(evaluation_instance_id=id).all()
-    user_grades = {uei.user_id: uei for uei in user_evaluation_instances}
-
-    return render_template('evaluation_instances/show.html', evaluation_instance=evaluation_instance, users=users, user_grades=user_grades)
+    student_evaluation_instances = StudentEvaluationInstance.query.filter_by(evaluation_instance_id=id).all()
+    student_grades = {student_evaluation_instance.student_id: student_evaluation_instance.grade for student_evaluation_instance in student_evaluation_instances}
+    print(student_grades)
+    return render_template('evaluation_instances/show.html', evaluation_instance=evaluation_instance, students=students, student_grades=student_grades)
 
 @evaluation_instance_bp.route('/create', methods=['GET', 'POST'])
 def create():
@@ -86,21 +82,18 @@ def delete(id):
         print(f"Error deleting evaluation_instance: {e}")
     return redirect(url_for('evaluation_instance.index'))
 
-@evaluation_instance_bp.route('/<int:evaluation_instance_id>/grade/<int:user_id>', methods=['GET', 'POST'])
-def grade_user(evaluation_instance_id, user_id):
+@evaluation_instance_bp.route('/<int:evaluation_instance_id>/grade/<int:student_id>', methods=['GET', 'POST'])
+def grade_user(evaluation_instance_id, student_id):
     evaluation_instance = EvaluationInstance.query.get_or_404(evaluation_instance_id)
-    user = next((u for u in evaluation_instance.evaluation.section.users if u.id == user_id), None)
+    student = next((student for student in evaluation_instance.evaluation.section.students if student.id == student_id), None)
 
-    if not user:
+    if not student:
         return "Estudiante no pertenece a esta sección", 404
     
-    uei = UserEvaluationInstance.query.filter(UserEvaluationInstance.user_id == user_id, UserEvaluationInstance.evaluation_instance_id == evaluation_instance_id).first()
+    student_evaluation_instance = StudentEvaluationInstance.query.filter(StudentEvaluationInstance.student_id == student_id, StudentEvaluationInstance.evaluation_instance_id == evaluation_instance_id).first()
 
     if request.method == 'POST':
         grade_input = request.form.get('grade')
-        print(f"User ID: {user_id}")
-        user_id = request.form.get('user_id')
-        print(f"User ID: {user_id}")
 
         if grade_input and grade_input.strip() != "":
             try:
@@ -108,11 +101,11 @@ def grade_user(evaluation_instance_id, user_id):
             except ValueError:
                 return "Nota inválida", 400
 
-            if uei:
-                uei.grade = grade_value
+            if student_evaluation_instance:
+                student_evaluation_instance.grade = grade_value
             else:
-                uei = UserEvaluationInstance(user_id=user_id, evaluation_instance_id=evaluation_instance_id, grade=grade_value)
-                kanvas_db.session.add(uei)
+                student_evaluation_instance = StudentEvaluationInstance(student_id=student_id, evaluation_instance_id=evaluation_instance_id, grade=grade_value)
+                kanvas_db.session.add(student_evaluation_instance)
 
             try:
                 kanvas_db.session.commit()
@@ -121,4 +114,4 @@ def grade_user(evaluation_instance_id, user_id):
                 kanvas_db.session.rollback()
                 print(f"Error al guardar la nota: {e}")
 
-    return render_template('evaluation_instances/grade_user.html', evaluation_instance=evaluation_instance, user=user, current_grade=uei.grade if uei else None)
+    return render_template('evaluation_instances/grade_user.html', evaluation_instance=evaluation_instance, student=student, current_grade=student_evaluation_instance.grade if student_evaluation_instance else None)

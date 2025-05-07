@@ -1,73 +1,67 @@
 import random
 from app import app, kanvas_db
-from app.models.course import Course
-from app.models.course_instance import CourseInstance, Semester
-from app.models.section import Section, WeighingType
-from app.models.requisite import Requisite
-from app.models.user import User
-from app.models.evaluation import Evaluation
-from app.models.evaluation_instance import EvaluationInstance
-from app.models.user_section import UserSection, SectionRole
+from app.models import Course, CourseInstance, Semester, Section, WeighingType, Requisite, User, Teacher, Evaluation, EvaluationInstance, StudentSection
 
 def seed_database():
-    print("Creando datos...")
+    print("Creando datos...\n\n")
 
+    print("Creando usuarios...")
     users_data = [
-        {"first_name": "Juan", "last_name": "Pérez", "email": "juan.perez@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "María", "last_name": "González", "email": "maria.gonzalez@example.com", "password": "password", "university_entry_year": 2019},
-        {"first_name": "Carlos", "last_name": "Ramírez", "email": "carlos.ramirez@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Ana", "last_name": "López", "email": "ana.lopez@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Luis", "last_name": "Martínez", "email": "luis.martinez@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "Sofía", "last_name": "Hernández", "email": "sofia.hernandez@example.com", "password": "password", "university_entry_year": 2023},
-        {"first_name": "Diego", "last_name": "Castro", "email": "diego.castro@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Valentina", "last_name": "Torres", "email": "valentina.torres@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Andrés", "last_name": "Ruiz", "email": "andres.ruiz@example.com", "password": "password", "university_entry_year": 2019},
-        {"first_name": "Camila", "last_name": "Flores", "email": "camila.flores@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "Mateo", "last_name": "Vargas", "email": "mateo.vargas@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Isabella", "last_name": "Cruz", "email": "isabella.cruz@example.com", "password": "password", "university_entry_year": 2023},
-        {"first_name": "Gabriel", "last_name": "Mendoza", "email": "gabriel.mendoza@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Renata", "last_name": "Sánchez", "email": "renata.sanchez@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "Sebastián", "last_name": "Ríos", "email": "sebastian.rios@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Daniela", "last_name": "Romero", "email": "daniela.romero@example.com", "password": "password", "university_entry_year": 2023},
-        {"first_name": "Tomás", "last_name": "Navarro", "email": "tomas.navarro@example.com", "password": "password", "university_entry_year": 2019},
-        {"first_name": "Lucía", "last_name": "Delgado", "email": "lucia.delgado@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Martín", "last_name": "Ortega", "email": "martin.ortega@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Paula", "last_name": "Guerrero", "email": "paula.guerrero@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "Emilio", "last_name": "Peña", "email": "emilio.pena@example.com", "password": "password", "university_entry_year": 2018},
-        {"first_name": "Florencia", "last_name": "Cabrera", "email": "florencia.cabrera@example.com", "password": "password", "university_entry_year": 2023},
-        {"first_name": "Santiago", "last_name": "Silva", "email": "santiago.silva@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Regina", "last_name": "Aguilar", "email": "regina.aguilar@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "Joaquín", "last_name": "Ramos", "email": "joaquin.ramos@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Natalia", "last_name": "Morales", "email": "natalia.morales@example.com", "password": "password", "university_entry_year": 2023},
-        {"first_name": "Agustín", "last_name": "León", "email": "agustin.leon@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Julieta", "last_name": "Reyes", "email": "julieta.reyes@example.com", "password": "password", "university_entry_year": 2019},
-        {"first_name": "Bruno", "last_name": "Campos", "email": "bruno.campos@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Ariana", "last_name": "Mora", "email": "ariana.mora@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Lucas", "last_name": "Herrera", "email": "lucas.herrera@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "Fernanda", "last_name": "Rojas", "email": "fernanda.rojas@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Iván", "last_name": "Núñez", "email": "ivan.nunez@example.com", "password": "password", "university_entry_year": 2023},
-        {"first_name": "Antonia", "last_name": "Paredes", "email": "antonia.paredes@example.com", "password": "password", "university_entry_year": 2018},
-        {"first_name": "Benjamín", "last_name": "Luna", "email": "benjamin.luna@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "Emma", "last_name": "Cordero", "email": "emma.cordero@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Maximiliano", "last_name": "Figueroa", "email": "maximiliano.figueroa@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Bianca", "last_name": "Carrillo", "email": "bianca.carrillo@example.com", "password": "password", "university_entry_year": 2023},
-        {"first_name": "Franco", "last_name": "Salazar", "email": "franco.salazar@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "Elena", "last_name": "Soto", "email": "elena.soto@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Alan", "last_name": "Arias", "email": "alan.arias@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Josefina", "last_name": "Mejía", "email": "josefina.mejia@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "Facundo", "last_name": "Escobar", "email": "facundo.escobar@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Clara", "last_name": "Acosta", "email": "clara.acosta@example.com", "password": "password", "university_entry_year": 2023},
-        {"first_name": "Leonardo", "last_name": "Ibarra", "email": "leonardo.ibarra@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Catalina", "last_name": "Valenzuela", "email": "catalina.valenzuela@example.com", "password": "password", "university_entry_year": 2019},
-        {"first_name": "Hugo", "last_name": "Saavedra", "email": "hugo.saavedra@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Milagros", "last_name": "Zamora", "email": "milagros.zamora@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "Axel", "last_name": "Vergara", "email": "axel.vergara@example.com", "password": "password", "university_entry_year": 2023},
-        {"first_name": "Martina", "last_name": "Pizarro", "email": "martina.pizarro@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Cristóbal", "last_name": "Fuentes", "email": "cristobal.fuentes@example.com", "password": "password", "university_entry_year": 2019},
-        {"first_name": "Josefa", "last_name": "Godoy", "email": "josefa.godoy@example.com", "password": "password", "university_entry_year": 2021},
-        {"first_name": "Gael", "last_name": "Montoya", "email": "gael.montoya@example.com", "password": "password", "university_entry_year": 2020},
-        {"first_name": "Alma", "last_name": "Esquivel", "email": "alma.esquivel@example.com", "password": "password", "university_entry_year": 2022},
-        {"first_name": "Enzo", "last_name": "Tapia", "email": "enzo.tapia@example.com", "password": "password", "university_entry_year": 2023},
+        {"first_name": "Juan", "last_name": "Pérez", "email": "juan.perez@example.com", "password": "password"},
+        {"first_name": "María", "last_name": "González", "email": "maria.gonzalez@example.com", "password": "password"},
+        {"first_name": "Carlos", "last_name": "Ramírez", "email": "carlos.ramirez@example.com", "password": "password"},
+        {"first_name": "Ana", "last_name": "López", "email": "ana.lopez@example.com", "password": "password"},
+        {"first_name": "Luis", "last_name": "Martínez", "email": "luis.martinez@example.com", "password": "password"},
+        {"first_name": "Sofía", "last_name": "Hernández", "email": "sofia.hernandez@example.com", "password": "password"},
+        {"first_name": "Diego", "last_name": "Castro", "email": "diego.castro@example.com", "password": "password"},
+        {"first_name": "Valentina", "last_name": "Torres", "email": "valentina.torres@example.com", "password": "password"},
+        {"first_name": "Andrés", "last_name": "Ruiz", "email": "andres.ruiz@example.com", "password": "password"},
+        {"first_name": "Camila", "last_name": "Flores", "email": "camila.flores@example.com", "password": "password"},
+        {"first_name": "Mateo", "last_name": "Vargas", "email": "mateo.vargas@example.com", "password": "password"},
+        {"first_name": "Isabella", "last_name": "Cruz", "email": "isabella.cruz@example.com", "password": "password"},
+        {"first_name": "Gabriel", "last_name": "Mendoza", "email": "gabriel.mendoza@example.com", "password": "password"},
+        {"first_name": "Renata", "last_name": "Sánchez", "email": "renata.sanchez@example.com", "password": "password"},
+        {"first_name": "Sebastián", "last_name": "Ríos", "email": "sebastian.rios@example.com", "password": "password"},
+        {"first_name": "Daniela", "last_name": "Romero", "email": "daniela.romero@example.com", "password": "password"},
+        {"first_name": "Tomás", "last_name": "Navarro", "email": "tomas.navarro@example.com", "password": "password"},
+        {"first_name": "Lucía", "last_name": "Delgado", "email": "lucia.delgado@example.com", "password": "password"},
+        {"first_name": "Martín", "last_name": "Ortega", "email": "martin.ortega@example.com", "password": "password"},
+        {"first_name": "Paula", "last_name": "Guerrero", "email": "paula.guerrero@example.com", "password": "password"},
+        {"first_name": "Emilio", "last_name": "Peña", "email": "emilio.pena@example.com", "password": "password"},
+        {"first_name": "Florencia", "last_name": "Cabrera", "email": "florencia.cabrera@example.com", "password": "password"},
+        {"first_name": "Santiago", "last_name": "Silva", "email": "santiago.silva@example.com", "password": "password"},
+        {"first_name": "Regina", "last_name": "Aguilar", "email": "regina.aguilar@example.com", "password": "password"},
+        {"first_name": "Joaquín", "last_name": "Ramos", "email": "joaquin.ramos@example.com", "password": "password"},
+        {"first_name": "Natalia", "last_name": "Morales", "email": "natalia.morales@example.com", "password": "password"},
+        {"first_name": "Agustín", "last_name": "León", "email": "agustin.leon@example.com", "password": "password"},
+        {"first_name": "Julieta", "last_name": "Reyes", "email": "julieta.reyes@example.com", "password": "password"},
+        {"first_name": "Bruno", "last_name": "Campos", "email": "bruno.campos@example.com", "password": "password"},
+        {"first_name": "Ariana", "last_name": "Mora", "email": "ariana.mora@example.com", "password": "password"},
+        {"first_name": "Lucas", "last_name": "Herrera", "email": "lucas.herrera@example.com", "password": "password"},
+        {"first_name": "Fernanda", "last_name": "Rojas", "email": "fernanda.rojas@example.com", "password": "password"},
+        {"first_name": "Iván", "last_name": "Núñez", "email": "ivan.nunez@example.com", "password": "password"},
+        {"first_name": "Antonia", "last_name": "Paredes", "email": "antonia.paredes@example.com", "password": "password"},
+        {"first_name": "Benjamín", "last_name": "Luna", "email": "benjamin.luna@example.com", "password": "password"},
+        {"first_name": "Emma", "last_name": "Cordero", "email": "emma.cordero@example.com", "password": "password"},
+        {"first_name": "Maximiliano", "last_name": "Figueroa", "email": "maximiliano.figueroa@example.com", "password": "password"},
+        {"first_name": "Bianca", "last_name": "Carrillo", "email": "bianca.carrillo@example.com", "password": "password"},
+        {"first_name": "Franco", "last_name": "Salazar", "email": "franco.salazar@example.com", "password": "password"},
+        {"first_name": "Elena", "last_name": "Soto", "email": "elena.soto@example.com", "password": "password"},
+        {"first_name": "Alan", "last_name": "Arias", "email": "alan.arias@example.com", "password": "password"},
+        {"first_name": "Josefina", "last_name": "Mejía", "email": "josefina.mejia@example.com", "password": "password"},
+        {"first_name": "Facundo", "last_name": "Escobar", "email": "facundo.escobar@example.com", "password": "password"},
+        {"first_name": "Clara", "last_name": "Acosta", "email": "clara.acosta@example.com", "password": "password"},
+        {"first_name": "Leonardo", "last_name": "Ibarra", "email": "leonardo.ibarra@example.com", "password": "password"},
+        {"first_name": "Catalina", "last_name": "Valenzuela", "email": "catalina.valenzuela@example.com", "password": "password"},
+        {"first_name": "Hugo", "last_name": "Saavedra", "email": "hugo.saavedra@example.com", "password": "password"},
+        {"first_name": "Milagros", "last_name": "Zamora", "email": "milagros.zamora@example.com", "password": "password"},
+        {"first_name": "Axel", "last_name": "Vergara", "email": "axel.vergara@example.com", "password": "password"},
+        {"first_name": "Martina", "last_name": "Pizarro", "email": "martina.pizarro@example.com", "password": "password"},
+        {"first_name": "Cristóbal", "last_name": "Fuentes", "email": "cristobal.fuentes@example.com", "password": "password"},
+        {"first_name": "Josefa", "last_name": "Godoy", "email": "josefa.godoy@example.com", "password": "password"},
+        {"first_name": "Gael", "last_name": "Montoya", "email": "gael.montoya@example.com", "password": "password"},
+        {"first_name": "Alma", "last_name": "Esquivel", "email": "alma.esquivel@example.com", "password": "password"},
+        {"first_name": "Enzo", "last_name": "Tapia", "email": "enzo.tapia@example.com", "password": "password"},
     ]
 
     for user_data in users_data:
@@ -76,14 +70,48 @@ def seed_database():
             user = User(
                 first_name=user_data["first_name"],
                 last_name=user_data["last_name"],
-                email=user_data["email"],
-                university_entry_year=user_data["university_entry_year"]
+                email=user_data["email"]
             )
             user.set_password(user_data["password"])
             kanvas_db.session.add(user)
 
     kanvas_db.session.commit()
+    print("Usuarios creados correctamente!\n")
+    
+    print("Creando profesores...")
+    users = User.query.all()
+    teachers = random.sample(users, 10)
+    teacher_ids = {user.id for user in teachers}
+    for user in teachers:
+        teacher = Teacher.query.filter_by(user_id=user.id).first()
+        
+        if not teacher:
+            teacher = Teacher(
+                user_id=user.id
+            )
 
+            kanvas_db.session.add(teacher)
+    
+    kanvas_db.session.commit()
+    print("Profesores creados correctamente!\n")
+
+    print("Creando alumnos...")
+    students = [user for user in users if user.id not in teacher_ids]
+    from app.models import Student
+    for user in students:
+        student = Student.query.filter_by(user_id=user.id).first()
+        
+        if not student:
+            student = Student(
+                user_id=user.id,
+                university_entry_year=random.randint(2015,2025)
+            )
+            
+            kanvas_db.session.add(student)
+    print("Alumnos creados correctamente!\n")
+    
+
+    print("Creando cursos y secciones...")
     courses_data = [
         {"title": "Matemáticas Avanzadas"},
         {"title": "Programación en Python"},
@@ -94,7 +122,8 @@ def seed_database():
         {"title": "Literatura Clásica"},
         {"title": "Diseño de Software"},
         {"title": "Economía Global"},
-        {"title": "Biología Molecular"}
+        {"title": "Biología Molecular"},
+        {"title": "Estadística Aplicada"},
     ]
 
     courses = []
@@ -111,9 +140,11 @@ def seed_database():
     kanvas_db.session.commit()
 
     if len(courses) < len(courses_data):
-        print("Error: No se pudieron obtener todos los cursos correctamente.")
-        return
+        print("Error: No se pudieron obtener todos los cursos correctamente.\n")
+    else:
+        print("Cursos creados correctamente!\n")
 
+    print("Creando instancias de cursos...")
     for course in courses:
         for i in range(random.randint(1, 5)):
             course_instance = CourseInstance(
@@ -124,7 +155,9 @@ def seed_database():
             kanvas_db.session.add(course_instance)
 
     kanvas_db.session.commit()
-    
+    print("Instancias de cursos creadas correctamente!\n")
+
+    print("Creando secciones...")     
     course_instances = CourseInstance.query.all()
     for instance in course_instances:
         for i in range(random.randint(1, 3)):
@@ -133,11 +166,14 @@ def seed_database():
                 code = random.randint(100, 999)
                 if not Section.query.filter_by(code=code).first():
                     unique_code = True
-            section = Section(course_instance_id=instance.id, code=code, weighing_type=random.choice([WeighingType.PERCENTAGE, WeighingType.WEIGHT]))
+            teacher = random.choice(Teacher.query.all())
+            section = Section(course_instance_id=instance.id, code=code, weighing_type=random.choice([WeighingType.PERCENTAGE, WeighingType.WEIGHT]), teacher=teacher)
             kanvas_db.session.add(section)
 
     kanvas_db.session.commit()
+    print("Secciones creadas correctamente!\n")
 
+    print("Creando requisitos...")
     for course in courses:
         possible_prerequisites = [c for c in courses if c.id != course.id]
         num_prerequisites = random.randint(1, min(3, len(possible_prerequisites)))
@@ -148,7 +184,9 @@ def seed_database():
                 requisite = Requisite(course_id=course.id, course_requisite_id=prerequisite.id)
                 kanvas_db.session.add(requisite)
     kanvas_db.session.commit()
-
+    print("Requisitos creados correctamente!\n")
+    
+    print("Creando evaluaciones y secciones de alumnos...")
     evaluations = ["Tareas", "Proyecto", "Controles", "Pruebas"]
     sections = Section.query.all()
     for section in sections:
@@ -165,26 +203,15 @@ def seed_database():
         evaluation = Evaluation(section_id=section.id, title="Examen", weighing=30, weighing_system=WeighingType.WEIGHT)
         kanvas_db.session.add(evaluation)
         
-        students = random.sample(User.query.all(), random.randint(19, 29))
+        students = random.sample(Student.query.all(), random.randint(19, 29))
 
-        teacher = random.choice(students)
-        students.remove(teacher)
-
-        user_section = UserSection(user_id=teacher.id, section_id=section.id, role=SectionRole.TEACHER)
-        kanvas_db.session.add(user_section)
-
-        assistants = random.sample(students, 3)
-        for assistant in assistants:
-            students.remove(assistant)
-            user_section = UserSection(user_id=assistant.id, section_id=section.id, role=SectionRole.ASSISTANT)
-            kanvas_db.session.add(user_section)
-        
         for student in students:
-            user_section = UserSection(user_id=student.id, section_id=section.id, role=SectionRole.STUDENT)
-            kanvas_db.session.add(user_section)
-
+            student_section = StudentSection(student_id=student.id, section_id=section.id)
+            kanvas_db.session.add(student_section)
     kanvas_db.session.commit()
-    
+    print("Evaluaciones y secciones de alumnos creadas correctamente!\n")
+        
+    print("Creando instancias de evaluaciones...")
     singular_evaluations = {"Tareas":"Tarea", "Proyecto":"Proyecto", "Controles":"Control", "Pruebas":"Prueba"}
     evaluations = Evaluation.query.where(Evaluation.title != "Examen").all()
     for evaluation in evaluations:
@@ -198,7 +225,8 @@ def seed_database():
         evaluation_instance = EvaluationInstance(title=exam.title, instance_weighing=1, optional=False, evaluation_id=evaluation.id)
         kanvas_db.session.add(evaluation_instance)
 
-    kanvas_db.session.commit()    
+    kanvas_db.session.commit()
+    print("Instancias de evaluaciones creadas correctamente!\n")
 
     print("Datos creados correctamente!")
 
