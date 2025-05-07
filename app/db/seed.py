@@ -206,8 +206,8 @@ def seed_database():
         students = random.sample(Student.query.all(), random.randint(19, 29))
 
         for student in students:
-            user_section = StudentSection(student_id=student.id, section_id=section.id)
-            kanvas_db.session.add(user_section)
+            student_section = StudentSection(student_id=student.id, section_id=section.id)
+            kanvas_db.session.add(student_section)
     kanvas_db.session.commit()
     print("Evaluaciones y secciones de alumnos creadas correctamente!\n")
         

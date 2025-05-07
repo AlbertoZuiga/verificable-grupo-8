@@ -29,17 +29,27 @@
   </div>
 
   <h3 class="mt-5">Calificaciones de estudiantes</h3>
-  {% if users %}
+  {% if students %}
     <ul class="list-group">
-      {% for user in users %}
+      {% for student in students %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
-          <div>{{ user.first_name }} {{ user.last_name }}</div>
-          {% if user.id in user_grades %}
-            <span class="badge bg-secondary fs-6">
-              {{ user_grades[user.id].grade }}
-            </span>
+          <div>{{ student.user.first_name }} {{ student.user.last_name }} {{student.id}}</div>
+          {% if student.id in student_grades %}
+            if student_grades[student.id] >= 4.0:
+              <span class="badge bg-success fs-6">
+                {{ student_grades[student.id] }}
+              </span>
+            else:
+              <span class="badge bg-danger fs-6">
+                {{ student_grades[student.id] }}
+              </span>
+            {% else %}
+              <span class="badge bg-secondary fs-6">
+                {{ student_grades[student.id] }}
+              </span>
+            {% endif %}
           {% else %}
-            <a href="{{ url_for('evaluation_instance.grade_user', evaluation_instance_id=evaluation_instance.id, user_id=user.id) }}" class="btn btn-sm btn-outline-primary ms-2">Calificar</a>
+            <a href="{{ url_for('evaluation_instance.grade_user', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}" class="btn btn-sm btn-outline-primary ms-2">Calificar</a>
           {% endif %}
         </li>
       {% endfor %}

@@ -13,15 +13,15 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password):
             login_user(user)
-            print('Sesión iniciada')
+            flash('Sesión iniciada', 'success')
             return redirect(url_for('main.index'))
         else:
-            print('Usuario o contraseña inválidos')
+            flash('Usuario o contraseña inválidos', 'danger')
     return render_template('auth/login.html')
 
 @auth_bp.route('/logout')
 @login_required
 def logout():
     logout_user()
-    print('Sesión cerrada')
+    flash('Sesión cerrada', 'success')
     return redirect(url_for('auth.login'))

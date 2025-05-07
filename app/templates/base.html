@@ -17,9 +17,10 @@
   <body>
     {% include 'partials/navbar.html' %}
     
-    {% include 'partials/flash.html' %}
-
+    
     <main class="container my-4">
+      {% include 'partials/flash.html' %}
+
       {% block content %}{% endblock %}
     </main>
 
