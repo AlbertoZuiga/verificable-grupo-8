@@ -2,4 +2,5 @@
 .env
 env
 venv
+examples
 __pycache__

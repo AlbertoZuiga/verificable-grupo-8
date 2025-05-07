@@ -1,10 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app import kanvas_db
-from app.models.evaluation_instance import EvaluationInstance
-from app.models.evaluation import Evaluation
-from app.models.user_evaluation_instance import UserEvaluationInstance
-from app.models.user_section import UserSection, SectionRole
-from app.models.user import User
+from app.models import EvaluationInstance, Evaluation, StudentEvaluationInstance, StudentSection, User
 
 evaluation_instance_bp = Blueprint('evaluation_instance', __name__, url_prefix='/evaluation_instances')
 
@@ -18,10 +14,10 @@ def show(id):
     evaluation_instance = EvaluationInstance.query.get_or_404(id)
 
     section_id = evaluation_instance.evaluation.section.id
-    student_ids = kanvas_db.session.query(UserSection.user_id).filter_by(section_id=section_id, role=SectionRole.STUDENT).subquery()
+    student_ids = kanvas_db.session.query(StudentSection.student_id).filter_by(section_id=section_id).subquery()
     users = User.query.filter(User.id.in_(student_ids)).all()
     
-    user_evaluation_instances = UserEvaluationInstance.query.filter_by(evaluation_instance_id=id).all()
+    user_evaluation_instances = StudentEvaluationInstance.query.filter_by(evaluation_instance_id=id).all()
     user_grades = {uei.user_id: uei for uei in user_evaluation_instances}
 
     return render_template('evaluation_instances/show.html', evaluation_instance=evaluation_instance, users=users, user_grades=user_grades)
@@ -94,7 +90,7 @@ def grade_user(evaluation_instance_id, user_id):
     if not user:
         return "Estudiante no pertenece a esta sección", 404
     
-    uei = UserEvaluationInstance.query.filter(UserEvaluationInstance.user_id == user_id, UserEvaluationInstance.evaluation_instance_id == evaluation_instance_id).first()
+    uei = StudentEvaluationInstance.query.filter(StudentEvaluationInstance.user_id == user_id, StudentEvaluationInstance.evaluation_instance_id == evaluation_instance_id).first()
 
     if request.method == 'POST':
         grade_input = request.form.get('grade')
@@ -111,7 +107,7 @@ def grade_user(evaluation_instance_id, user_id):
             if uei:
                 uei.grade = grade_value
             else:
-                uei = UserEvaluationInstance(user_id=user_id, evaluation_instance_id=evaluation_instance_id, grade=grade_value)
+                uei = StudentEvaluationInstance(user_id=user_id, evaluation_instance_id=evaluation_instance_id, grade=grade_value)
                 kanvas_db.session.add(uei)
 
             try:

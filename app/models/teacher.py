@@ -1,7 +1,9 @@
 from app import kanvas_db
-from app.models.user import User
 
-class Teacher(User):
+class Teacher(kanvas_db.Model):
     __tablename__ = 'teachers'
-    id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('users.id'), primary_key=True)
-    __mapper_args__ = {'polymorphic_identity': 'teacher'}
+
+    id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, autoincrement=True)
+
+    user_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey("users.id"), unique=True, nullable=False)
+    user = kanvas_db.relationship("User", back_populates="teacher")

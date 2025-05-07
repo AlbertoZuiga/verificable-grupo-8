@@ -12,8 +12,8 @@ class EvaluationInstance(kanvas_db.Model):
     instance_weighing = kanvas_db.Column(kanvas_db.Integer, nullable=False)
     optional = kanvas_db.Column(kanvas_db.Boolean, default=False, nullable=False)
 
-    user_evaluation_instances = kanvas_db.relationship('UserEvaluationInstance', back_populates='evaluation_instance')
-    users = kanvas_db.relationship('User', secondary='user_evaluation_instances', viewonly=True, back_populates='evaluation_instances')
+    student_evaluation_instances = kanvas_db.relationship('StudentEvaluationInstance', back_populates='evaluation_instance')
+    students = kanvas_db.relationship('Student', secondary='student_evaluation_instances', viewonly=True, back_populates='evaluation_instances')
 
     def __repr__(self):
         return f"<EvaluationInstance id={self.id}, title={self.title}, weighing={self.instance_weighing}>"

@@ -11,11 +11,8 @@ class User(UserMixin, kanvas_db.Model):
     first_name = kanvas_db.Column(kanvas_db.String(100), nullable=False)
     last_name = kanvas_db.Column(kanvas_db.String(100), nullable=False)
 
-    user_sections = kanvas_db.relationship('UserSection', back_populates='user', cascade='all, delete-orphan')
-    sections = kanvas_db.relationship('Section', secondary='user_sections', viewonly=True, back_populates='users')
-    
-    user_evaluation_instances = kanvas_db.relationship('UserEvaluationInstance', back_populates='user')
-    evaluation_instances = kanvas_db.relationship('EvaluationInstance', secondary='user_evaluation_instances', viewonly=True, back_populates='users')
+    student = kanvas_db.relationship("Student", back_populates="user", uselist=False)
+    teacher = kanvas_db.relationship("Teacher", back_populates="user", uselist=False)
 
     def __repr__(self):
         return f"<User id={self.id}, name={self.first_name} {self.last_name}, email={self.email}>"
