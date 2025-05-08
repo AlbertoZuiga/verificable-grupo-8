@@ -54,6 +54,18 @@ def _process_student(student_data, user_id):
 
     kanvas_db.session.add(student)
 
+def _process_teacher(teacher_data, user_id):
+    teacher = Teacher.query.filter_by(id=teacher_data['id']).first()
+    if not teacher:
+        teacher = Teacher(
+            id=teacher_data['id'],
+            user_id=user_id
+        )
+    else:
+        teacher.user_id = user_id
+
+    kanvas_db.session.add(teacher)
+
 @load_json_bp.route('/students', methods=['GET', 'POST'])
 def students():
     if request.method == 'POST':
@@ -74,3 +86,24 @@ def students():
             flash("Alumnos cargados correctamente!", "success")
             return redirect(url_for('load_json.index'))
     return render_template('load_json/students.html')
+
+@load_json_bp.route('/teachers', methods=['GET', 'POST'])
+def teachers():
+    if request.method == 'POST':
+        json_file = request.files['file']
+        json_type = request.form['json_type']
+
+        if json_file and json_file.filename.endswith('.json'):
+            try:
+                teachers_data = _parse_json_file(json_file, json_type)
+                for teacher_data in teachers_data:
+                    user = _process_user(teacher_data)
+                    _process_teacher(teacher_data, user.id)
+                kanvas_db.session.commit()
+            except Exception as e:
+                kanvas_db.session.rollback()
+                return f"Error al cargar JSON: {str(e)}", 400
+
+            flash("Profesores cargados correctamente!", "success")
+            return redirect(url_for('load_json.index'))
+    return render_template('load_json/teachers.html')
