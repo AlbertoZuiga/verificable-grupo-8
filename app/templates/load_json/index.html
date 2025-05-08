@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block title %} Cargar JSON {% endblock %}
+
+{% block content %}
+    <a href="{{ url_for('load_json.students') }}" class="btn btn-primary mt-4">📤 Cargar JSON Alumnos </a>
+{% endblock %}
