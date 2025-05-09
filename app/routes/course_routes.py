@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app import kanvas_db
 from app.models.course import Course
+from app.services.course_service import get_course_and_other_courses
 
 course_bp = Blueprint('course', __name__, url_prefix='/courses')
 
@@ -11,14 +12,7 @@ def index():
 
 @course_bp.route('/<int:id>')
 def show(id):
-    course = Course.query.get_or_404(id)
-
-    requisite_ids = {requisite.course_requisite_id for requisite in course.prerequisites}  
-    courses = Course.query.filter(
-        Course.id != id,
-        Course.id.notin_(requisite_ids)
-    ).all()
-
+    course, courses = get_course_and_other_courses(id)
     return render_template('courses/show.html', course=course, courses=courses)
 
 @course_bp.route('/create', methods=['GET', 'POST'])
