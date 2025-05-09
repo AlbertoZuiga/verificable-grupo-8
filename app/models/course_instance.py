@@ -1,5 +1,4 @@
 from app import kanvas_db
-from sqlalchemy import CheckConstraint
 from enum import Enum
 
 class Semester(Enum):

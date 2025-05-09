@@ -1,47 +1,49 @@
 {% extends "base.html" %}
 
-{% block title %}Editar Evaluación: {{ evaluation.title }}{% endblock %}
+{% block title %} Editar Evaluación: {{ evaluation.title }} {% endblock %}
 
 {% block content %}
-  <div class="container">
-    <h1 class="mb-4 text-primary">Editar Evaluación</h1>
-    <div class="card shadow-lg p-4">
-      <form action="{{ url_for('evaluation.edit', id=evaluation.id) }}" method="POST">
-        <div class="mb-3">
-          <label for="section_id" class="form-label">Sección</label>
-          <select class="form-select" id="section_id" name="section_id" required>
-            {% for section in sections %}
-              <option value="{{ section.id }}" {% if section.id == evaluation.section_id %}selected{% endif %}>
-                {{ section.code }} - {{ section.course_instance.course.title }}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
-        
-        <div class="mb-3">
-          <label for="title" class="form-label">Título de la Evaluación</label>
-          <input type="text" id="title" name="title" class="form-control" value="{{ evaluation.title }}" required>
-        </div>
-        
-        <div class="mb-3">
-          <label for="weighing" class="form-label">Peso</label>
-          <input type="number" id="weighing" name="weighing" class="form-control" value="{{ evaluation.weighing }}" required>
-        </div>
-        
-        <div class="mb-3">
-          <label for="weighing_system" class="form-label">Sistema de Ponderación</label>
-          <select class="form-select" id="weighing_system" name="weighing_system" required>
-            {% for type in weighing_types %}
-              <option value="{{ type.name }}" {% if type.name == evaluation.weighing_system.name %}selected{% endif %}>
-                {{ type.value }}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
 
-        <a href="{{ url_for('evaluation.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
-        <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
-      </form>
-    </div>
+<div class="container">
+  <h1 class="mb-4 text-primary">Editar Evaluación</h1>
+  <div class="card shadow-lg p-4">
+    <form action="{{ url_for('evaluation.edit', id=evaluation.id) }}" method="POST">
+      <div class="mb-3">
+        <label for="section_id" class="form-label">Sección</label>
+        <select class="form-select" id="section_id" name="section_id" required>
+          {% for section in sections %}
+            <option value="{{ section.id }}" {% if section.id == evaluation.section_id %}selected{% endif %}>
+              {{ section.code }} - {{ section.course_instance.course.title }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      
+      <div class="mb-3">
+        <label for="title" class="form-label">Título de la Evaluación</label>
+        <input type="text" id="title" name="title" class="form-control" value="{{ evaluation.title }}" required>
+      </div>
+      
+      <div class="mb-3">
+        <label for="weighing" class="form-label">Peso</label>
+        <input type="number" id="weighing" name="weighing" class="form-control" value="{{ evaluation.weighing }}" required>
+      </div>
+      
+      <div class="mb-3">
+        <label for="weighing_system" class="form-label">Sistema de Ponderación</label>
+        <select class="form-select" id="weighing_system" name="weighing_system" required>
+          {% for type in weighing_types %}
+            <option value="{{ type.name }}" {% if type.name == evaluation.weighing_system.name %}selected{% endif %}>
+              {{ type.value }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <a href="{{ url_for('evaluation.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
+      <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+    </form>
   </div>
+</div>
+
 {% endblock %}

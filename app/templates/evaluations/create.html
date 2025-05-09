@@ -1,5 +1,9 @@
-{% extends "base.html" %} {% block title %}Nueva Evaluación{% endblock %} {%
-block content %}
+{% extends "base.html" %}
+
+{% block title %} Nueva Evaluación {% endblock %}
+
+{%block content %}
+
 <div class="container">
   <h1 class="mb-4 text-primary">Nueva Evaluación</h1>
   <div class="card shadow-lg p-4">
@@ -8,56 +12,36 @@ block content %}
         <label for="section_id" class="form-label">Sección</label>
         <select class="form-select" id="section_id" name="section_id" required>
           {% for section in sections %}
-          <option value="{{ section.id }}">
-            {{ section.code }} - {{ section.course_instance.course.title }}
-          </option>
+            <option value="{{ section.id }}">
+              {{ section.code }} - {{ section.course_instance.course.title }}
+            </option>
           {% endfor %}
         </select>
       </div>
 
       <div class="mb-3">
         <label for="title" class="form-label">Título de la Evaluación</label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          class="form-control"
-          required
-        />
+        <input type="text" id="title" name="title" class="form-control" required/>
       </div>
 
       <div class="mb-3">
         <label for="weighing" class="form-label">Ponderación</label>
-        <input
-          type="number"
-          id="weighing"
-          name="weighing"
-          class="form-control"
-          required
-        />
+        <input type="number" id="weighing" name="weighing" class="form-control" required/>
       </div>
 
       <div class="mb-3">
-        <label for="weighing_system" class="form-label"
-          >Sistema de Ponderación</label
-        >
-        <select
-          class="form-select"
-          id="weighing_system"
-          name="weighing_system"
-          required
-        >
+        <label for="weighing_system" class="form-label">Sistema de Ponderación</label>
+        <select class="form-select" id="weighing_system" name="weighing_system" required>
           {% for type in weighing_types %}
-          <option value="{{ type.name }}">{{ type.value }}</option>
+            <option value="{{ type.name }}">{{ type.value }}</option>
           {% endfor %}
         </select>
       </div>
 
-      <a href="{{ url_for('evaluation.index') }}" class="btn btn-secondary"
-        >⬅ Volver al listado</a
-      >
+      <a href="{{ url_for('evaluation.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
       <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
     </form>
   </div>
 </div>
+
 {% endblock %}
