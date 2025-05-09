@@ -85,23 +85,30 @@ def seed_database():
     kanvas_db.session.commit()
 
     courses_data = [
-        {"title": "Matemáticas Avanzadas"},
-        {"title": "Programación en Python"},
-        {"title": "Historia Universal"},
-        {"title": "Física Cuántica"},
-        {"title": "Inteligencia Artificial"},
-        {"title": "Química Orgánica"},
-        {"title": "Literatura Clásica"},
-        {"title": "Diseño de Software"},
-        {"title": "Economía Global"},
-        {"title": "Biología Molecular"}
+        {"title": "Matemáticas Avanzadas", "code": "MA101", "credits": 5},
+        {"title": "Programación en Python", "code": "PY101", "credits": 5},
+        {"title": "Historia Universal", "code": "HU101", "credits": 4},
+        {"title": "Física Cuántica", "code": "FQ101", "credits": 6},
+        {"title": "Inteligencia Artificial", "code": "IA101", "credits": 5},
+        {"title": "Química Orgánica", "code": "QO101", "credits": 6},
+        {"title": "Literatura Clásica", "code": "LC101", "credits": 4},
+        {"title": "Diseño de Software", "code": "DS101", "credits": 5},
+        {"title": "Economía Global", "code": "EG101", "credits": 4},
+        {"title": "Biología Molecular", "code": "BM101", "credits": 5}
     ]
+
+
 
     courses = []
     for course_data in courses_data:
         course = Course.query.filter_by(title=course_data["title"]).first()
         if not course:
-            course = Course(title=course_data["title"])
+            # Aquí asignamos el código y los créditos al crear el curso
+            course = Course(
+                title=course_data["title"], 
+                code=course_data["code"], 
+                credits=course_data["credits"]
+            )
             kanvas_db.session.add(course)
         else:
             print(f"\tEl curso '{course_data['title']}' ya existe, no se añadirá de nuevo.")
