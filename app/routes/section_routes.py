@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import kanvas_db
 from app.models import CourseInstance, Section, WeighingType, Teacher
+from app.services.section_service import create_section
 
 section_bp = Blueprint('section', __name__, url_prefix='/sections')
 
@@ -21,23 +22,19 @@ def create():
         teacher_id = request.form['teacher_id']
         code = request.form['code']
         weighing_type = request.form['weighing_type']
-        
-        if not course_instance_id or not teacher_id or not code or not weighing_type:
-            print("Todos los campos son obligatorios.")
-        else:
-            new_section = Section(course_instance_id=course_instance_id, teacher_id=teacher_id, code=code, weighing_type=weighing_type)
-            try:
-                kanvas_db.session.add(new_section)
-                kanvas_db.session.commit()
-                print("Seccion creada exitosamente")
-                return redirect(url_for('section.index'))
-            except Exception as e:
-                kanvas_db.session.rollback()
-                print(f"Error al crear la seccion: {str(e)}")
+
+        try:
+            create_section(course_instance_id, teacher_id, code, weighing_type)
+            flash("Sección creada exitosamente", "success")
+            return redirect(url_for('section.index'))
+        except ValueError as ve:
+            flash(str(ve), "warning")
+        except Exception as e:
+            flash("Error al crear la sección", "danger")
+            print(f"Error al crear la sección: {str(e)}")
 
     course_instances = CourseInstance.query.all()
     teachers = Teacher.query.all()
-
     context = {
         "course_instances": course_instances,
         "weighing_types": WeighingType,
