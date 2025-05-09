@@ -3,5 +3,5 @@
 .vscode
 env
 venv
-examples
 __pycache__
+.python-version
