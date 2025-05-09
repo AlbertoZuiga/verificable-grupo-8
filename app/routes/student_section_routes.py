@@ -44,37 +44,3 @@ def remove_user(section_id, student_id):
     return redirect(url_for('student_section.index', section_id=section_id))
 
 
-@student_section_bp.route('/bulk_load_json', methods=['POST'])
-def bulk_load_students_json(section_id=None, **kwargs):
-    json_payload = request.get_json()
-
-    if not json_payload or 'alumnos_seccion' not in json_payload:
-        return jsonify({'error': 'Invalid JSON format'}), 400
-
-    student_section_entries = json_payload['alumnos_seccion']
-    total_students_added = 0
-    failed_entries = []
-
-    for entry in student_section_entries:
-        section_id = entry.get('seccion_id')
-        student_id = entry.get('alumno_id')
-
-        if section_id is None or student_id is None:
-            failed_entries.append(f"Missing section_id or student_id in entry: {entry}")
-            continue
-
-        try:
-            was_added = add_student_to_section(student_id=student_id, section_id=section_id)
-            if was_added:
-                total_students_added += 1
-        except Exception as error:
-            error_message = f"Error adding student {student_id} to section {section_id}: {str(error)}"
-            failed_entries.append(error_message)
-
-    return jsonify({
-        'message': f'{total_students_added} students successfully assigned to sections.',
-        'errors': failed_entries
-    }), 200
-
-
-
