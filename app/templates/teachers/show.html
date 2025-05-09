@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %} Perfil de {{ teacher.user.first_name }} {{teacher.user.last_name }} {% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+  <h1 class="mb-4 text-primary">📄 Perfil del Profesor</h1>
+
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body">
+      <dl class="row">
+        <dt class="col-sm-4 text-muted">Nombre completo:</dt>
+        <dd class="col-sm-8">{{ teacher.user.first_name }} {{ teacher.user.last_name }}</dd>
+
+        <dt class="col-sm-4 text-muted">Correo electrónico:</dt>
+        <dd class="col-sm-8">{{ teacher.user.email }}</dd>
+      </dl>
+
+      <div class="mt-4 d-flex flex-wrap gap-2">
+        <a href="{{ url_for('teacher.index') }}" class="btn btn-secondary"> ⬅ Volver </a>
+        <a href="{{ url_for('teacher.edit', id=teacher.id) }}" class="btn btn-primary"> ✏ Editar </a>
+        <a href="{{ url_for('teacher.delete', id=teacher.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este profesor?')"> 🗑 Eliminar </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

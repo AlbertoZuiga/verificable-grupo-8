@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app import kanvas_db
 from app.models.course import Course
+from app.services.course_service import get_course_and_other_courses
 
 course_bp = Blueprint('course', __name__, url_prefix='/courses')
 
@@ -11,21 +12,19 @@ def index():
 
 @course_bp.route('/<int:id>')
 def show(id):
-    course = Course.query.get_or_404(id)
-
-    requisite_ids = {requisite.course_requisite_id for requisite in course.prerequisites}  
-    courses = Course.query.filter(
-        Course.id != id,
-        Course.id.notin_(requisite_ids)
-    ).all()
-
+    course, courses = get_course_and_other_courses(id)
     return render_template('courses/show.html', course=course, courses=courses)
 
 @course_bp.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':
         title = request.form['title']
-        new_course = Course(title=title)
+        code = request.form['code']
+        credits = int(request.form['credits'])
+        if Course.query.filter_by(title=title).first():
+            return render_template('courses/create.html', error="Ya existe un curso con ese título.")
+
+        new_course = Course(title=title, code=code, credits=credits)
         kanvas_db.session.add(new_course)
         kanvas_db.session.commit()
         return redirect(url_for('course.index'))
@@ -36,6 +35,8 @@ def edit(id):
     course = Course.query.get_or_404(id)
     if request.method == 'POST':
         course.title = request.form['title']
+        course.code = request.form['code']
+        course.credits = int(request.form['credits'])
         kanvas_db.session.commit()
         return redirect(url_for('course.index'))
     return render_template('courses/edit.html', course=course)

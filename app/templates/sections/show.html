@@ -8,6 +8,7 @@
   <h1 class="mb-4 text-primary">Detalles de la Sección</h1>
   <div class="card shadow-lg p-4">
     <p><strong>Instancia del Curso:</strong> {{ section.course_instance.course.title }} - {{ section.course_instance.year }} (Semestre {{ section.course_instance.semester }})</p>
+    <p><strong>Profesor:</strong> {{ section.teacher.user.first_name }} {{ section.teacher.user.last_name }} ({{ section.teacher.user.email }})</p>
     <p><strong>Código de Sección:</strong> {{ section.code }}</p>
     <p><strong>Tipo de Ponderación:</strong> {{ section.weighing_type }}</p>
 
@@ -15,8 +16,8 @@
       <a href="{{ url_for('section.index') }}" class="btn btn-secondary">
         ⬅ Volver al listado
       </a>
-      <a href="{{ url_for('user_section.index', section_id=section.id) }}" class="btn btn-info">
-        👥 Ver Usuarios
+      <a href="{{ url_for('student_section.index', section_id=section.id) }}" class="btn btn-info">
+        👥 Ver Alumnos
       </a>
       <div class="btn-group" role="group">
         <a href="{{ url_for('section.edit', id=section.id) }}" class="btn btn-warning text-dark">

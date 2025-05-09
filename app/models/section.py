@@ -1,6 +1,5 @@
 from app import kanvas_db
 import enum
-from app.models.user_section import UserSection
 
 class WeighingType(enum.Enum):
     PERCENTAGE = "Porcentaje"
@@ -13,13 +12,18 @@ class Section(kanvas_db.Model):
     __tablename__ = 'sections'
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)
+    
     course_instance_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('course_instances.id'), nullable=False, index=True)
     course_instance = kanvas_db.relationship('CourseInstance', backref='sections')
+    
     code = kanvas_db.Column(kanvas_db.Integer, nullable=False, index=True, unique=True)
     weighing_type = kanvas_db.Column(kanvas_db.Enum(WeighingType), nullable=False)
 
-    user_sections = kanvas_db.relationship('UserSection', back_populates='section')
-    users = kanvas_db.relationship('User', secondary='user_sections', viewonly=True, back_populates='sections')
+    teacher_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('teachers.id'), nullable=False, index=True)
+    teacher = kanvas_db.relationship('Teacher', backref='sections')
+    
+    student_sections = kanvas_db.relationship('StudentSection', back_populates='section')
+    students = kanvas_db.relationship('Student', secondary='student_sections', viewonly=True, back_populates='sections')
 
     def __repr__(self):
         return f"<Section id={self.id}, code={self.code}, weighing_type={self.weighing_type}>"
