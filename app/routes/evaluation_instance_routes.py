@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app import kanvas_db
 from app.models import EvaluationInstance, Evaluation, StudentEvaluationInstance, StudentSection, User
+from app.services.evaluation_instance_service import get_evaluation_instance_with_students_and_grades
 
 evaluation_instance_bp = Blueprint('evaluation_instance', __name__, url_prefix='/evaluation_instances')
 
@@ -11,16 +12,13 @@ def index():
 
 @evaluation_instance_bp.route('/<int:id>')
 def show(id):
-    evaluation_instance = EvaluationInstance.query.get_or_404(id)
-
-    section_id = evaluation_instance.evaluation.section.id
-    student_sections = StudentSection.query.filter_by(section_id=section_id).all()
-    students = [student_section.student for student_section in student_sections]
-    
-    student_evaluation_instances = StudentEvaluationInstance.query.filter_by(evaluation_instance_id=id).all()
-    student_grades = {student_evaluation_instance.student_id: student_evaluation_instance.grade for student_evaluation_instance in student_evaluation_instances}
-    print(student_grades)
-    return render_template('evaluation_instances/show.html', evaluation_instance=evaluation_instance, students=students, student_grades=student_grades)
+    evaluation_instance, students, student_grades = get_evaluation_instance_with_students_and_grades(id)
+    return render_template(
+        'evaluation_instances/show.html',
+        evaluation_instance=evaluation_instance,
+        students=students,
+        student_grades=student_grades
+    )
 
 @evaluation_instance_bp.route('/create', methods=['GET', 'POST'])
 def create():
