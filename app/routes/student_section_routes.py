@@ -3,7 +3,7 @@ from app import kanvas_db
 from app.models import Section
 from app.models import StudentSection
 
-from app.services.student_section_service import get_students_not_in_section, add_student_to_section, remove_student_from_section, add_students_to_section_from_json
+from app.services.student_section_service import get_students_not_in_section, add_student_to_section, remove_student_from_section
 
 student_section_bp = Blueprint('student_section', __name__, url_prefix='/sections/<int:section_id>/students/')
 
