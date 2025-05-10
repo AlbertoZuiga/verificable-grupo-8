@@ -9,3 +9,6 @@ from app.models.evaluation import Evaluation
 from app.models.evaluation_instance import EvaluationInstance
 from app.models.student_section import StudentSection
 from app.models.student_evaluation_instance import StudentEvaluationInstance
+from app.models.classroom import Classroom
+from app.models.time_block import TimeBlock
+from app.models.assigned_time_block import AssignedTimeBlock
