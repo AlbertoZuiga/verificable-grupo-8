@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from app import kanvas_db
-from app.models import User, Student, Teacher
+from app.models import User, Student, Teacher, Section, StudentSection
+from app.services.student_section_service import _add_student_to_section
 import json
-
 
 load_json_bp = Blueprint('load_json', __name__, url_prefix='/load_json')
 
@@ -12,7 +12,7 @@ def index():
 
 def _parse_json_file(json_file, json_type):
     data = json.load(json_file)
-    if json_type=="sections":
+    if json_type == "sections":
         return data
     else:
         if json_type not in data:
@@ -107,3 +107,34 @@ def teachers():
             flash("Profesores cargados correctamente!", "success")
             return redirect(url_for('load_json.index'))
     return render_template('load_json/teachers.html')
+
+@load_json_bp.route('/student_sections', methods=['GET', 'POST'])
+def student_sections():
+    if request.method == 'POST':
+        json_file = request.files['file']
+        json_type = request.form['json_type']
+
+        if json_file and json_file.filename.endswith('.json'):
+            try:
+                student_section_data = _parse_json_file(json_file, json_type)
+
+                total_students_added = 0
+                for entry in student_section_data:
+                    section_id = entry.get('seccion_id')
+                    student_ids = entry.get('alumno_id', [])
+
+                    if not section_id or not student_ids:
+                        continue
+
+                    added_count = _add_student_to_section(section_id, student_ids)
+                    total_students_added += added_count
+
+                kanvas_db.session.commit()
+            except Exception as e:
+                kanvas_db.session.rollback()
+                return f"Error al cargar JSON: {str(e)}", 400
+
+            flash(f"{total_students_added} alumnos asignados a secciones correctamente!", "success")
+            return redirect(url_for('load_json.index'))
+
+    return render_template('load_json/student_sections.html')
