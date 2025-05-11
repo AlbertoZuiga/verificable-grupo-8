@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import kanvas_db
-from app.models import User, Student, Teacher
+from app.models import User, Student, Teacher, Classroom, Course, Requisite
 import json
 
 
@@ -66,6 +66,46 @@ def _process_teacher(teacher_data, user_id):
 
     kanvas_db.session.add(teacher)
 
+def _process_classroom(data):
+    classroom = Classroom.query.filter_by(id=data['id']).first()
+    if not classroom:
+        classroom = Classroom(
+            id=data['id'],
+            name=data['nombre'],
+            capacity=data['capacidad']
+        )
+    else:
+        classroom.name = data['nombre']
+        classroom.capacity = data['capacidad']
+
+    kanvas_db.session.add(classroom)
+
+def _process_course(course_data):
+    course = Course.query.filter_by(id=course_data['id']).first()
+
+    if not course:
+        course = Course(
+            id=course_data['id'],
+            code=course_data['codigo'],
+            title=course_data['descripcion'], 
+            credits=course_data['creditos']
+        )
+    else:
+        course.code = course_data['codigo']
+        course.title = course_data['descripcion'] 
+        course.credits = course_data['creditos']
+
+    kanvas_db.session.add(course)
+    kanvas_db.session.flush()
+    
+    Requisite.query.filter_by(course_id=course.id).delete()
+
+    for req_code in course_data.get('requisitos', []):
+        requisite_course = Course.query.filter_by(code=req_code).first()
+        if requisite_course:
+            req = Requisite(course_id=course.id, course_requisite_id=requisite_course.id)
+            kanvas_db.session.add(req)
+
 @load_json_bp.route('/students', methods=['GET', 'POST'])
 def students():
     if request.method == 'POST':
@@ -107,3 +147,45 @@ def teachers():
             flash("Profesores cargados correctamente!", "success")
             return redirect(url_for('load_json.index'))
     return render_template('load_json/teachers.html')
+
+@load_json_bp.route('/classrooms', methods=['GET', 'POST'])
+def classrooms():
+    if request.method == 'POST':
+        json_file = request.files['file']
+        json_type = request.form['json_type']
+
+        if json_file and json_file.filename.endswith('.json'):
+            try:
+                classrooms_data = _parse_json_file(json_file, json_type)
+                for classroom_data in classrooms_data:
+                    _process_classroom(classroom_data)
+                kanvas_db.session.commit()
+            except Exception as e:
+                kanvas_db.session.rollback()
+                return f"Error al cargar JSON: {str(e)}", 400
+
+            flash("Salas cargadas correctamente!", "success")
+            return redirect(url_for('load_json.index'))
+    return render_template('load_json/classrooms.html')
+
+
+
+@load_json_bp.route('/courses', methods=['GET', 'POST'])
+def courses():
+    if request.method == 'POST':
+        json_file = request.files['file']
+        json_type = request.form['json_type']
+
+        if json_file and json_file.filename.endswith('.json'):
+            try:
+                courses_data = _parse_json_file(json_file, json_type)
+                for course_data in courses_data:
+                    _process_course(course_data)
+                kanvas_db.session.commit()
+            except Exception as e:
+                kanvas_db.session.rollback()
+                return f"Error al cargar cursos: {str(e)}", 400
+
+            flash("Cursos cargados correctamente!", "success")
+            return redirect(url_for('load_json.index'))
+    return render_template('load_json/courses.html')
