@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from app import kanvas_db
 from app.models import Section
 from app.models import StudentSection
@@ -42,3 +42,5 @@ def remove_user(section_id, student_id):
     else:
         flash("Error al remover usuario de la sección.", "danger")
     return redirect(url_for('student_section.index', section_id=section_id))
+
+
