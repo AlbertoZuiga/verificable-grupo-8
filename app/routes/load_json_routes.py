@@ -1,8 +1,25 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from app import kanvas_db
-from app.models import User, Student, Teacher, Classroom, Course, Requisite, CourseInstance, Semester, Section, WeighingType
 import json
 
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+
+from app import kanvas_db
+from app.models import (
+    User,
+    Student,
+    Teacher,
+    Classroom,
+    Course,
+    Requisite,
+    CourseInstance,
+    Semester,
+    Section,
+    WeighingType,
+    StudentSection,
+)
+from app.services.create_object_instances import create_classroom_instances, create_student_instances
+from app.services.student_section_service import _add_student_to_section
+from app.utils import json_constants as JC
+from app.utils.parse_json import parse_classroom_json, parse_students_json
 
 load_json_bp = Blueprint('load_json', __name__, url_prefix='/load_json')
 
@@ -65,20 +82,6 @@ def _process_teacher(teacher_data, user_id):
         teacher.user_id = user_id
 
     kanvas_db.session.add(teacher)
-
-def _process_classroom(data):
-    classroom = Classroom.query.filter_by(id=data['id']).first()
-    if not classroom:
-        classroom = Classroom(
-            id=data['id'],
-            name=data['nombre'],
-            capacity=data['capacidad']
-        )
-    else:
-        classroom.name = data['nombre']
-        classroom.capacity = data['capacidad']
-
-    kanvas_db.session.add(classroom)
 
 def _process_course(course_data):
     course = Course.query.filter_by(id=course_data['id']).first()
@@ -148,19 +151,22 @@ def students():
         json_file = request.files['file']
         json_type = request.form['json_type']
 
-        if json_file and json_file.filename.endswith('.json'):
+        if json_file and json_file.filename.endswith('.json') and json_type == JC.STUDENTS:
             try:
-                students_data = _parse_json_file(json_file, json_type)
-                for student_data in students_data:
-                    user = _process_user(student_data)
-                    _process_student(student_data, user.id)
+                file_content = json_file.read().decode('utf-8')
+                user_student_pairs = parse_students_json(file_content)
+
+                created_count = create_student_instances(user_student_pairs)
+                
                 kanvas_db.session.commit()
+                flash(f"{created_count} students loaded successfully!", "success")
+                return redirect(url_for('load_json.index'))
+
             except Exception as e:
                 kanvas_db.session.rollback()
-                return f"Error al cargar JSON: {str(e)}", 400
+                flash(f"Error loading students: {str(e)}", "danger")
+                return f"Error: {str(e)}", 400
 
-            flash("Alumnos cargados correctamente!", "success")
-            return redirect(url_for('load_json.index'))
     return render_template('load_json/students.html')
 
 @load_json_bp.route('/teachers', methods=['GET', 'POST'])
@@ -190,18 +196,21 @@ def classrooms():
         json_file = request.files['file']
         json_type = request.form['json_type']
 
-        if json_file and json_file.filename.endswith('.json'):
+        if json_file and json_file.filename.endswith('.json') and json_type == JC.CLASSROOMS:
             try:
-                classrooms_data = _parse_json_file(json_file, json_type)
-                for classroom_data in classrooms_data:
-                    _process_classroom(classroom_data)
+                file_content = json_file.read().decode('utf-8')
+                classroom_objects = parse_classroom_json(file_content)
+                created_count = create_classroom_instances(classroom_objects)
                 kanvas_db.session.commit()
+                
+                flash(f"{created_count} classrooms loaded successfully!", "success")
+                return redirect(url_for('load_json.index'))
+
             except Exception as e:
                 kanvas_db.session.rollback()
-                return f"Error al cargar JSON: {str(e)}", 400
+                flash(f"Error loading classrooms: {str(e)}", "danger")
+                return f"Error: {str(e)}", 400
 
-            flash("Salas cargadas correctamente!", "success")
-            return redirect(url_for('load_json.index'))
     return render_template('load_json/classrooms.html')
 
 
