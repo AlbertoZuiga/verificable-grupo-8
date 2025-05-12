@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from app import kanvas_db
-from app.models import User, Student, Teacher, Classroom, Course, Requisite, CourseInstance, Semester, Section, WeighingType, StudentSection
+from app.models import User, Student, Teacher, Classroom, Course, Requisite, CourseInstance, Semester, Section, WeighingType, StudentSection, StudentEvaluationInstance
 from app.services.student_section_service import _add_student_to_section
 import json
+
 
 load_json_bp = Blueprint('load_json', __name__, url_prefix='/load_json')
 
@@ -18,6 +19,26 @@ def _parse_json_file(json_file, json_type):
         if json_type not in data:
             raise KeyError(f"'{json_type}' not found in JSON data")
         return data[json_type]
+
+def _process_grade(data):
+    instance = StudentEvaluationInstance.query.filter_by(
+        student_id=data['alumno_id'],
+        evaluation_instance_id=data['instancia'],
+        evaluation_id=data['topico_id']
+    ).first()
+
+    if not instance:
+        instance = StudentEvaluationInstance(
+            student_id=data['alumno_id'],
+            evaluation_instance_id=data['instancia'],
+            evaluation_id=data['topico_id'],
+            grade=data['nota']
+        )
+    else:
+        instance.grade = data['nota']
+
+    kanvas_db.session.add(instance)
+
 
 def _process_user(student_data):
     name_parts = student_data['nombre'].split(' ')
@@ -141,7 +162,6 @@ def _process_section(data):
 
     kanvas_db.session.add(section)
 
-
 @load_json_bp.route('/students', methods=['GET', 'POST'])
 def students():
     if request.method == 'POST':
@@ -203,8 +223,6 @@ def classrooms():
             flash("Salas cargadas correctamente!", "success")
             return redirect(url_for('load_json.index'))
     return render_template('load_json/classrooms.html')
-
-
 
 @load_json_bp.route('/courses', methods=['GET', 'POST'])
 def courses():
@@ -300,3 +318,26 @@ def student_sections():
             return redirect(url_for('load_json.index'))
 
     return render_template('load_json/student_sections.html')
+
+@load_json_bp.route('/grades', methods=['GET', 'POST'])
+def grades():
+    if request.method == 'POST':
+        json_file = request.files['file']
+        json_type = request.form['json_type']
+
+        if json_file and json_file.filename.endswith('.json'):
+            try:
+                grades_data = _parse_json_file(json_file, json_type)
+
+                for grade in grades_data:
+                    _process_grade(grade)
+
+                kanvas_db.session.commit()
+            except Exception as e:
+                kanvas_db.session.rollback()
+                return f"Error al cargar notas: {str(e)}", 400
+
+            flash("Notas cargadas correctamente!", "success")
+            return redirect(url_for('load_json.index'))
+
+    return render_template('load_json/grades.html')
