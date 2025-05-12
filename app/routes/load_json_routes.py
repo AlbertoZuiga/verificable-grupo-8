@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from app import kanvas_db
-from app.models import User, Student, Teacher, Classroom, Course, Requisite, CourseInstance, Semester, Section, WeighingType, StudentSection, StudentEvaluationInstance
+from app.models import User, Student, Teacher, Classroom, Course, Requisite, CourseInstance, Semester, Section, WeighingType, Evaluation, EvaluationInstance, StudentEvaluationInstance
 from app.services.student_section_service import _add_student_to_section
 import json
 
@@ -20,6 +20,13 @@ def _parse_json_file(json_file, json_type):
             raise KeyError(f"'{json_type}' not found in JSON data")
         return data[json_type]
 
+def validar_id_existente(modelo, id_val, nombre_objeto):
+    objeto = modelo.query.get(id_val)
+    if objeto is None:
+        flash(f"El ID {id_val} no corresponde a un {nombre_objeto} válido", "danger")
+        return False
+    return True
+
 def _process_grade(data):
     instance = StudentEvaluationInstance.query.filter_by(
         student_id=data['alumno_id'],
@@ -38,7 +45,6 @@ def _process_grade(data):
         instance.grade = data['nota']
 
     kanvas_db.session.add(instance)
-
 
 def _process_user(student_data):
     name_parts = student_data['nombre'].split(' ')
@@ -173,6 +179,10 @@ def students():
                 students_data = _parse_json_file(json_file, json_type)
                 for student_data in students_data:
                     user = _process_user(student_data)
+                    # Validación de IDs
+                    if not validar_id_existente(User, user.id, "usuario"):
+                        continue
+
                     _process_student(student_data, user.id)
                 kanvas_db.session.commit()
             except Exception as e:
@@ -194,6 +204,9 @@ def teachers():
                 teachers_data = _parse_json_file(json_file, json_type)
                 for teacher_data in teachers_data:
                     user = _process_user(teacher_data)
+                    # Validación de IDs
+                    if not validar_id_existente(User, user.id, "usuario"):
+                        continue        
                     _process_teacher(teacher_data, user.id)
                 kanvas_db.session.commit()
             except Exception as e:
@@ -257,6 +270,9 @@ def course_instances():
                 semester = Semester(data["semestre"])
 
                 for inst_data in data["instancias"]:
+                    # Validación de IDs
+                    if not validar_id_existente(Course, inst_data["curso_id"], "curso_id"):
+                        continue
                     _process_course_instance(inst_data, year, semester)
 
                 kanvas_db.session.commit()
@@ -277,8 +293,13 @@ def sections():
         if json_file and json_file.filename.endswith('.json'):
             try:
                 sections_data = _parse_json_file(json_file, json_type)
-                for section_data in sections_data:
-                    _process_section(section_data)
+                for section in sections_data:
+                    # Validación de IDs
+                    if not validar_id_existente(CourseInstance, section["instancia_curso"], "Instancia de curso"):
+                        continue
+                    if not validar_id_existente(Teacher, section["profesor_id"], "Profesor"):   
+                        continue
+                    _process_section(section)
                 kanvas_db.session.commit()
             except Exception as e:
                 kanvas_db.session.rollback()
@@ -302,6 +323,11 @@ def student_sections():
                 for entry in student_section_data:
                     section_id = entry.get('seccion_id')
                     student_ids = entry.get('alumno_id', [])
+                    # Validación de IDs
+                    if not validar_id_existente(Section, section_id, "sección"):
+                        continue
+                    if not validar_id_existente(Student, student_ids, "alumno"):   
+                        continue
 
                     if not section_id or not student_ids:
                         continue
@@ -330,6 +356,13 @@ def grades():
                 grades_data = _parse_json_file(json_file, json_type)
 
                 for grade in grades_data:
+                    # Validación de IDs
+                    if not validar_id_existente(Student, grade["alumno_id"], "alumno"):
+                        continue
+                    if not validar_id_existente(EvaluationInstance, grade["instancia"], "instancia"):
+                        continue
+                    if not validar_id_existente(Evaluation, grade["topico_id"], "evaluación"):   
+                        continue
                     _process_grade(grade)
 
                 kanvas_db.session.commit()
