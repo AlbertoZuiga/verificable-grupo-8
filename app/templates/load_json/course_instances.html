@@ -9,7 +9,7 @@
             <div class="mb-3">
                 <label for="jsonFile" class="form-label">Selecciona un archivo JSON:</label>
                 <input type="file" id="jsonFile" name="file" accept=".json" required class="form-control">
-                <input type="hidden" name="json_type" value="course instances">
+                <input type="hidden" name="json_type" value="instancias">
             </div>
             <a href="{{ url_for('load_json.index') }}" class="btn btn-secondary">Cancelar</a>
             <button type="submit" class="btn btn-success">Subir</button>
