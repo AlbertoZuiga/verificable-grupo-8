@@ -1,24 +1,8 @@
-import json
-
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 
 from app import kanvas_db
-from app.models import (
-    User,
-    Student,
-    Teacher,
-    Classroom,
-    Course,
-    Requisite,
-    CourseInstance,
-    Semester,
-    Section,
-    WeighingType,
-    StudentSection,
-)
 from app.services.create_object_instances import create_classroom_instances, create_student_instances, create_teacher_instances, create_course_instances, create_requisite_instances, create_course_instance_objects, create_section_instances, create_evaluation_instances, create_evaluation_instance_instances, create_student_section_instances, create_grade_instances
 
-from app.services.student_section_service import _add_student_to_section
 from app.utils import json_constants as JC
 from app.utils.parse_json import parse_classroom_json, parse_students_json, parse_teachers_json, parse_courses_json, parse_course_instances_json, parse_sections_json, parse_student_sections_json, parse_grades_json
 
@@ -27,15 +11,6 @@ load_json_bp = Blueprint('load_json', __name__, url_prefix='/load_json')
 @load_json_bp.route('/')
 def index():
     return render_template('load_json/index.html')
-
-def _parse_json_file(json_file, json_type):
-    data = json.load(json_file)
-    if json_type=="course instances": # course instances is the only json that has "metadata" (año, semestre)
-        return data
-    else:
-        if json_type not in data:
-            raise KeyError(f"'{json_type}' not found in JSON data")
-        return data[json_type]
 
 @load_json_bp.route('/students', methods=['GET', 'POST'])
 def students():

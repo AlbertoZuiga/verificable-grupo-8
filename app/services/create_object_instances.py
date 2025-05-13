@@ -1,6 +1,19 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import flash
+
 from app import kanvas_db
-from app.models import Classroom, User, Student, Teacher, Course, Requisite, CourseInstance, Semester, Section, Evaluation, EvaluationInstance, WeighingType, StudentSection, StudentEvaluationInstance
+from app.models import (
+    Classroom,
+    Course,
+    CourseInstance,
+    EvaluationInstance,
+    Requisite,
+    Section,
+    Student,
+    StudentEvaluationInstance,
+    StudentSection,
+    Teacher,
+    User,
+)
 from app.services.database_validations import exists_by_field, exists_by_two_fields
 from app.utils import json_constants as JC
 
@@ -18,7 +31,7 @@ def create_classroom_instances(classroom_objects)-> int:
 
 def create_student_instances(pairs)-> int:
     created_count = 0
-    student_validation_field = "user_id"
+    student_validation_field = "id"
     user_validation_field = "email"
     for user, student in pairs:
         if exists_by_field(model=Student, field_name=student_validation_field, value=student.id):
