@@ -89,7 +89,7 @@ def create_requisite_instances(requisite_data_list) -> int:
 
     return created_count
 
-def create_course_instance_objects(course_instances):
+def create_course_instance_objects(course_instances)-> int:
     created_count = 0
     for instance in course_instances:
         if exists_by_field(CourseInstance, "id", instance.id):
@@ -101,7 +101,7 @@ def create_course_instance_objects(course_instances):
 
     return created_count
 
-def create_section_instances(sections):
+def create_section_instances(sections)-> int:
     created_count = 0
     for section in sections:
         if exists_by_field(Section, "id", section.id):
@@ -111,21 +111,21 @@ def create_section_instances(sections):
         created_count += 1
     return created_count
 
-def create_evaluation_instances(evaluations):
+def create_evaluation_instances(evaluations)-> int:
     created_count = 0
     for evaluation in evaluations:
         kanvas_db.session.add(evaluation)
         created_count += 1
     return created_count
 
-def create_evaluation_instance_instances(instances):
+def create_evaluation_instance_instances(instances)-> int:
     created_count = 0
     for instance in instances:
         kanvas_db.session.add(instance)
         created_count += 1
     return created_count
 
-def create_student_section_instances(student_section_links):
+def create_student_section_instances(student_section_links)-> int:
     created_count = 0
     for link in student_section_links:
         if exists_by_two_fields(
@@ -139,7 +139,7 @@ def create_student_section_instances(student_section_links):
         created_count += 1
     return created_count
 
-def create_grade_instances(parsed_data):
+def create_grade_instances(parsed_data)-> int:
     created_count = 0
 
     for entry in parsed_data:
