@@ -12,19 +12,22 @@ class Section(kanvas_db.Model):
     __tablename__ = 'sections'
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)
-    
-    course_instance_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('course_instances.id'), nullable=False, index=True)
-    course_instance = kanvas_db.relationship('CourseInstance', backref='sections')
+
+    course_instance_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('course_instances.id', ondelete='CASCADE'), nullable=False, index=True)
+    course_instance = kanvas_db.relationship('CourseInstance', back_populates='sections')
     
     code = kanvas_db.Column(kanvas_db.Integer, nullable=False, index=True, unique=True)
     weighing_type = kanvas_db.Column(kanvas_db.Enum(WeighingType), nullable=False)
 
-    teacher_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('teachers.id'), nullable=False, index=True)
-    teacher = kanvas_db.relationship('Teacher', backref='sections')
-    
-    student_sections = kanvas_db.relationship('StudentSection', back_populates='section')
-    students = kanvas_db.relationship('Student', secondary='student_sections', viewonly=True, back_populates='sections')
+    teacher_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('teachers.id', ondelete='CASCADE'), nullable=False, index=True)
+    teacher = kanvas_db.relationship('Teacher', back_populates='sections')
 
+    students = kanvas_db.relationship('Student', secondary='student_sections', back_populates='sections')
+    student_associations = kanvas_db.relationship('StudentSection', back_populates='section', cascade='all, delete-orphan', passive_deletes=True)
+
+    assigned_time_blocks = kanvas_db.relationship('AssignedTimeBlock', back_populates='section', cascade='all, delete-orphan')
+    evaluations = kanvas_db.relationship('Evaluation', back_populates='section', cascade='all, delete-orphan')
+    
     def __repr__(self):
         return f"<Section id={self.id}, code={self.code}, weighing_type={self.weighing_type}>"
     

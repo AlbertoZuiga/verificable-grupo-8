@@ -50,8 +50,7 @@ def edit(id):
 @teacher_bp.route('/delete/<int:id>')
 def delete(id):
     teacher = Teacher.query.get_or_404(id)
-    user = teacher.user
+
     kanvas_db.session.delete(teacher)
-    kanvas_db.session.delete(user)
     kanvas_db.session.commit()
     return redirect(url_for('teacher.index'))
