@@ -41,7 +41,7 @@ cd verificable-grupo-8
 
 ### 4. **Configurar la base de datos**:
 
-- Asegúrate de MySQL instalado y configurado en tu dispositivo.
+- Asegúrate de tener MySQL instalado y configurado en tu dispositivo.
 - Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
   ```env
    DB_NAME=nombre_de_tu_base_de_datos
@@ -50,7 +50,7 @@ cd verificable-grupo-8
    DB_HOST=localhost           # Cambia si no estás usando localhost
    DEBUG=True                  # Cambia a False para desactivar el modo debug
   ```
-  Estas variables se importaran y utilizaran en el archivo `config.py` para configurar tu proyecto.
+  Estas variables se importarán y utilizarán en el archivo `config.py` para configurar tu proyecto.
 
 ### **5. Crear, migrar e insertar datos en la base de datos**:
 
@@ -120,8 +120,8 @@ Abre tu navegador y ve a [http://127.0.0.1:5000](http://127.0.0.1:5000).
 ## Aspectos de flujo a notar
 
 - Para agregar usuarios a una sección y asignarle un rol (profesor, ayudante, estudiante) en esa sección, se debe apretar el botón "ver usuarios", y luego abajo está la opción de agregar usuarios. Al agregar este usuario, se le podrá asignar un rol.
-- Muchas instancias de objetos no se pueden borrar por diseño de proyecto. Primero se deben borrar a manos los objetos relacionados
-- Para calificar a los estudiantes hay que ir a las instancias de las evaluaciones, entrar a una, y en esa página se podrá ver el listado de los estudiantes que corresponden a la sección de la evaluación. En ese mismo listado se permite calificar.
+- Muchas instancias de objetos no se pueden borrar por diseño de proyecto. Primero se deben borrar manualmente los objetos relacionados.
+- Para calificar a los estudiantes, hay que ir a las instancias de las evaluaciones, entrar a una, y en esa página se podrá ver el listado de los estudiantes que corresponden a la sección de la evaluación. En ese mismo listado se permite calificar.
 
 ## 🗂 Estructura del Proyecto
 
@@ -145,28 +145,45 @@ verificable-grupo-8/
 │   │   └── setup.py
 │   ├── models/                # Modelos de SQLAlchemy
 │   │   ├── __init__.py
+│   │   ├── assigned_time_block.py
+│   │   ├── classroom.py
+│   │   ├── course.py
 │   │   ├── course_grade.py
 │   │   ├── course_instance.py
-│   │   ├── course.py
-│   │   ├── evaluation_instance.py
 │   │   ├── evaluation.py
+│   │   ├── evaluation_instance.py
+│   │   ├── generate_schedule.py
 │   │   ├── requisite.py
 │   │   ├── section.py
-│   │   ├── user_evaluation_instance.py
+│   │   ├── student.py
+│   │   ├── student_evaluation_instance.py
 │   │   ├── student_section.py
+│   │   ├── teacher.py
+│   │   ├── time_block.py
 │   │   └── user.py
 │   ├── routes/                # Endpoints de la aplicación
 │   │   ├── __init__.py
 │   │   ├── auth_routes.py
 │   │   ├── course_instance_routes.py
 │   │   ├── course_routes.py
-│   │   └── evaluation_instance_routes.py
+│   │   ├── evaluation_instance_routes.py
 │   │   ├── evaluation_routes.py
+│   │   ├── load_json_routes.py
 │   │   ├── main_routes.py
 │   │   ├── requisite_routes.py
 │   │   ├── section_routes.py
-│   │   ├── user_routes.py
-│   │   └── student_section_routes.py
+│   │   ├── student_routes.py
+│   │   ├── student_section_routes.py
+│   │   ├── teacher_routes.py
+│   │   └── user_routes.py
+│   ├── services/              # Lógica de negocio y validaciones
+│   │   ├── __init__.py
+│   │   ├── course_service.py
+│   │   ├── evaluation_instance_service.py
+│   │   ├── schedule_generator.py
+│   │   ├── section_service.py
+│   │   ├── student_section_service.py
+│   │   └── validations.py
 │   ├── static/                # Archivos estáticos (CSS, JS, imágenes)
 │   └── templates/             # Plantillas HTML con Jinja2
 │       ├── base.html
@@ -175,10 +192,13 @@ verificable-grupo-8/
 │       ├── courses/
 │       ├── evaluation_instances/
 │       ├── evaluations/
+│       ├── load_json/
 │       ├── main/
 │       ├── partials/
 │       ├── sections/
 │       ├── student_sections/
+│       ├── students/
+│       ├── teachers/
 │       └── users/
 └──
 ```
@@ -211,6 +231,10 @@ verificable-grupo-8/
 
 - Crear instancias de evaluaciones (e.g., tareas, pruebas).
 - Calificar a los estudiantes en cada instancia.
+
+### Gestión de Horarios
+
+- Asignar bloques de tiempo a secciones y aulas.
 
 ---
 
