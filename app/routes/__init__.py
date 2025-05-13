@@ -11,6 +11,7 @@ from app.routes.teacher_routes import teacher_bp
 from app.routes.student_routes import student_bp
 from app.routes.student_section_routes import student_section_bp
 from app.routes.load_json_routes import load_json_bp
+from app.routes.classroom_routes import classroom_bp
 
 blueprints = [
     main_bp,
@@ -25,5 +26,6 @@ blueprints = [
     student_section_bp,
     teacher_bp,
     student_bp,
-    load_json_bp
+    load_json_bp,
+    classroom_bp
 ]

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %} Salas {% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="mb-4 text-primary">Lista de Salas</h1>
+
+  {% if classrooms %}
+    <ul class="list-group">
+      {% for classroom in classrooms %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <strong class="text-dark">{{ classroom.name }}</strong>
+          <div>
+            <a href="{{ url_for('classroom.show', id=classroom.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver sala {{ classroom.name }}">Ver</a>
+            <a href="{{ url_for('classroom.edit', id=classroom.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar sala {{ classroom.name }}">Editar</a>
+            <a href="{{ url_for('classroom.delete', id=classroom.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar sala {{ classroom.name }}">Eliminar</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="alert alert-warning">No hay salas registradas.</p>
+  {% endif %}
+
+  <a href="{{ url_for('classroom.create') }}" class="btn btn-success mt-4">➕ Crear nueva sala</a>
+</div>
+{% endblock %}

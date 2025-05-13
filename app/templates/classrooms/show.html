@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %} Sala: {{ classroom.name }} {% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4 text-primary">🏫 Detalles de la Sala</h1>
+
+  <div class="card shadow-lg border-0 rounded-3">
+    <div class="card-body">
+      <h5 class="card-title text-dark">
+        <strong>Nombre:</strong> {{ classroom.name }}
+      </h5>
+      <p class="card-text text-muted mb-1">
+        <strong>Capacidad:</strong> {{ classroom.capacity }}
+      </p>
+
+      <div class="mt-4 d-flex gap-2">
+        <a href="{{ url_for('classroom.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
+        <a href="{{ url_for('classroom.edit', id=classroom.id) }}" class="btn btn-warning">✏ Editar</a>
+        <a href="{{ url_for('classroom.delete', id=classroom.id) }}" class="btn btn-danger">🗑 Eliminar</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
