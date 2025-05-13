@@ -51,8 +51,7 @@ def edit(id):
 @student_bp.route('/delete/<int:id>')
 def delete(id):
     student = Student.query.get_or_404(id)
-    user = student.user
+
     kanvas_db.session.delete(student)
-    kanvas_db.session.delete(user)
     kanvas_db.session.commit()
     return redirect(url_for('student.index'))

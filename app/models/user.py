@@ -11,8 +11,8 @@ class User(UserMixin, kanvas_db.Model):
     first_name = kanvas_db.Column(kanvas_db.String(100), nullable=False)
     last_name = kanvas_db.Column(kanvas_db.String(100), nullable=False)
 
-    student = kanvas_db.relationship("Student", back_populates="user", uselist=False)
-    teacher = kanvas_db.relationship("Teacher", back_populates="user", uselist=False)
+    student = kanvas_db.relationship("Student", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    teacher = kanvas_db.relationship("Teacher", back_populates="user", uselist=False, cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<User id={self.id}, name={self.first_name} {self.last_name}, email={self.email}>"

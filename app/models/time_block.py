@@ -1,12 +1,14 @@
-from app import kanvas_db as db
+from app import kanvas_db
 
-class TimeBlock(db.Model):
+class TimeBlock(kanvas_db.Model):
     __tablename__ = 'time_blocks'
 
-    id = db.Column(db.Integer, primary_key=True)
-    start_time = db.Column(db.Time, nullable=False)
-    stop_time = db.Column(db.Time, nullable=False)
-    weekday = db.Column(db.String(10), nullable=False)  # e.g. 'Monday'
+    id = kanvas_db.Column(kanvas_db.Integer, primary_key=True)
+    start_time = kanvas_db.Column(kanvas_db.Time, nullable=False)
+    stop_time = kanvas_db.Column(kanvas_db.Time, nullable=False)
+    weekday = kanvas_db.Column(kanvas_db.String(10), nullable=False)
+
+    assigned_time_blocks = kanvas_db.relationship('AssignedTimeBlock', back_populates='time_block', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<TimeBlock {self.weekday} {self.start_time}-{self.stop_time}>"

@@ -47,5 +47,5 @@ def delete(id):
     classroom = Classroom.query.get_or_404(id)
     kanvas_db.session.delete(classroom)
     kanvas_db.session.commit()
-    flash('Sala eliminada exitosamente', 'warning')
+    flash('Sala eliminada exitosamente', 'success')
     return redirect(url_for('classroom.index'))
