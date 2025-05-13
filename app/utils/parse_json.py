@@ -1,5 +1,5 @@
 import json
-from app.models import Classroom, User, Student
+from app.models import Classroom, User, Student, Teacher, Course
 from app.utils import json_constants as JC
 
 def parse_classroom_json(json_data):
@@ -43,3 +43,57 @@ def parse_students_json(json_data):
         result.append((user, student))
 
     return result
+
+def parse_teachers_json(json_data):
+    result = []
+    data = json.loads(json_data)
+    teacher_list = data[JC.TEACHERS]
+
+    for item in teacher_list:
+        name_parts = item[JC.NAME].split(" ")
+        first_name = name_parts[0]
+        last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+
+        user = User(
+            first_name=first_name,
+            last_name=last_name,
+            email=item[JC.EMAIL]
+        )
+        user.set_password(f"password_{item[JC.NAME]}")
+
+        teacher = Teacher(
+            id=item[JC.ID],
+            user=user
+        )
+
+        result.append((user, teacher))
+
+    return result
+
+def parse_courses_json(json_data):
+    data = json.loads(json_data)
+    course_list = data[JC.COURSES]
+
+    courses = []
+    requisite_relations = []
+
+    for item in course_list:
+        course = Course(
+            id=item[JC.ID],
+            code=item[JC.CODE],
+            title=item[JC.DESCRIPTION],
+            credits=item[JC.CREDITS],
+        )
+        courses.append(course)
+
+        # Store requisite links (by course code)
+        for req_code in item.get(JC.REQUISITES, []):
+            requisite_relations.append({
+                JC.MAIN_COURSE_CODE: item[JC.CODE],
+                JC.REQUISITE_CODE: req_code
+            })
+
+    return {
+        JC.COURSES: courses,
+        JC.REQUISITES: requisite_relations
+    }
