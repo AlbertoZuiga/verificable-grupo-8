@@ -22,6 +22,7 @@ def filter_existing_by_two_fields(model, field_1: str, field_2: str, objects) ->
         )
     ]
 
+# Created to handle grades, which is a special case
 def filter_grades(parsed_data: list) -> list:
     filtered_grades = []
 

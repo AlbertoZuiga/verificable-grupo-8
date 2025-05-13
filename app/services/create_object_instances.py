@@ -105,7 +105,6 @@ def create_student_section_instances(student_section_links) -> int:
         created_count += 1
     return created_count
 
-# Created to handle grades, which is a special case
 def create_grade_instances(validated_entries) -> int:
     created_count = 0
     for entry in validated_entries:

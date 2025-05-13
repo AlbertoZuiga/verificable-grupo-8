@@ -210,7 +210,6 @@ def course_instances():
 
     return render_template('load_json/course_instances.html')
 
-
 @load_json_bp.route('/sections', methods=['GET', 'POST'])
 def sections():
     if request.method == 'POST':
@@ -231,7 +230,7 @@ def sections():
                 count_sections = create_section_instances(filtered_sections)
                 count_evaluations = create_evaluation_instances(parsed_evaluations)
                 count_instances = create_evaluation_instance_instances(parsed_instances)
-
+                
                 kanvas_db.session.commit()
 
                 flash_successful_load(count_sections, JC.SECTIONS_LABEL)
@@ -246,10 +245,6 @@ def sections():
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/sections.html')
-
-from app.models import StudentSection
-from app.services.database_validations import filter_existing_by_two_fields
-from app.utils.flash_messages import flash_successful_load
 
 @load_json_bp.route('/student_sections', methods=['GET', 'POST'])
 def student_sections():
