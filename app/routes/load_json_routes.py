@@ -154,7 +154,6 @@ def course_instances():
 
     return render_template('load_json/course_instances.html')
 
-
 @load_json_bp.route('/sections', methods=['GET', 'POST'])
 def sections():
     if request.method == 'POST':
@@ -170,6 +169,7 @@ def sections():
                 count_evaluations = create_evaluation_instances(parsed_evaluations)
                 count_instances = create_evaluation_instance_instances(parsed_instances)
 
+                kanvas_db.session.expunge_all()
                 kanvas_db.session.commit()
 
                 flash(f"{count_sections} sections, {count_evaluations} evaluations, and {count_instances} evaluation instances loaded successfully.", "success")
@@ -206,7 +206,6 @@ def student_sections():
 
     return render_template('load_json/student_sections.html')
 
-
 @load_json_bp.route('/grades', methods=['GET', 'POST'])
 def grades():
     if request.method == 'POST':
@@ -221,6 +220,7 @@ def grades():
                 count = create_grade_instances(grade_objects)
 
                 kanvas_db.session.commit()
+                
                 flash(f"{count} grades successfully assigned.", "success")
                 return redirect(url_for('load_json.index'))
 

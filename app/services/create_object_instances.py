@@ -170,13 +170,17 @@ def create_grade_instances(parsed_data)-> int:
             flash(f"No EvaluationInstance found for topic ID {topic_id} and index {instance_index}. Skipping.", "warning")
             continue
 
-        kanvas_db.session.add(
-            StudentEvaluationInstance(
-                evaluation_instance_id=eval_instance.id,
-                student_id=student_id,
-                grade=grade
-            )
+
+        student_evaluation_instance = StudentEvaluationInstance(
+            evaluation_instance_id=eval_instance.id,
+            student_id=student_id,
+            grade=grade
         )
+        if exists_by_two_fields(StudentEvaluationInstance, "evaluation_instance_id", eval_instance.id, "student_id", student_id):
+            flash(f"Grade for student {student_id} in evaluation instance {eval_instance.id} already exists. Skipping.", "warning")
+            continue
+
+        kanvas_db.session.add(student_evaluation_instance)
         created_count += 1
 
     return created_count
