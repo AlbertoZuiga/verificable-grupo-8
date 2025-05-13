@@ -16,10 +16,11 @@ from app.models import (
     WeighingType,
     StudentSection,
 )
-from app.services.create_object_instances import create_classroom_instances, create_student_instances, create_teacher_instances, create_course_instances, create_requisite_instances, create_course_instance_objects
+from app.services.create_object_instances import create_classroom_instances, create_student_instances, create_teacher_instances, create_course_instances, create_requisite_instances, create_course_instance_objects, create_section_instances, create_evaluation_instances, create_evaluation_instance_instances, create_student_section_instances, create_grade_instances
+
 from app.services.student_section_service import _add_student_to_section
 from app.utils import json_constants as JC
-from app.utils.parse_json import parse_classroom_json, parse_students_json, parse_teachers_json, parse_courses_json, parse_course_instances_json
+from app.utils.parse_json import parse_classroom_json, parse_students_json, parse_teachers_json, parse_courses_json, parse_course_instances_json, parse_sections_json, parse_student_sections_json, parse_grades_json
 
 load_json_bp = Blueprint('load_json', __name__, url_prefix='/load_json')
 
@@ -35,42 +36,6 @@ def _parse_json_file(json_file, json_type):
         if json_type not in data:
             raise KeyError(f"'{json_type}' not found in JSON data")
         return data[json_type]
-
-def _process_course_instance(data, year, semester):
-    instance = CourseInstance.query.filter_by(id=data['id']).first()
-    if not instance:
-        instance = CourseInstance(
-            id=data['id'],
-            course_id=data['curso_id'],
-            year=year,
-            semester=semester
-        )
-    else:
-        instance.course_id = data['curso_id']
-        instance.year = year
-        instance.semester = semester
-
-    kanvas_db.session.add(instance)
-
-def _process_section(data):
-    section = Section.query.filter_by(id=data['id']).first()
-
-    if not section:
-        section = Section(
-            id=data['id'],
-            code=data['id'],  # usando el mismo id como código (ajustar si tienes otro criterio)
-            course_instance_id=data['instancia_curso'],
-            teacher_id=data['profesor_id'],
-            weighing_type=WeighingType.PERCENTAGE  # por ahora usar porcentaje por defecto
-        )
-    else:
-        section.code = data['id']
-        section.course_instance_id = data['instancia_curso']
-        section.teacher_id = data['profesor_id']
-        section.weighing_type = WeighingType.PERCENTAGE
-
-    kanvas_db.session.add(section)
-
 
 @load_json_bp.route('/students', methods=['GET', 'POST'])
 def students():
@@ -197,53 +162,79 @@ def course_instances():
 
     return render_template('load_json/course_instances.html')
 
+
 @load_json_bp.route('/sections', methods=['GET', 'POST'])
 def sections():
     if request.method == 'POST':
-        json_file = request.files['file']
-        json_type = request.form['json_type']
+        json_file = request.files.get('file')
+        json_type = request.form.get('json_type')
 
-        if json_file and json_file.filename.endswith('.json'):
+        if json_file and json_file.filename.endswith('.json') and json_type == JC.SECTIONS:
             try:
-                sections_data = _parse_json_file(json_file, json_type)
-                for section_data in sections_data:
-                    _process_section(section_data)
+                file_content = json_file.read().decode('utf-8')
+                parsed_sections, parsed_evaluations, parsed_instances = parse_sections_json(file_content)
+
+                count_sections = create_section_instances(parsed_sections)
+                count_evaluations = create_evaluation_instances(parsed_evaluations)
+                count_instances = create_evaluation_instance_instances(parsed_instances)
+
                 kanvas_db.session.commit()
+
+                flash(f"{count_sections} sections, {count_evaluations} evaluations, and {count_instances} evaluation instances loaded successfully.", "success")
+                return redirect(url_for('load_json.index'))
+
             except Exception as e:
                 kanvas_db.session.rollback()
-                return f"Error al cargar secciones: {str(e)}", 400
+                flash(f"Error loading sections: {str(e)}", "danger")
+                return f"Error: {str(e)}", 400
 
-            flash("Secciones cargadas correctamente!", "success")
-            return redirect(url_for('load_json.index'))
     return render_template('load_json/sections.html')
 
 @load_json_bp.route('/student_sections', methods=['GET', 'POST'])
 def student_sections():
     if request.method == 'POST':
-        json_file = request.files['file']
-        json_type = request.form['json_type']
+        json_file = request.files.get('file')
+        json_type = request.form.get('json_type')
 
-        if json_file and json_file.filename.endswith('.json'):
+        if json_file and json_file.filename.endswith('.json') and json_type == JC.STUDENT_SECTIONS:
             try:
-                student_section_data = _parse_json_file(json_file, json_type)
+                file_content = json_file.read().decode('utf-8')
+                parsed_links = parse_student_sections_json(file_content)
 
-                total_students_added = 0
-                for entry in student_section_data:
-                    section_id = entry.get('seccion_id')
-                    student_ids = entry.get('alumno_id', [])
-
-                    if not section_id or not student_ids:
-                        continue
-
-                    added_count = _add_student_to_section(section_id, student_ids)
-                    total_students_added += added_count
+                created_count = create_student_section_instances(parsed_links)
 
                 kanvas_db.session.commit()
+                flash(f"{created_count} student-section assignments loaded successfully!", "success")
+                return redirect(url_for('load_json.index'))
+
             except Exception as e:
                 kanvas_db.session.rollback()
-                return f"Error al cargar JSON: {str(e)}", 400
-
-            flash(f"{total_students_added} alumnos asignados a secciones correctamente!", "success")
-            return redirect(url_for('load_json.index'))
+                flash(f"Error loading student-section assignments: {str(e)}", "danger")
+                return f"Error: {str(e)}", 400
 
     return render_template('load_json/student_sections.html')
+
+
+@load_json_bp.route('/grades', methods=['GET', 'POST'])
+def grades():
+    if request.method == 'POST':
+        json_file = request.files.get('file')
+        json_type = request.form.get('json_type')
+
+        if json_file and json_file.filename.endswith('.json') and json_type == JC.GRADES:
+            try:
+                file_content = json_file.read().decode('utf-8')
+                grade_objects = parse_grades_json(file_content)
+
+                count = create_grade_instances(grade_objects)
+
+                kanvas_db.session.commit()
+                flash(f"{count} grades successfully assigned.", "success")
+                return redirect(url_for('load_json.index'))
+
+            except Exception as e:
+                kanvas_db.session.rollback()
+                flash(f"Error loading grades: {str(e)}", "danger")
+                return f"Error: {str(e)}", 400
+
+    return render_template('load_json/grades.html')

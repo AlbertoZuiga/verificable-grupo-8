@@ -9,7 +9,7 @@ GRADES = "notas"
 STUDENT_SECTIONS = "alumnos_seccion"
 YEAR = "año"
 SEMESTER = "semestre"
-    
+
 # Common field keys
 ID = "id"
 NAME = "nombre"
@@ -33,3 +33,13 @@ SECTION_ID = "seccion_id"
 # Other constants for utility
 MAIN_COURSE_CODE = "main_course_code"
 REQUISITE_CODE = "prerequisite_code"
+
+# Evaluation-specific keys
+EVALUATION_TYPE = "tipo"
+TOPIC_COMBINATIONS = "combinacion_topicos"
+TOPICS = "topicos"
+TOPIC_WEIGHT = "valor"
+TOPIC_COUNT = "cantidad"
+TOPIC_TYPE = "tipo"
+TOPIC_VALUES = "valores"
+TOPIC_MANDATORY = "obligatorias"

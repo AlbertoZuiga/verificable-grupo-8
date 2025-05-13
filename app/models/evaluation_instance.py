@@ -5,6 +5,7 @@ class EvaluationInstance(kanvas_db.Model):
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)
     
+    index_in_evaluation = kanvas_db.Column(kanvas_db.Integer, nullable=False)
     evaluation_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('evaluations.id'), nullable=False, index=True)
     evaluation = kanvas_db.relationship('Evaluation', backref='instances')
     

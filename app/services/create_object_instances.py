@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from app import kanvas_db
-from app.models import Classroom, User, Student, Teacher, Course, Requisite, CourseInstance, Semester
+from app.models import Classroom, User, Student, Teacher, Course, Requisite, CourseInstance, Semester, Section, Evaluation, EvaluationInstance, WeighingType, StudentSection, StudentEvaluationInstance
 from app.services.database_validations import exists_by_field, exists_by_two_fields
 from app.utils import json_constants as JC
 
@@ -45,7 +45,7 @@ def create_teacher_instances(pairs) -> int:
             flash(f"Teacher with user_id {teacher.user_id} already exists. Skipping.", "warning")
             continue
 
-        if exists_by_field(mode=User, field_name=user_validation_field, value=user.email):
+        if exists_by_field(model=User, field_name=user_validation_field, value=user.email):
             flash(f"User with email {user.email} already exists. Skipping teacher creation.", "warning")
             continue
 
@@ -97,6 +97,73 @@ def create_course_instance_objects(course_instances):
             continue
 
         kanvas_db.session.add(instance)
+        created_count += 1
+
+    return created_count
+
+def create_section_instances(sections):
+    created_count = 0
+    for section in sections:
+        if exists_by_field(Section, "id", section.id):
+            flash(f"Section with ID {section.id} already exists. Skipping.", "warning")
+            continue
+        kanvas_db.session.add(section)
+        created_count += 1
+    return created_count
+
+def create_evaluation_instances(evaluations):
+    created_count = 0
+    for evaluation in evaluations:
+        kanvas_db.session.add(evaluation)
+        created_count += 1
+    return created_count
+
+def create_evaluation_instance_instances(instances):
+    created_count = 0
+    for instance in instances:
+        kanvas_db.session.add(instance)
+        created_count += 1
+    return created_count
+
+def create_student_section_instances(student_section_links):
+    created_count = 0
+    for link in student_section_links:
+        if exists_by_two_fields(
+            StudentSection,
+            "section_id", link.section_id,
+            "student_id", link.student_id
+        ):
+            flash(f"Student {link.student_id} already assigned to section {link.section_id}. Skipping.", "warning")
+            continue
+        kanvas_db.session.add(link)
+        created_count += 1
+    return created_count
+
+def create_grade_instances(parsed_data):
+    created_count = 0
+
+    for entry in parsed_data:
+        student_id = entry["student_id"]
+        topic_id = entry["topic_id"]
+        instance_index = entry["instance_index"]
+        grade = entry["grade"]
+
+        eval_instance = EvaluationInstance.query.filter_by(
+            evaluation_id=topic_id,
+            index_in_evaluation=instance_index
+        ).first()
+
+        if not eval_instance:
+            flash(f"No EvaluationInstance found for topic ID {topic_id} and index {instance_index}. Skipping.", "warning")
+            continue
+
+        kanvas_db.session.add(
+            StudentEvaluationInstance(
+                evaluation_instance_id=eval_instance.id,
+                student_id=student_id,
+                grade=grade
+            )
+        )
         created_count += 1
 
     return created_count
