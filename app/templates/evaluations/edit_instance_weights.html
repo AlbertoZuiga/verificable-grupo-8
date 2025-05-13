@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %} Editar pesos de instancias {% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Editar pesos de instancias</h2>
+    <form method="post">
+        {% for instance in evaluation.instances %}
+            <div class="row mb-3 align-items-center">
+                <label for="instance_{{ instance.id }}" class="col-sm-2 col-form-label">{{ instance.title }}:</label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <input type="number" name="instance_{{ instance.id }}" id="instance_{{ instance.id }}" value="{{ instance.instance_weighing }}" step="0.01" class="form-control" required>
+                        <span class="input-group-text">
+                            {% if evaluation.weighing_system == WeighingType.WEIGHT %}
+                                /{{ evaluation.total_weighing }}
+                            {% else %}
+                                %
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="d-flex gap-2 mt-4">
+            <a href="{{ url_for('evaluation.show', id=evaluation.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver evaluación {{ evaluation.title }}"> Cancelar </a>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

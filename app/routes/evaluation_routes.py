@@ -16,6 +16,41 @@ def show(id):
     print(evaluation)
     return render_template('evaluations/show.html', evaluation=evaluation, WeighingType=WeighingType)
 
+@evaluation_bp.route('/<int:id>/edit_instance_weights', methods=['GET', 'POST'])
+def edit_instance_weights(id):
+    evaluation = Evaluation.query.get_or_404(id)
+
+    if request.method == 'POST':
+        weights = {}
+        try:
+            for instance in evaluation.instances:
+                key = f'instance_{instance.id}'
+                weights[instance.id] = float(request.form[key])
+        except (ValueError, KeyError) as e:
+            flash(f"Entrada inválida para los pesos: {e}", "danger")
+            return redirect(url_for('evaluation.edit_instance_weights', id=evaluation.id))
+
+        # Validación para evaluaciones con porcentajes
+        if evaluation.weighing_system == WeighingType.PERCENTAGE:
+            total = sum(weights.values())
+            if round(total, 2) != 100.0:
+                flash("La suma de los pesos de las instancias debe ser 100 para las evaluaciones ponderadas.", "danger")
+                return redirect(url_for('evaluation.edit_instance_weights', id=evaluation.id))
+
+        # Asignar pesos nuevos
+        for instance in evaluation.instances:
+            instance.instance_weighing = weights[instance.id]
+
+        try:
+            kanvas_db.session.commit()
+            flash("Pesos de instancias actualizados correctamente", "success")
+            return redirect(url_for('evaluation.show', id=evaluation.id))
+        except Exception as e:
+            kanvas_db.session.rollback()
+            flash(f"Error al guardar cambios: {e}", "danger")
+
+    return render_template('evaluations/edit_instance_weights.html', evaluation=evaluation, WeighingType=WeighingType)
+
 @evaluation_bp.route('/create', methods=['GET', 'POST'])
 def create():
     print(request.form)
