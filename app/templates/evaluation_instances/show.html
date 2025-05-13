@@ -37,20 +37,20 @@
           <div class="d-flex align-items-center gap-2">
             {% if student.id in student_grades %}
               {% set grade = student_grades[student.id] %}
-              <a href="{{ url_for('evaluation_instance.grade_user', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
+              <a href="{{ url_for('grades.assign_or_edit_grade', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
                 class="btn btn-sm {% if grade >= 4.0 %}btn-success{% else %}btn-danger{% endif %}">
                 {{ grade }} ✏️
               </a>
 
               <form method="post"
-                    action="{{ url_for('evaluation_instance.delete_grade', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
+                    action="{{ url_for('grades.delete_grade', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
                     onsubmit="return confirm('¿Estás seguro de que quieres eliminar la nota de {{ student.user.first_name }}?')">
                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar nota">
                       <i class="fas fa-trash-alt"></i>
                     </button>
               </form>
             {% else %}
-              <a href="{{ url_for('evaluation_instance.grade_user', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
+              <a href="{{ url_for('grades.assign_or_edit_grade', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
                 class="btn btn-sm btn-outline-primary">
                 Calificar
               </a>
@@ -62,7 +62,6 @@
   {% else %}
     <p>No hay estudiantes</p>
   {% endif %}
-
 </div>
 
 {% endblock %}

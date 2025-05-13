@@ -13,6 +13,9 @@ from app.routes.student_section_routes import student_section_bp
 from app.routes.load_json_routes import load_json_bp
 from app.routes.classroom_routes import classroom_bp
 from app.routes.schedule_routes import schedule_bp
+from app.routes.grade_routes import grade_bp
+
+
 
 blueprints = [
     main_bp,
@@ -29,5 +32,6 @@ blueprints = [
     student_bp,
     load_json_bp,
     classroom_bp,
-    schedule_bp
+    schedule_bp,
+    grade_bp
 ]
