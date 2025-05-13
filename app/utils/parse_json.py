@@ -1,5 +1,6 @@
 import json
-from app.models import Classroom, User, Student, Teacher, Course
+from flask import flash
+from app.models import Classroom, User, Student, Teacher, Course, Semester, CourseInstance
 from app.utils import json_constants as JC
 
 def parse_classroom_json(json_data):
@@ -97,3 +98,26 @@ def parse_courses_json(json_data):
         JC.COURSES: courses,
         JC.REQUISITES: requisite_relations
     }
+
+def parse_course_instances_json(json_data):
+    data = json.loads(json_data)
+    year = data[JC.YEAR]
+    semester_value = data[JC.SEMESTER]
+    
+    try:
+        semester_enum = Semester(semester_value)
+    except ValueError:
+        flash(f"Invalid semester value '{semester_value}'. No course instances parsed.", "danger")
+        return []
+
+    instances = []
+    for item in data[JC.COURSE_INSTANCES]:
+        instance = CourseInstance(
+            id=item[JC.ID],
+            course_id=item[JC.COURSE_ID],
+            year=year,
+            semester=semester_enum
+        )
+        instances.append(instance)
+
+    return instances

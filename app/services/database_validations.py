@@ -1,5 +1,4 @@
 def exists_by_field(model, field_name: str, value) -> bool:
-    print(f"[DEBUG] model: {model} ({type(model)}), field: {field_name}, value: {value}")
     return model.query.filter(getattr(model, field_name) == value).first() is not None
 
 def exists_by_two_fields(model, field_1: str, value_1, field_2: str, value_2) -> bool:

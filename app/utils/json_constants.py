@@ -2,14 +2,14 @@
 STUDENTS = "alumnos"
 TEACHERS = "profesores"
 COURSES = "cursos"
-INSTANCES = "instancias"
+COURSE_INSTANCES = "instancias"
 SECTIONS = "secciones"
 CLASSROOMS = "salas"
 GRADES = "notas"
 STUDENT_SECTIONS = "alumnos_seccion"
 YEAR = "año"
 SEMESTER = "semestre"
-
+    
 # Common field keys
 ID = "id"
 NAME = "nombre"

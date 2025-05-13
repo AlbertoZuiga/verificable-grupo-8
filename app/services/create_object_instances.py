@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from app import kanvas_db
-from app.models import Classroom, User, Student, Teacher, Course, Requisite
+from app.models import Classroom, User, Student, Teacher, Course, Requisite, CourseInstance, Semester
 from app.services.database_validations import exists_by_field, exists_by_two_fields
 from app.utils import json_constants as JC
 
@@ -85,6 +85,18 @@ def create_requisite_instances(requisite_data_list) -> int:
             continue
 
         kanvas_db.session.add(Requisite(course_id=main_course.id, course_requisite_id=requisite_course.id))
+        created_count += 1
+
+    return created_count
+
+def create_course_instance_objects(course_instances):
+    created_count = 0
+    for instance in course_instances:
+        if exists_by_field(CourseInstance, "id", instance.id):
+            flash(f"CourseInstance with ID {instance.id} already exists. Skipping.", "warning")
+            continue
+
+        kanvas_db.session.add(instance)
         created_count += 1
 
     return created_count

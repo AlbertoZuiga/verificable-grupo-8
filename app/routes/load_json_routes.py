@@ -16,10 +16,10 @@ from app.models import (
     WeighingType,
     StudentSection,
 )
-from app.services.create_object_instances import create_classroom_instances, create_student_instances, create_teacher_instances, create_course_instances, create_requisite_instances
+from app.services.create_object_instances import create_classroom_instances, create_student_instances, create_teacher_instances, create_course_instances, create_requisite_instances, create_course_instance_objects
 from app.services.student_section_service import _add_student_to_section
 from app.utils import json_constants as JC
-from app.utils.parse_json import parse_classroom_json, parse_students_json, parse_teachers_json, parse_courses_json
+from app.utils.parse_json import parse_classroom_json, parse_students_json, parse_teachers_json, parse_courses_json, parse_course_instances_json
 
 load_json_bp = Blueprint('load_json', __name__, url_prefix='/load_json')
 
@@ -35,53 +35,6 @@ def _parse_json_file(json_file, json_type):
         if json_type not in data:
             raise KeyError(f"'{json_type}' not found in JSON data")
         return data[json_type]
-
-def _process_user(student_data):
-    name_parts = student_data['nombre'].split(' ')
-    first_name = name_parts[0]
-    last_name = ' '.join(name_parts[1:]) if len(name_parts) > 1 else ''
-
-    user = User.query.filter_by(email=student_data['correo']).first()
-    if not user:
-        user = User(
-            first_name=first_name,
-            last_name=last_name,
-            email=student_data['correo']
-        )
-        user.set_password(f"password_{student_data['nombre']}")
-    else:
-        user.first_name = first_name
-        user.last_name = last_name
-
-    kanvas_db.session.add(user)
-    kanvas_db.session.flush()
-    return user
-
-def _process_course(course_data):
-    course = Course.query.filter_by(id=course_data['id']).first()
-
-    if not course:
-        course = Course(
-            id=course_data['id'],
-            code=course_data['codigo'],
-            title=course_data['descripcion'], 
-            credits=course_data['creditos']
-        )
-    else:
-        course.code = course_data['codigo']
-        course.title = course_data['descripcion'] 
-        course.credits = course_data['creditos']
-
-    kanvas_db.session.add(course)
-    kanvas_db.session.flush()
-    
-    Requisite.query.filter_by(course_id=course.id).delete()
-
-    for req_code in course_data.get('requisitos', []):
-        requisite_course = Course.query.filter_by(code=req_code).first()
-        if requisite_course:
-            req = Requisite(course_id=course.id, course_requisite_id=requisite_course.id)
-            kanvas_db.session.add(req)
 
 def _process_course_instance(data, year, semester):
     instance = CourseInstance.query.filter_by(id=data['id']).first()
@@ -222,25 +175,26 @@ def courses():
 @load_json_bp.route('/course_instances', methods=['GET', 'POST'])
 def course_instances():
     if request.method == 'POST':
-        json_file = request.files['file']
-        json_type = request.form['json_type']
+        
+        json_file = request.files.get('file')
+        json_type = request.form.get('json_type')
 
-        if json_file and json_file.filename.endswith('.json'):
+        if json_file and json_file.filename.endswith('.json') and json_type == JC.COURSE_INSTANCES:
             try:
-                data = _parse_json_file(json_file, json_type)
-                year = data["año"]
-                semester = Semester(data["semestre"])
+                file_content = json_file.read().decode('utf-8')
+                parsed_instances = parse_course_instances_json(file_content)
 
-                for inst_data in data["instancias"]:
-                    _process_course_instance(inst_data, year, semester)
+                created_count = create_course_instance_objects(parsed_instances)
 
                 kanvas_db.session.commit()
+                flash(f"{created_count} course instances loaded successfully!", "success")
+                return redirect(url_for('load_json.index'))
+
             except Exception as e:
                 kanvas_db.session.rollback()
-                return f"Error al cargar instancias de curso: {str(e)}", 400
+                flash(f"Error loading course instances: {str(e)}", "danger")
+                return f"Error: {str(e)}", 400
 
-            flash("Instancias de curso cargadas correctamente!", "success")
-            return redirect(url_for('load_json.index'))
     return render_template('load_json/course_instances.html')
 
 @load_json_bp.route('/sections', methods=['GET', 'POST'])
