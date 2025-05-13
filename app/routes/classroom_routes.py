@@ -1,16 +1,22 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for, flash
 from app.models.classroom import Classroom
 from app import kanvas_db
 
 classroom_bp = Blueprint('classroom', __name__)
 
-@classroom_bp.route('/classrooms', methods=['POST'])
+@classroom_bp.route('/classrooms/create', methods=['GET'])
+def create_form():
+    return render_template('classrooms/create.html')
+
+@classroom_bp.route('/classrooms/create', methods=['POST'])
 def create():
-    data = request.get_json()
-    new_classroom = Classroom(name=data['name'], capacity=data['capacity'])
+    name = request.form['name']
+    capacity = request.form['capacity']
+    new_classroom = Classroom(name=name, capacity=capacity)
     kanvas_db.session.add(new_classroom)
     kanvas_db.session.commit()
-    return render_template('classrooms/create.html')
+    flash('Sala creada exitosamente', 'success')
+    return redirect(url_for('classroom.index'))
 
 @classroom_bp.route('/classrooms', methods=['GET'])
 def index():
@@ -22,18 +28,24 @@ def show(id):
     classroom = Classroom.query.get_or_404(id)
     return render_template('classrooms/show.html', classroom=classroom)
 
-@classroom_bp.route('/classrooms/<int:id>', methods=['PUT'])
-def edit(id):
-    data = request.get_json()
+@classroom_bp.route('/classrooms/<int:id>/edit', methods=['GET'])
+def edit_form(id):
     classroom = Classroom.query.get_or_404(id)
-    classroom.name = data.get('name', classroom.name)
-    classroom.capacity = data.get('capacity', classroom.capacity)
-    kanvas_db.session.commit()
     return render_template('classrooms/edit.html', classroom=classroom)
 
-@classroom_bp.route('/classrooms/<int:id>', methods=['DELETE'])
+@classroom_bp.route('/classrooms/<int:id>/edit', methods=['POST'])
+def edit(id):
+    classroom = Classroom.query.get_or_404(id)
+    classroom.name = request.form['name']
+    classroom.capacity = request.form['capacity']
+    kanvas_db.session.commit()
+    flash('Sala actualizada exitosamente', 'info')
+    return redirect(url_for('classroom.index'))
+
+@classroom_bp.route('/classrooms/<int:id>/delete', methods=['POST'])
 def delete(id):
     classroom = Classroom.query.get_or_404(id)
     kanvas_db.session.delete(classroom)
     kanvas_db.session.commit()
+    flash('Sala eliminada exitosamente', 'warning')
     return redirect(url_for('classroom.index'))
