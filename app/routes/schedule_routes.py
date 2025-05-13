@@ -1,20 +1,27 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+import io
+
+import pandas as pd
+from flask import (
+    Blueprint, render_template, request, redirect,
+    url_for, flash, send_file
+)
+
 from app import kanvas_db
 from app.models import AssignedTimeBlock, TimeBlock
 from app.services import generate_schedule, delete_assigned_time_blocks
 
 schedule_bp = Blueprint('schedule', __name__, url_prefix='/schedule')
 
-@schedule_bp.route('/')
-def index():
-    clean_schedule = {}
+
+def get_schedule():
     schedule = (
         kanvas_db.session.query(AssignedTimeBlock)
         .join(TimeBlock, TimeBlock.id == AssignedTimeBlock.time_block_id)
         .order_by(TimeBlock.start_time)
         .all()
     )
-    
+
+    clean_schedule = {}
     for entry in schedule:
         if entry.section_id not in clean_schedule:
             clean_schedule[entry.section_id] = {
@@ -27,10 +34,18 @@ def index():
                 'stop_time': entry.time_block.stop_time.strftime('%H:%M')
             }
         else:
-            clean_schedule[entry.section_id]['stop_time'] = entry.time_block.stop_time.strftime('%H:%M')
-        print(f"Section {entry.section_id} to {clean_schedule[entry.section_id]['stop_time']}")
+            clean_schedule[entry.section_id]['stop_time'] = (
+                entry.time_block.stop_time.strftime('%H:%M')
+            )
 
-    return render_template('schedule/index.html', schedule=clean_schedule)
+    return clean_schedule
+
+
+@schedule_bp.route('/')
+def index():
+    schedule = get_schedule()
+    return render_template('schedule/index.html', schedule=schedule)
+
 
 @schedule_bp.route('/generate')
 def generate():
@@ -42,10 +57,24 @@ def generate():
         flash(f'Error generando horario: {str(e)}', 'danger')
     return redirect(url_for('schedule.index'))
 
+
 @schedule_bp.route('/download')
 def download():
     try:
-        flash('Horario descargado exitosamente!.', 'success')
+        schedule = get_schedule()
+        df = pd.DataFrame(schedule.values())
+
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False)
+
+        output.seek(0)
+        return send_file(
+            output,
+            download_name='horario.xlsx',
+            as_attachment=True,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
     except Exception as e:
         flash(f'Error descargando horario: {str(e)}', 'danger')
-    return redirect(url_for('schedule.index'))
+        return redirect(url_for('schedule.index'))
