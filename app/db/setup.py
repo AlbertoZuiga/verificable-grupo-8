@@ -8,7 +8,6 @@ def setup():
     with app.app_context():
         create_database()
         migrate_database()
-        seed_database()
 
 if __name__ == "__main__":
     setup()
