@@ -17,7 +17,7 @@
           <div>
             <a href="{{ url_for('user.show', id=user.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver usuario {{ user.email }}"> Ver </a>
             <a href="{{ url_for('user.edit', id=user.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar usuario {{ user.email }}"> Editar </a>
-            <a href="{{ url_for('user.delete', id=user.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar usuario {{ user.email }}"> Eliminar </a>
+            <a href="{{ url_for('user.delete', id=user.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar usuario {{ user.email }}" onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?');"> Eliminar </a>
           </div>
         </li>
       {% endfor %}

@@ -14,12 +14,8 @@
           <div>
             <a href="{{ url_for('classroom.show', id=classroom.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver sala {{ classroom.name }}">Ver</a>
             <a href="{{ url_for('classroom.edit', id=classroom.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar sala {{ classroom.name }}">Editar</a>
-            <form method="POST" action="{{ url_for('classroom.delete', id=classroom.id) }}" style="display:inline;">
-              <button type="submit" class="btn btn-sm btn-danger"
-                      aria-label="Eliminar sala {{ classroom.name }}"
-                      onclick="return confirm('¿Estás seguro que deseas eliminar esta sala?');">
-                Eliminar
-              </button>
+            <form method="POST" action="{{ url_for('classroom.delete', id=classroom.id) }}" class="d-inline ms-1" onsubmit="return confirm('¿Estás seguro que deseas eliminar esta sala?');">
+              <button type="submit" class="btn btn-sm btn-danger" aria-label="Eliminar sala {{ classroom.name }}">Eliminar</button>
             </form>
           </div>          
         </li>

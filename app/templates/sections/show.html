@@ -13,17 +13,11 @@
     <p><strong>Tipo de Ponderación:</strong> {{ section.weighing_type }}</p>
 
     <div class="mt-4 d-flex justify-content-between">
-      <a href="{{ url_for('section.index') }}" class="btn btn-secondary">
-        ⬅ Volver al listado
-      </a>
-      <a href="{{ url_for('student_section.index', section_id=section.id) }}" class="btn btn-info">
-        👥 Ver Alumnos
-      </a>
+      <a href="{{ url_for('section.index') }}" class="btn btn-secondary"> ⬅ Volver al listado </a>
+      <a href="{{ url_for('student_section.index', section_id=section.id) }}" class="btn btn-info"> 👥 Ver Alumnos </a>
       <div class="btn-group" role="group">
-        <a href="{{ url_for('section.edit', id=section.id) }}" class="btn btn-warning text-dark">
-          ✏ Editar
-        </a>
-        <form action="{{ url_for('section.delete', id=section.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta sección?');">
+        <a href="{{ url_for('section.edit', id=section.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
+        <form action="{{ url_for('section.delete', id=section.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta sección?');">
           <button type="submit" class="btn btn-danger">🗑 Eliminar</button>
         </form>
       </div>

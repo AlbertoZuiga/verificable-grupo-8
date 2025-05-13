@@ -14,14 +14,10 @@
       <p class="lead"><strong>Semestre:</strong> {{ course_instance.semester }} </p>
 
       <div class="mt-4 d-flex justify-content-between">
-        <a href="{{ url_for('course_instance.index') }}" class="btn btn-secondary">
-          ⬅ Volver al listado
-        </a>
+        <a href="{{ url_for('course_instance.index') }}" class="btn btn-secondary"> ⬅ Volver al listado </a>
         <div class="btn-group" role="group">
-          <a href="{{ url_for('course_instance.edit', id=course_instance.id) }}" class="btn btn-warning text-dark">
-            ✏ Editar
-          </a>
-            <form action="{{ url_for('course_instance.delete', id=course_instance.id) }}" method="POST" style="display:inline;">
+          <a href="{{ url_for('course_instance.edit', id=course_instance.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
+            <form action="{{ url_for('course_instance.delete', id=course_instance.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro que deseas eliminar esta instancia de curso?');">
               <button type="submit" class="btn btn-danger">🗑 Eliminar</button>
             </form>
         </div>
