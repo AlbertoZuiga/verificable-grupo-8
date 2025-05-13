@@ -33,26 +33,36 @@
     <ul class="list-group">
       {% for student in students %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
-          <div>{{ student.user.first_name }} {{ student.user.last_name }} {{student.id}}</div>
-          {% if student.id in student_grades %}
-            {% if student_grades[student.id] >= 4.0 %}
-              <span class="badge bg-success fs-6">
-                {{ student_grades[student.id] }}
-              </span>
+          <div>{{ student.user.first_name }} {{ student.user.last_name }} {{ student.id }}</div>
+          <div class="d-flex align-items-center gap-2">
+            {% if student.id in student_grades %}
+              {% set grade = student_grades[student.id] %}
+              <a href="{{ url_for('evaluation_instance.grade_user', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
+                class="btn btn-sm {% if grade >= 4.0 %}btn-success{% else %}btn-danger{% endif %}">
+                {{ grade }} ✏️
+              </a>
+
+              <form method="post"
+                    action="{{ url_for('evaluation_instance.delete_grade', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
+                    onsubmit="return confirm('¿Estás seguro de que quieres eliminar la nota de {{ student.user.first_name }}?')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar nota">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+              </form>
             {% else %}
-              <span class="badge bg-danger fs-6">
-                {{ student_grades[student.id] }}
-              </span>
+              <a href="{{ url_for('evaluation_instance.grade_user', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
+                class="btn btn-sm btn-outline-primary">
+                Calificar
+              </a>
             {% endif %}
-          {% else %}
-            <a href="{{ url_for('evaluation_instance.grade_user', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}" class="btn btn-sm btn-outline-primary ms-2">Calificar</a>
-          {% endif %}
+          </div>
         </li>
       {% endfor %}
     </ul>
   {% else %}
     <p>No hay estudiantes</p>
   {% endif %}
+
 </div>
 
 {% endblock %}

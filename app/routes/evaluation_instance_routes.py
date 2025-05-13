@@ -131,3 +131,19 @@ def grade_user(evaluation_instance_id, student_id):
         student=student,
         current_grade=current_grade
     )
+
+@evaluation_instance_bp.route('/<int:evaluation_instance_id>/delete_grade/<int:student_id>', methods=['POST'])
+def delete_grade(evaluation_instance_id, student_id):
+    grade_instance = get_student_grade_instance(evaluation_instance_id, student_id)
+
+    if not grade_instance:
+        return "Nota no encontrada", 404
+
+    try:
+        kanvas_db.session.delete(grade_instance)
+        kanvas_db.session.commit()
+        return redirect(url_for('evaluation_instance.show', id=evaluation_instance_id))
+    except Exception as e:
+        kanvas_db.session.rollback()
+        print(f"Error al eliminar la nota: {e}")
+        return "Error al eliminar la nota", 500
