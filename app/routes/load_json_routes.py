@@ -1,11 +1,30 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from app import kanvas_db
-from app.services.create_object_instances import create_classroom_instances, create_student_instances, create_teacher_instances, create_course_instances, create_requisite_instances, create_course_instance_objects, create_section_instances, create_evaluation_instances, create_evaluation_instance_instances, create_student_section_instances, create_grade_instances
-
+from app.services.create_object_instances import (
+    create_classroom_instances,
+    create_course_instance_objects,
+    create_course_instances,
+    create_evaluation_instance_instances,
+    create_evaluation_instances,
+    create_grade_instances,
+    create_requisite_instances,
+    create_section_instances,
+    create_student_instances,
+    create_student_section_instances,
+    create_teacher_instances,
+)
 from app.utils import json_constants as JC
-from app.utils.parse_json import parse_classroom_json, parse_students_json, parse_teachers_json, parse_courses_json, parse_course_instances_json, parse_sections_json, parse_student_sections_json, parse_grades_json
-
+from app.utils.parse_json import (
+    parse_classroom_json,
+    parse_courses_json,
+    parse_course_instances_json,
+    parse_grades_json,
+    parse_sections_json,
+    parse_student_sections_json,
+    parse_students_json,
+    parse_teachers_json,
+)
 load_json_bp = Blueprint('load_json', __name__, url_prefix='/load_json')
 
 @load_json_bp.route('/')
