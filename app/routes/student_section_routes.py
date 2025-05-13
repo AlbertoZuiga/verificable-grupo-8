@@ -13,21 +13,35 @@ def index(section_id):
     student_sections = StudentSection.query.filter_by(section_id=section_id).all()
     return render_template('student_sections/index.html', section=section, student_sections=student_sections)
 
+from flask import request, render_template, redirect, url_for, flash
+import json
+
 @student_section_bp.route('/add', methods=['GET', 'POST'])
 def add_user(section_id):
     section = Section.query.get_or_404(section_id)
     students = get_students_not_in_section(section_id)
 
     if request.method == 'POST':
-        student_id = request.form['student_id']
+        ids_json = request.form.get('student_ids')
 
-        if not student_id:
-            flash("Todos los campos son obligatorios.", "danger")
+        if not ids_json:
+            flash("Debes agregar al menos un estudiante.", "danger")
         else:
-            if add_student_to_section(student_id, section_id):
-                flash("Usuario agregado exitosamente.", "success")
-            else:
-                flash("El estudiante ya está en esta sección.", "warning")
+            try:
+                student_ids = json.loads(ids_json)
+                added = 0
+                for student_id in student_ids:
+                    if add_student_to_section(student_id, section_id):
+                        added += 1
+                if added:
+                    flash(f"{added} estudiante(s) agregados exitosamente.", "success")
+                else:
+                    flash("Los estudiantes ya estaban en esta sección.", "warning")
+            except Exception as e:
+                flash("Error al procesar los estudiantes.", "danger")
+                print("Error:", e)
+
+        return redirect(url_for('student_section.index', section_id=section_id))
 
     context = {
         'section': section,
