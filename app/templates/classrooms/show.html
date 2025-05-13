@@ -18,12 +18,8 @@
       <div class="mt-4 d-flex gap-2">
         <a href="{{ url_for('classroom.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
         <a href="{{ url_for('classroom.edit', id=classroom.id) }}" class="btn btn-warning">✏ Editar</a>
-        <form method="POST" action="{{ url_for('classroom.delete', id=classroom.id) }}" style="display:inline;">
-          <button type="submit" class="btn btn-danger"
-                  aria-label="Eliminar sala {{ classroom.name }}"
-                  onclick="return confirm('¿Estás seguro que deseas eliminar esta sala?');">
-            Eliminar
-          </button>
+        <form method="POST" action="{{ url_for('classroom.delete', id=classroom.id) }}" class="d-inline" onsubmit="return confirm('¿Estás seguro que deseas eliminar esta sala?');">
+          <button type="submit" class="btn btn-danger" aria-label="Eliminar sala {{ classroom.name }}">Eliminar</button>
         </form>
       </div>
     </div>

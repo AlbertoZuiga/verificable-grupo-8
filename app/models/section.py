@@ -22,8 +22,9 @@ class Section(kanvas_db.Model):
     teacher_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('teachers.id', ondelete='CASCADE'), nullable=False, index=True)
     teacher = kanvas_db.relationship('Teacher', back_populates='sections')
 
-    students = kanvas_db.relationship('Student', secondary='student_sections', back_populates='sections')
-    student_associations = kanvas_db.relationship('StudentSection', back_populates='section', cascade='all, delete-orphan', passive_deletes=True)
+    students = kanvas_db.relationship('Student', secondary='student_sections', back_populates='sections', viewonly=True)
+
+    student_associations = kanvas_db.relationship('StudentSection', back_populates='section', cascade='all, delete-orphan', passive_deletes=False)
 
     assigned_time_blocks = kanvas_db.relationship('AssignedTimeBlock', back_populates='section', cascade='all, delete-orphan')
     evaluations = kanvas_db.relationship('Evaluation', back_populates='section', cascade='all, delete-orphan')
