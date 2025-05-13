@@ -192,47 +192,47 @@ def seed_database():
     kanvas_db.session.commit()
     print("Requisitos creados correctamente!\n")
     
-    print("Creando evaluaciones y secciones de alumnos...")
-    evaluations = ["Tareas", "Proyecto", "Controles", "Pruebas"]
-    sections = Section.query.all()
-    for section in sections:
-        selected_evaluations = random.sample(evaluations, 2)
-        for title in selected_evaluations:
-            evaluation = Evaluation(
-                section_id=section.id,
-                title=title,
-                weighing=random.randint(10, 50),
-                weighing_system=random.choice([WeighingType.PERCENTAGE, WeighingType.WEIGHT])
-            )
-            kanvas_db.session.add(evaluation)
+    # print("Creando evaluaciones y secciones de alumnos...")
+    # evaluations = ["Tareas", "Proyecto", "Controles", "Pruebas"]
+    # sections = Section.query.all()
+    # for section in sections:
+    #     selected_evaluations = random.sample(evaluations, 2)
+    #     for title in selected_evaluations:
+    #         evaluation = Evaluation(
+    #             section_id=section.id,
+    #             title=title,
+    #             weighing=random.randint(10, 50),
+    #             weighing_system=random.choice([WeighingType.PERCENTAGE, WeighingType.WEIGHT])
+    #         )
+    #         kanvas_db.session.add(evaluation)
         
-        evaluation = Evaluation(section_id=section.id, title="Examen", weighing=30, weighing_system=WeighingType.WEIGHT)
-        kanvas_db.session.add(evaluation)
+    #     evaluation = Evaluation(section_id=section.id, title="Examen", weighing=30, weighing_system=WeighingType.WEIGHT)
+    #     kanvas_db.session.add(evaluation)
         
-        students = random.sample(Student.query.all(), random.randint(19, 29))
+    #     students = random.sample(Student.query.all(), random.randint(19, 29))
 
-        for student in students:
-            student_section = StudentSection(student_id=student.id, section_id=section.id)
-            kanvas_db.session.add(student_section)
-    kanvas_db.session.commit()
-    print("Evaluaciones y secciones de alumnos creadas correctamente!\n")
+    #     for student in students:
+    #         student_section = StudentSection(student_id=student.id, section_id=section.id)
+    #         kanvas_db.session.add(student_section)
+    # kanvas_db.session.commit()
+    # print("Evaluaciones y secciones de alumnos creadas correctamente!\n")
         
-    print("Creando instancias de evaluaciones...")
-    singular_evaluations = {"Tareas":"Tarea", "Proyecto":"Proyecto", "Controles":"Control", "Pruebas":"Prueba"}
-    evaluations = Evaluation.query.where(Evaluation.title != "Examen").all()
-    for evaluation in evaluations:
-        for i in range(random.randint(2, 7)):
-            evaluation_instance = EvaluationInstance(title=f'{singular_evaluations[evaluation.title]} {i+1}', instance_weighing=random.randint(10, 50), optional=False, evaluation_id=evaluation.id)
-            kanvas_db.session.add(evaluation_instance)
-    kanvas_db.session.commit()
+    # print("Creando instancias de evaluaciones...")
+    # singular_evaluations = {"Tareas":"Tarea", "Proyecto":"Proyecto", "Controles":"Control", "Pruebas":"Prueba"}
+    # evaluations = Evaluation.query.where(Evaluation.title != "Examen").all()
+    # for evaluation in evaluations:
+    #     for i in range(random.randint(2, 7)):
+    #         evaluation_instance = EvaluationInstance(title=f'{singular_evaluations[evaluation.title]} {i+1}', instance_weighing=random.randint(10, 50), optional=False, evaluation_id=evaluation.id)
+    #         kanvas_db.session.add(evaluation_instance)
+    # kanvas_db.session.commit()
             
-    exams = Evaluation.query.where(Evaluation.title == "Examen").all()
-    for exam in exams:
-        evaluation_instance = EvaluationInstance(title=exam.title, instance_weighing=1, optional=False, evaluation_id=evaluation.id)
-        kanvas_db.session.add(evaluation_instance)
+    # exams = Evaluation.query.where(Evaluation.title == "Examen").all()
+    # for exam in exams:
+    #     evaluation_instance = EvaluationInstance(title=exam.title, instance_weighing=1, optional=False, evaluation_id=evaluation.id)
+    #     kanvas_db.session.add(evaluation_instance)
 
-    kanvas_db.session.commit()
-    print("Instancias de evaluaciones creadas correctamente!\n")
+    # kanvas_db.session.commit()
+    # print("Instancias de evaluaciones creadas correctamente!\n")
 
     print("Datos creados correctamente!")
 
