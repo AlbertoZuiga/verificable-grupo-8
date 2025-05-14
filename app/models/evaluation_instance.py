@@ -5,15 +5,17 @@ class EvaluationInstance(kanvas_db.Model):
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)
     
-    evaluation_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('evaluations.id'), nullable=False, index=True)
-    evaluation = kanvas_db.relationship('Evaluation', backref='instances')
-    
+    index_in_evaluation = kanvas_db.Column(kanvas_db.Integer, nullable=False)
+
+    evaluation_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('evaluations.id', ondelete='CASCADE'), nullable=False, index=True)
+    evaluation = kanvas_db.relationship('Evaluation', back_populates='instances')
+
     title = kanvas_db.Column(kanvas_db.String(100), nullable=False)
-    instance_weighing = kanvas_db.Column(kanvas_db.Integer, nullable=False)
+    instance_weighing = kanvas_db.Column(kanvas_db.Float, nullable=False)
     optional = kanvas_db.Column(kanvas_db.Boolean, default=False, nullable=False)
 
-    user_evaluation_instances = kanvas_db.relationship('UserEvaluationInstance', back_populates='evaluation_instance')
-    users = kanvas_db.relationship('User', secondary='user_evaluation_instances', viewonly=True, back_populates='evaluation_instances')
+    student_evaluation_instances = kanvas_db.relationship('StudentEvaluationInstance', back_populates='evaluation_instance', cascade='all, delete-orphan', passive_deletes=True)
+    students = kanvas_db.relationship('Student', secondary='student_evaluation_instances', viewonly=True, back_populates='evaluation_instances')
 
     def __repr__(self):
         return f"<EvaluationInstance id={self.id}, title={self.title}, weighing={self.instance_weighing}>"

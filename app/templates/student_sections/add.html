@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %} Agregar Usuarios a la Sección {% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <h1 class="mb-4 text-primary">Agregar Usuarios a la Sección {{ section.code }}</h1>
+
+  <!-- Formulario principal -->
+  <form method="POST" class="card p-4 shadow-sm mb-5" onsubmit="return submitForm()">
+    <div class="mb-3">
+      <label for="student_select" class="form-label">Usuario:</label>
+      <select id="student_select" class="form-select">
+        <option value="">-- Selecciona un estudiante --</option>
+        {% for student in students %}
+          <option value="{{ student.user.id }}" data-name="{{ student.user.first_name }} {{ student.user.last_name }}">
+            {{ student.user.first_name }} {{ student.user.last_name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="button" class="btn btn-outline-primary mb-3" onclick="addStudent()">➕ Agregar estudiante</button>
+
+    <!-- Tabla dinámica de estudiantes por agregar -->
+    <h5>Estudiantes a agregar:</h5>
+    <table class="table table-bordered" id="students_table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="students_body">
+        <!-- Filas se insertan dinámicamente -->
+      </tbody>
+    </table>
+
+    <!-- Campo oculto para enviar la lista -->
+    <input type="hidden" name="student_ids" id="student_ids">
+
+    <div class="d-flex gap-2 mt-4">
+      <a href="{{ url_for('student_section.index', section_id=section.id) }}" class="btn btn-secondary">Cancelar</a>
+      <button type="submit" class="btn btn-success">💾 Guardar Todos</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const studentsBody = document.getElementById('students_body');
+  const studentSelect = document.getElementById('student_select');
+  const addedIds = new Set();
+
+  function addStudent() {
+    const selectedOption = studentSelect.options[studentSelect.selectedIndex];
+    const studentId = selectedOption.value;
+    const studentName = selectedOption.dataset.name;
+
+    if (!studentId || addedIds.has(studentId)) return;
+
+    // Crear fila
+    const row = document.createElement('tr');
+    row.setAttribute('data-id', studentId);
+    row.innerHTML = `
+      <td>${studentName}</td>
+      <td>
+        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeStudent('${studentId}', '${studentName}')">❌ Quitar</button>
+      </td>
+    `;
+
+    studentsBody.appendChild(row);
+    addedIds.add(studentId);
+
+    // Quitar del select
+    selectedOption.remove();
+
+    // Resetear selección
+    studentSelect.selectedIndex = 0;
+  }
+
+
+  function removeStudent(id, name) {
+    const row = document.querySelector(`tr[data-id='${id}']`);
+    if (row) {
+      row.remove();
+      addedIds.delete(id);
+
+      // Volver a agregar al <select>
+      const newOption = document.createElement('option');
+      newOption.value = id;
+      newOption.dataset.name = name;
+      newOption.textContent = name;
+      studentSelect.appendChild(newOption);
+    }
+  }
+
+
+  function submitForm() {
+    const ids = Array.from(addedIds);
+    document.getElementById('student_ids').value = JSON.stringify(ids);
+    return true;
+  }
+</script>
+
+{% endblock %}

@@ -1,35 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}Instancias de Evaluaciones{% endblock %}
+{% block title %} Instancias de Evaluaciones {% endblock %}
 
 {% block content%}
+
 <div class="container">
   <h1 class="mb-4 text-primary">Lista de Instancias Evaluaciones</h1>
 
   {% if evaluation_instances %}
-  <ul class="list-group">
-    {% for evaluation_instance in evaluation_instances %}
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <strong class="text-dark">{{ evaluation_instance.title }} - {{ evaluation_instance.evaluation.section.course_instance.course.title }} ({{ evaluation_instance.evaluation.section.code }})</strong>
-      <strong class="text-dark">{{ evaluation_instance.weighing }}</strong>
-      <div>
-        <a href="{{ url_for('evaluation_instance.show', id=evaluation_instance.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver instancia de evaluación {{ evaluation_instance.title }}">
-          Ver
-        </a>
-        <a href="{{ url_for('evaluation_instance.edit', id=evaluation_instance.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar instancia de evaluación {{ evaluation_instance.title }}">
-          Editar
-        </a>
-        <a href="{{ url_for('evaluation_instance.delete', id=evaluation_instance.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar instancia de evaluación {{ evaluation_instance.title }}">
-          Eliminar
-        </a>
-      </div>
-    </li>
-    {% endfor %}
-  </ul>
+    <ul class="list-group">
+      {% for evaluation_instance in evaluation_instances %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <strong class="text-dark">{{ evaluation_instance.title }} - {{ evaluation_instance.evaluation.section.course_instance.course.title }} ({{ evaluation_instance.evaluation.section.code }})</strong>
+          <strong class="text-dark">{{ evaluation_instance.weighing }}</strong>
+          <div>
+            <a href="{{ url_for('evaluation_instance.show', id=evaluation_instance.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver instancia de evaluación {{ evaluation_instance.title }}"> Ver </a>
+            <a href="{{ url_for('evaluation_instance.edit', id=evaluation_instance.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar instancia de evaluación {{ evaluation_instance.title }}"> Editar </a>
+            <a href="{{ url_for('evaluation_instance.delete', id=evaluation_instance.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar instancia de evaluación {{ evaluation_instance.title }}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta instancia de evaluación?');"> Eliminar </a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
   {% else %}
-  <p class="alert alert-warning">No hay instancias de evaluaciones disponibles.</p>
+    <p class="alert alert-warning">No hay instancias de evaluaciones disponibles.</p>
   {% endif %}
 
   <a href="{{ url_for('evaluation_instance.create') }}" class="btn btn-success mt-4">➕ Crear nueva evaluacion</a>
 </div>
+
 {% endblock %}

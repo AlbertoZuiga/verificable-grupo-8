@@ -1,50 +1,29 @@
 {% extends "base.html" %}
 
-{% block title %}Cursos{% endblock %}
+{% block title %} Cursos {% endblock %}
 
 {% block content%}
+
 <div class="container">
   <h1 class="mb-4 text-primary">Lista de Cursos</h1>
 
   {% if courses %}
-  <ul class="list-group">
-    {% for course in courses %}
-    <li
-      class="list-group-item d-flex justify-content-between align-items-center"
-    >
-      <strong class="text-dark">{{ course.title }}</strong>
-      <div>
-        <a
-          href="{{ url_for('course.show', id=course.id) }}"
-          class="btn btn-sm btn-info text-white"
-          aria-label="Ver curso {{ course.title }}"
-        >
-          Ver
-        </a>
-        <a
-          href="{{ url_for('course.edit', id=course.id) }}"
-          class="btn btn-sm btn-warning text-dark"
-          aria-label="Editar curso {{ course.title }}"
-        >
-          Editar
-        </a>
-        <a
-          href="{{ url_for('course.delete', id=course.id) }}"
-          class="btn btn-sm btn-danger"
-          aria-label="Eliminar curso {{ course.title }}"
-        >
-          Eliminar
-        </a>
-      </div>
-    </li>
-    {% endfor %}
-  </ul>
+    <ul class="list-group">
+      {% for course in courses %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <strong class="text-dark">{{ course.title }}</strong>
+          <div>
+            <a href="{{ url_for('course.show', id=course.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver curso {{ course.title }}"> Ver </a>
+            <a href="{{ url_for('course.edit', id=course.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar curso {{ course.title }}"> Editar </a>
+            <a href="{{ url_for('course.delete', id=course.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar curso {{ course.title }}" onclick="return confirm('¿Estás seguro que deseas eliminar este curso?');"> Eliminar </a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
   {% else %}
-  <p class="alert alert-warning">No hay cursos disponibles.</p>
+    <p class="alert alert-warning">No hay cursos disponibles.</p>
   {% endif %}
 
-  <a href="{{ url_for('course.create') }}" class="btn btn-success mt-4"
-    >➕ Crear nuevo curso</a
-  >
+  <a href="{{ url_for('course.create') }}" class="btn btn-success mt-4">➕ Crear nuevo curso</a>
 </div>
 {% endblock %}

@@ -1,22 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}Calificar a {{ user.first_name }} {{ user.last_name }}{% endblock %}
+{% block title %} Calificar a {{ student.user.first_name }} {{ student.user.last_name }} {% endblock %}
 
 {% block content %}
+
 <div class="container mt-4">
-  <h2>Calificar a {{ user.first_name }} {{ user.last_name }}</h2>
+  <h2>Calificar a {{ student.user.first_name }} {{ student.user.last_name }}</h2>
   <p><strong>Evaluación:</strong> {{ evaluation_instance.title }}</p>
 
   <form method="POST" class="mt-4">
-    <input type="hidden" name="user_id" value="{{ user.id }}">
+    <input type="hidden" name="user_id" value="{{ student.user.id }}">
 
     <div class="mb-3">
       <label for="grade" class="form-label">Nota</label>
       <input type="number" step="0.01" min="1.0" max="7.0" name="grade" class="form-control" value="{{ current_grade or '' }}" required>
     </div>
 
-    <button type="submit" class="btn btn-success">💾 Guardar Nota</button>
     <a href="{{ url_for('evaluation_instance.show', id=evaluation_instance.id) }}" class="btn btn-secondary">⬅ Volver</a>
+    <button type="submit" class="btn btn-success">💾 Guardar Nota</button>
   </form>
 </div>
+
 {% endblock %}

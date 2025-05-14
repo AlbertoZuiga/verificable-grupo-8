@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %} Subir Archivo JSON {% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>Subir Archivo JSON de alumnos</h2>
+        <form action="{{ url_for('load_json.students') }}" method="post" enctype="multipart/form-data" class="mt-3">
+            <div class="mb-3">
+                <label for="jsonFile" class="form-label">Selecciona un archivo JSON:</label>
+                <input type="file" id="jsonFile" name="file" accept=".json" required class="form-control">
+
+                <input type="hidden" name="json_type" value="alumnos">
+            </div>
+            <a href="{{ url_for('load_json.index') }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-success">Subir</button>
+        </form>
+    </div>
+{% endblock %}

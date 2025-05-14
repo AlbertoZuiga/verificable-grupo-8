@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Schedule{% endblock %}
+
+{% block content %}
+  <div class="container my-4">
+    {% if schedule %}
+      <h1 class="mb-4 text-primary">Horario de Cursos</h1>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Curso</th>
+            <th>Código</th>
+            <th>Sección</th>
+            <th>Sala</th>
+            <th>Día</th>
+            <th>Hora Inicio</th>
+            <th>Hora Fin</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key, entry in schedule.items() %}
+            <tr>
+              <td>{{ entry['course_title'] }}</td>
+              <td>{{ entry['course_code'] }}</td>
+              <td>{{ entry['section_code'] }}</td>
+              <td>{{ entry['classroom'] }}</td>
+              <td>{{ entry['weekday'] }}</td>
+              <td>{{ entry['start_time'] }}</td>
+              <td>{{ entry['stop_time'] }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a href="{{ url_for('schedule.generate') }}" class="btn btn-warning mt-4">🔁 Regenerar Horario</a>
+      <a href="{{ url_for('schedule.download') }}" class="btn btn-success mt-4">📥 Descargar Horario</a>
+    {% else %}
+      <div class="alert alert-warning">ℹ️ No hay horario disponible.</div>
+      <a href="{{ url_for('schedule.generate') }}" class="btn btn-primary mt-4">➕ Generar Horario</a>
+    {% endif %}
+  </div>
+{% endblock %}

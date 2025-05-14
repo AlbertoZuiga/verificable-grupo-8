@@ -6,12 +6,14 @@ class Evaluation(kanvas_db.Model):
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)
     
-    section_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('sections.id'), nullable=False, index=True)
-    section = kanvas_db.relationship('Section', backref='evaluations')
-    
+    section_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('sections.id', ondelete='CASCADE'), nullable=False, index=True)
+    section = kanvas_db.relationship('Section', back_populates='evaluations')
+
     title = kanvas_db.Column(kanvas_db.String(100), nullable=False)
-    weighing = kanvas_db.Column(kanvas_db.Integer, nullable=False)
+    weighing = kanvas_db.Column(kanvas_db.Float, nullable=False)
     weighing_system = kanvas_db.Column(kanvas_db.Enum(WeighingType), nullable=False)
+
+    instances = kanvas_db.relationship('EvaluationInstance', back_populates='evaluation', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<Evaluation id={self.id}, title={self.title}, weighing_system={self.weighing_system}>"

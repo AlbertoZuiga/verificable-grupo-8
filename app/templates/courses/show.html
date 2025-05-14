@@ -1,63 +1,73 @@
 {% extends "base.html" %}
 
-{% block title %}Curso: {{ course.title }}{% endblock %}
+{% block title %} Curso: {{ course.title }} {% endblock %}
 
 {% block content %}
+
   <div class="container py-4">
     <h1 class="mb-4 text-primary">📚 Detalles del Curso</h1>
 
     <div class="card shadow-lg border-0 rounded-3">
       <div class="card-body">
-        <h5 class="card-title text-dark"><strong>Título:</strong> {{ course.title }}</h5>
+        <h5 class="card-title text-dark">
+          <strong>Título:</strong> {{ course.title }}
+        </h5>
+        <p class="card-text text-muted mb-1">
+          <strong>Código:</strong> {{ course.code }}
+        </p>
+        <p class="card-text text-muted mb-4">
+          <strong>Créditos:</strong> {{ course.credits }}
+        </p>
         <div class="mt-4 d-flex gap-2">
           <a href="{{ url_for('course.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
           <a href="{{ url_for('course.edit', id=course.id) }}" class="btn btn-warning">✏ Editar</a>
-          <a href="{{ url_for('course.delete', id=course.id) }}" class="btn btn-danger">🗑 Eliminar</a>
+          <a href="{{ url_for('course.delete', id=course.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro que deseas eliminar este curso?');"> 🗑 Eliminar </a>
         </div>
       </div>
     </div>
-
-    <h3 class="mt-5 text-primary">Requisitos</h3>
-    <div class="list-group mt-3 shadow-sm rounded-3">
-      {% for requisite in course.prerequisites %}
-        <div class="list-group-item d-flex justify-content-between align-items-center">
-          <a href="{{ url_for('course.show', id=requisite.course_requisite.id) }}" class="text-decoration-none fw-bold text-dark">
-            {{ requisite.course_requisite.title }}
-          </a>
-          <a href="{{ url_for('requisite.delete', id=requisite.id) }}" class="btn btn-sm btn-outline-danger">❌ Eliminar</a>
-        </div>
-      {% else %}
-        <p class="text-muted">El curso no tiene requisitos.</p>
-      {% endfor %}
-    </div>
-
-    <div class="card shadow-sm mt-4 p-4 border-0 rounded-3">
-      <h5 class="card-title">Añadir Requisito</h5>
-      <form action="{{ url_for('requisite.create') }}" method="POST">
-        <input type="hidden" name="course_id" value="{{ course.id }}">
-        <div class="mb-3">
-          <label for="requisite_id" class="form-label">Curso</label>
-          <select class="form-select" id="requisite_id" name="requisite_id" required>
-            <option selected disabled>Seleccionar curso</option>
-            {% for course in courses %}
-              <option value="{{ course.id }}">{{ course.title }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">➕ Añadir requisito</button>
-      </form>
-    </div>
-
-    <h3 class="mt-5 text-primary">Instancias del curso</h3>
-    <div class="list-group mt-3 shadow-sm rounded-3">
-      {% for instance in course.instances %}
-        <div class="list-group-item d-flex justify-content-between align-items-center">
-          <span><strong>{{ instance.year }}</strong> - {{ instance.semester }}</span>
-          <a href="{{ url_for('course_instance.show', id=instance.id) }}" class="btn btn-sm btn-primary">Ver</a>
-        </div>
-      {% else %}
-        <p class="text-muted">No hay instancias disponibles.</p>
-      {% endfor %}
-    </div>
   </div>
+
+
+  <h3 class="mt-5 text-primary">Requisitos</h3>
+  <div class="list-group mt-3 shadow-sm rounded-3">
+    {% for requisite in course.prerequisites %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <a href="{{ url_for('course.show', id=requisite.course_requisite.id) }}" class="text-decoration-none fw-bold text-dark"> {{ requisite.course_requisite.title }} </a>
+        <a href="{{ url_for('requisite.delete', id=requisite.id) }}" class="btn btn-sm btn-outline-danger">❌ Eliminar</a>
+      </div>
+    {% else %}
+      <p class="text-muted">El curso no tiene requisitos.</p>
+    {% endfor %}
+  </div>
+
+  <div class="card shadow-sm mt-4 p-4 border-0 rounded-3">
+    <h5 class="card-title">Añadir Requisito</h5>
+    <form action="{{ url_for('requisite.create') }}" method="POST">
+      <input type="hidden" name="course_id" value="{{ course.id }}">
+      <div class="mb-3">
+        <label for="requisite_id" class="form-label">Curso</label>
+        <select class="form-select" id="requisite_id" name="requisite_id" required>
+          <option selected disabled>Seleccionar curso</option>
+          {% for c in courses %}
+            <option value="{{ c.id }}">{{ c.title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">➕ Añadir requisito</button>
+    </form>
+  </div>
+
+  <h3 class="mt-5 text-primary">Instancias del curso</h3>
+  <div class="list-group mt-3 shadow-sm rounded-3">
+    {% for instance in course.instances %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <span><strong>{{ instance.year }}</strong> - {{ instance.semester }}</span>
+        <a href="{{ url_for('course_instance.show', id=instance.id) }}" class="btn btn-sm btn-primary">Ver</a>
+      </div>
+    {% else %}
+      <p class="text-muted">No hay instancias disponibles.</p>
+    {% endfor %}
+  </div>
+</div>
+
 {% endblock %}
