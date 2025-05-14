@@ -57,7 +57,11 @@
                 </form>
               {% endif %}
             {% else %}
-              <span>-</span>
+              {% if not evaluation_instance.evaluation.section.closed %}
+                <a href="{{ url_for('grades.assign_or_edit_grade', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}" class="btn btn-sm btn-info">Calificar</a>
+              {% else %}
+                <span>-</span>
+              {% endif %}
             {% endif %}
           </div>
         </li>
