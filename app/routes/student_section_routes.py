@@ -19,8 +19,13 @@ import json
 @student_section_bp.route('/add', methods=['GET', 'POST'])
 def add_user(section_id):
     section = Section.query.get_or_404(section_id)
+    
     students = get_students_not_in_section(section_id)
 
+    if section.closed:
+        flash("Esta sección está cerrada y no puede ser modificada.", "warning")
+        return redirect(url_for('section.show', id=section.id))
+        
     if request.method == 'POST':
         ids_json = request.form.get('student_ids')
 
@@ -51,6 +56,11 @@ def add_user(section_id):
 
 @student_section_bp.route('/remove/<int:student_id>', methods=['POST'])
 def remove_user(section_id, student_id):
+    section = Section.query.get_or_404(section_id)
+    
+    if section.closed:
+        flash("Esta sección está cerrada y no puede ser modificada.", "warning")
+        return redirect(url_for('section.show', id=section.id))
     if remove_student_from_section(section_id, student_id):
         flash("Usuario removido de la sección.", "success")
     else:

@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import kanvas_db
 from app.models import CourseInstance, Section, WeighingType, Teacher
 from app.services.section_service import create_section
+from app.services.decorators import require_section_open
+
 
 section_bp = Blueprint('section', __name__, url_prefix='/sections')
 
@@ -43,6 +45,7 @@ def create():
     return render_template('sections/create.html', **context)
 
 @section_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
+@require_section_open(lambda id: Section.query.get_or_404(id))
 def edit(id):
     section = Section.query.get_or_404(id)
 
@@ -79,6 +82,7 @@ def edit(id):
     return render_template('sections/edit.html', section=section, **context)
 
 @section_bp.route('/delete/<int:id>', methods=['POST'])
+@require_section_open(lambda id: Section.query.get_or_404(id))
 def delete(id):
     section = Section.query.get_or_404(id)
     try:
@@ -92,3 +96,12 @@ def delete(id):
         return redirect(url_for('section.show', id=id))
     
     return redirect(url_for('section.index'))
+
+@section_bp.route('/<int:section_id>/close', methods=['POST'])
+def close(section_id):
+    section = Section.query.get_or_404(section_id)
+    section.closed = True
+    kanvas_db.session.commit()
+    flash("La sección fue cerrada exitosamente.", "success")
+    return redirect(url_for('section.index', section_id=section.id))
+

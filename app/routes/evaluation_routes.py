@@ -13,10 +13,17 @@ def index():
 @evaluation_bp.route('/<int:id>')
 def show(id):
     evaluation = Evaluation.query.get_or_404(id)
+    print(evaluation)
     return render_template('evaluations/show.html', evaluation=evaluation, WeighingType=WeighingType)
 
 @evaluation_bp.route('/create', methods=['GET', 'POST'])
 def create():
+    print(request.form)
+    evaluation = Evaluation.query.get_or_404(id)
+    if evaluation.closed:
+        flash("Esta evaluación está cerrada y no puede ser modificada.", "warning")
+        return redirect(url_for('evaluation.show', id=evaluation.id))
+    
     if request.method == 'POST':
         title = request.form['title']
         weighing = request.form['weighing']

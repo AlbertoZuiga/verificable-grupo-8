@@ -28,6 +28,8 @@ class Section(kanvas_db.Model):
 
     assigned_time_blocks = kanvas_db.relationship('AssignedTimeBlock', back_populates='section', cascade='all, delete-orphan')
     evaluations = kanvas_db.relationship('Evaluation', back_populates='section', cascade='all, delete-orphan')
+    closed = kanvas_db.Column(kanvas_db.Boolean, default=False)
+
     
     def __repr__(self):
         return f"<Section id={self.id}, code={self.code}, weighing_type={self.weighing_type}>"

@@ -6,6 +6,11 @@
 
 <div class="container">
   <h1 class="mb-4 text-primary">Detalles de la Sección</h1>
+
+  {% if section.closed %}
+    <div class="alert alert-warning">Esta sección está <strong>cerrada</strong>. No se permiten más modificaciones.</div>
+  {% endif %}
+
   <div class="card shadow-lg p-4">
     <p><strong>Instancia del Curso:</strong> {{ section.course_instance.course.title }} - {{ section.course_instance.year }} (Semestre {{ section.course_instance.semester }})</p>
     <p><strong>Profesor:</strong> {{ section.teacher.user.first_name }} {{ section.teacher.user.last_name }} ({{ section.teacher.user.email }})</p>
@@ -13,15 +18,27 @@
     <p><strong>Tipo de Ponderación:</strong> {{ section.weighing_type }}</p>
 
     <div class="mt-4 d-flex justify-content-between">
-      <a href="{{ url_for('section.index') }}" class="btn btn-secondary"> ⬅ Volver al listado </a>
-      <a href="{{ url_for('student_section.index', section_id=section.id) }}" class="btn btn-info"> 👥 Ver Alumnos </a>
+      <a href="{{ url_for('section.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
+      <a href="{{ url_for('student_section.index', section_id=section.id) }}" class="btn btn-info">👥 Ver Alumnos</a>
+
       <div class="btn-group" role="group">
-        <a href="{{ url_for('section.edit', id=section.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
-        <form action="{{ url_for('section.delete', id=section.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta sección?');">
-          <button type="submit" class="btn btn-danger">🗑 Eliminar</button>
-        </form>
+        {% if not section.closed %}
+          <a href="{{ url_for('section.edit', id=section.id) }}" class="btn btn-warning text-dark">✏ Editar</a>
+          
+          <form action="{{ url_for('section.delete', id=section.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta sección?');">
+            <button type="submit" class="btn btn-danger">🗑 Eliminar</button>
+          </form>
+        {% endif %}
       </div>
     </div>
+
+    {% if not section.closed %}
+      <form method="POST" action="{{ url_for('section.close', section_id=section.id) }}" class="mt-4">
+        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('¿Estás seguro de que deseas cerrar esta sección? Esta acción no se puede deshacer.')">
+          🚫 Cerrar Sección
+        </button>
+      </form>
+    {% endif %}
   </div>
 
   <h3 class="mt-5 text-primary">Evaluaciones</h3>
