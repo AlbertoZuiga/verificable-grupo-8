@@ -129,29 +129,43 @@ def parse_sections_json(json_data):
     parsed_instances = []
 
     for section_data in data[JC.SECTIONS]:
+        section_weighing_type = WeighingType(section_data[JC.EVALUATION][JC.EVALUATION_TYPE].capitalize())
+        topic_combinations = section_data[JC.EVALUATION][JC.TOPIC_COMBINATIONS]
+        topic_details = section_data[JC.EVALUATION][JC.TOPICS]
+        
         section = Section(
             id=section_data[JC.ID],
             code=section_data[JC.ID], 
             course_instance_id=section_data[JC.COURSE_INSTANCE],
             teacher_id=section_data[JC.TEACHER_ID],
-            weighing_type=WeighingType(section_data[JC.EVALUATION][JC.EVALUATION_TYPE].capitalize())
+            weighing_type=section_weighing_type
         )
         parsed_sections.append(section)
 
-        evaluation_type = WeighingType(section_data[JC.EVALUATION][JC.EVALUATION_TYPE].capitalize())
-        topic_combinations = section_data[JC.EVALUATION][JC.TOPIC_COMBINATIONS]
-        topic_details = section_data[JC.EVALUATION][JC.TOPICS]
 
+        if section_weighing_type == WeighingType.PERCENTAGE:
+            total = sum(topic[JC.TOPIC_WEIGHT] for topic in topic_combinations)
+            if total != 0 and total != 100:
+                for topic in topic_combinations:
+                    original = topic[JC.TOPIC_WEIGHT]
+                    topic[JC.TOPIC_WEIGHT] = round((original / total) * 100, 2)
+        
         for topic in topic_combinations:
             topic_id = topic[JC.ID]
             topic_def = topic_details[str(topic_id)]
-
+            evaluation_weighing_type = WeighingType(topic_def[JC.EVALUATION_TYPE].capitalize())
+            
+            if evaluation_weighing_type == WeighingType.PERCENTAGE:
+                total_instance_weight = sum(topic_def[JC.TOPIC_VALUES])
+                if total_instance_weight != 0 and total_instance_weight != 100:
+                    topic_def[JC.TOPIC_VALUES] = [round((v / total_instance_weight) * 100, 2) for v in topic_def[JC.TOPIC_VALUES]]
+            
             evaluation = Evaluation(
                 id=topic_id,
                 section=section,
                 title=topic[JC.NAME],
                 weighing=topic[JC.TOPIC_WEIGHT],
-                weighing_system=evaluation_type
+                weighing_system=evaluation_weighing_type,
             )
             parsed_evaluations.append(evaluation)
 
@@ -166,7 +180,6 @@ def parse_sections_json(json_data):
                 parsed_instances.append(instance)
 
     print(f"[DEBUG] Parsed {len(parsed_sections)} sections, {len(parsed_evaluations)} evaluations, and {len(parsed_instances)} evaluation instances.")
-
     return parsed_sections, parsed_evaluations, parsed_instances
 
 def parse_student_sections_json(json_data):
