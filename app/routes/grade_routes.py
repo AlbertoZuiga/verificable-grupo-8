@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app import kanvas_db
+from app.services.validations import validate_section_for_evaluation
 from app.services.evaluation_instance_service import (
     get_evaluation_instance_and_student,
     get_student_grade_instance,
     save_student_grade
 )
+from app.services.student_evaluation_instance_service import get_section_id_from_evaluation_instance
 
 grade_bp = Blueprint('grades', __name__, url_prefix='/grades')
 
@@ -18,6 +20,12 @@ def assign_or_edit_grade(evaluation_instance_id, student_id):
 
     current_grade_instance = get_student_grade_instance(evaluation_instance_id, student_id)
     current_grade = current_grade_instance.grade if current_grade_instance else None
+
+    section_id = get_section_id_from_evaluation_instance(evaluation_instance_id)
+
+    validation_error = validate_section_for_evaluation(section_id)
+    if validation_error:
+        return validation_error
 
     if request.method == 'POST':
         grade_input = request.form.get('grade')
@@ -49,6 +57,13 @@ def assign_or_edit_grade(evaluation_instance_id, student_id):
 @grade_bp.route('/<int:evaluation_instance_id>/delete/<int:student_id>', methods=['POST'])
 def delete_grade(evaluation_instance_id, student_id):
     grade_instance = get_student_grade_instance(evaluation_instance_id, student_id)
+
+    section_id = get_section_id_from_evaluation_instance(evaluation_instance_id)
+
+
+    validation_error = validate_section_for_evaluation(section_id)
+    if validation_error:
+        return validation_error
 
     if not grade_instance:
         return "Nota no encontrada", 404
