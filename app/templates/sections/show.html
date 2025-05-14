@@ -42,6 +42,9 @@
   </div>
 
   <h3 class="mt-5 text-primary">Evaluaciones</h3>
+
+  <a href="{{ url_for('section.edit_evaluation_weights', id=section.id) }}" class="btn btn-sm btn-success"> Editar pesos de evaluaciones</a>
+  
   <div class="list-group mt-3 shadow-sm rounded-3">
     {% for evaluation in section.evaluations %}
       <div class="list-group-item d-flex justify-content-between align-items-center">

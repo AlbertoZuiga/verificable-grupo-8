@@ -17,6 +17,41 @@ def show(id):
     section = Section.query.get_or_404(id)
     return render_template('sections/show.html', section=section, WeighingType=WeighingType)
 
+@section_bp.route('/<int:id>/edit_evaluation_weights', methods=['GET', 'POST'])
+def edit_evaluation_weights(id):
+    section = Section.query.get_or_404(id)
+
+    if request.method == 'POST':
+        weights = {}
+        try:
+            for evaluation in section.evaluations:
+                key = f'evaluation_{evaluation.id}'
+                weights[evaluation.id] = float(request.form[key])
+        except (ValueError, KeyError) as e:
+            flash(f"Entrada inválida para los pesos: {e}", "danger")
+            return redirect(url_for('section.edit_evaluation_weights', id=section.id))
+
+        # Validación para evaluaciones con porcentajes
+        if section.weighing_type == WeighingType.PERCENTAGE:
+            total = sum(weights.values())
+            if round(total, 2) != 100.0:
+                flash("La suma de los pesos de las evaluaciones debe ser 100 para las evaluaciones ponderadas.", "danger")
+                return redirect(url_for('section.edit_evaluation_weights', id=section.id))
+
+        # Asignar pesos nuevos
+        for evaluation in section.evaluations:
+            evaluation.weighing = weights[evaluation.id]
+
+        try:
+            kanvas_db.session.commit()
+            flash("Pesos de evaluaciones actualizados correctamente", "success")
+            return redirect(url_for('section.show', id=section.id))
+        except Exception as e:
+            kanvas_db.session.rollback()
+            flash(f"Error al guardar cambios: {e}", "danger")
+
+    return render_template('sections/edit_evaluation_weights.html', section=section, WeighingType=WeighingType)
+
 @section_bp.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':

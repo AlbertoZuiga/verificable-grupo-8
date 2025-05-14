@@ -61,23 +61,22 @@ def create():
     
     if request.method == 'POST':
         title = request.form['title']
-        weighing = request.form['weighing']
         weighing_system = request.form['weighing_system']
         section_id = request.form['section_id']
         
         if Section.query.get(section_id) is None:
-            return "Invalid section ID", 400
-        
+            flash("Invalid section ID", "danger")
+            return redirect(url_for('evaluation_instance.create'))
 
-        evaluation = Evaluation(title=title, weighing=weighing, weighing_system=weighing_system, section_id=section_id)
+        evaluation = Evaluation(title=title, weighing=0.0, weighing_system=weighing_system, section_id=section_id)
         try:
             kanvas_db.session.add(evaluation)
             kanvas_db.session.commit()
             return redirect(url_for('evaluation.show', id=evaluation.id))
         except Exception as e:
             kanvas_db.session.rollback()
-            print(f"Error Creating evaluation: {e}")
-    
+            flash(f"Error Creating evaluation: {e}", "danger")
+
     sections = Section.query.all()
     return render_template('evaluations/create.html', sections=sections, weighing_types=WeighingType)
 
@@ -86,21 +85,21 @@ def edit(id):
     evaluation = Evaluation.query.get_or_404(id)
     if request.method == 'POST':
         evaluation.title = request.form['title']
-        evaluation.weighing = request.form['weighing']
         evaluation.weighing_system = request.form['weighing_system']
         section_id = request.form['section_id']
         
         if Section.query.get(section_id) is None:
-            return "Invalid section ID", 400
-        
+            flash("Invalid section ID", "danger")
+            return redirect(url_for('evaluation_instance.create'))
+
         evaluation.section_id = section_id
-        
+
         try:
             kanvas_db.session.commit()
             return redirect(url_for('evaluation.show', id=evaluation.id))
         except Exception as e:
             kanvas_db.session.rollback()
-            print(f"Error updating evaluation: {e}")
+            flash(f"Error updating evaluation: {e}", "danger")
     
     sections = Section.query.all()
     return render_template('evaluations/edit.html', evaluation=evaluation, sections=sections, weighing_types=WeighingType)
