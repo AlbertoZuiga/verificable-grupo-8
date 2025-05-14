@@ -1,14 +1,12 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, url_for
 
 from app.models import (
     Classroom,
     Course,
     CourseInstance,
-    EvaluationInstance,
     Requisite,
     Section,
     Student,
-    StudentEvaluationInstance,
     StudentSection,
     Teacher,
     User,
@@ -16,8 +14,8 @@ from app.models import (
 
 from app import kanvas_db
 from app.services.create_object_instances import (
-    create_requisite_instances,
-    add_objects_to_session
+    add_objects_to_session,
+    build_requisite_objects_from_codes
 )
 from app.utils import json_constants as JC
 from app.utils.parse_json import (
@@ -33,7 +31,7 @@ from app.utils.parse_json import (
 
 from app.services.database_validations import filter_existing_by_field, filter_existing_by_two_fields, filter_grades
 
-from app.utils.flash_messages import flash_successful_load, flash_invalid_grades
+from app.utils.flash_messages import flash_successful_load, flash_invalid_grades, flash_invalid_load
 
 load_json_bp = Blueprint('load_json', __name__, url_prefix='/load_json')
 
@@ -74,7 +72,7 @@ def students():
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading students: {str(e)}", "danger")
+                flash_invalid_load(JC.STUDENTS_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/students.html')
@@ -113,7 +111,7 @@ def teachers():
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading teachers: {str(e)}", "danger")
+                flash_invalid_load(JC.TEACHERS_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/teachers.html')
@@ -137,7 +135,7 @@ def classrooms():
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading classrooms: {str(e)}", "danger")
+                flash_invalid_load(JC.CLASSROOMS_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/classrooms.html')
@@ -152,27 +150,26 @@ def courses():
         if json_file and json_file.filename.endswith('.json') and json_type == JC.COURSES:
             try:
                 file_content = json_file.read().decode('utf-8')
-                parsed = parse_courses_json(file_content)
-
-                filtered_courses = filter_existing_by_field(
-                    model=Course,
-                    field_name="id",
-                    objects=parsed[JC.COURSES]
-                )
-
+                courses, requisite_code_pairs = parse_courses_json(file_content)
+                filtered_courses = filter_existing_by_field(Course, "id", courses)
                 created_courses_count = add_objects_to_session(filtered_courses)
-                kanvas_db.session.flush()  
 
-                created_requisites = create_requisite_instances(parsed[JC.REQUISITES])
+                kanvas_db.session.flush()
+
+                requisites, skipped = build_requisite_objects_from_codes(requisite_code_pairs)
+                filtered_requisites = filter_existing_by_two_fields(
+                    Requisite, "course_id", "course_requisite_id", requisites
+                )
+                created_requisites_count = add_objects_to_session(filtered_requisites)
 
                 kanvas_db.session.commit()
                 flash_successful_load(created_courses_count, JC.COURSES_LABEL)
-                flash_successful_load(created_requisites, JC.REQUISITES_LABEL)
+                flash_successful_load(created_requisites_count, JC.REQUISITES_LABEL)
                 return redirect(url_for('load_json.index'))
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading courses: {str(e)}", "danger")
+                flash_invalid_load(JC.COURSES_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/courses.html')
@@ -202,7 +199,7 @@ def course_instances():
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading course instances: {str(e)}", "danger")
+                flash_invalid_load(JC.COURSE_INSTANCES_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/course_instances.html')
@@ -238,7 +235,7 @@ def sections():
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading sections: {str(e)}", "danger")
+                flash_invalid_load(JC.SECTIONS_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/sections.html')
@@ -269,7 +266,7 @@ def student_sections():
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading student-section assignments: {str(e)}", "danger")
+                flash_invalid_load(JC.STUDENT_SECTIONS_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/student_sections.html')
@@ -291,12 +288,12 @@ def grades():
                 created_grades_count = add_objects_to_session(valid_entries)
 
                 kanvas_db.session.commit()
-                flash(f"{created_grades_count} grades successfully assigned.", "success")
+                flash_successful_load(created_grades_count, JC.GRADES_LABEL)
                 return redirect(url_for('load_json.index'))
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading grades: {str(e)}", "danger")
+                flash_invalid_load(JC.GRADES_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/grades.html')
