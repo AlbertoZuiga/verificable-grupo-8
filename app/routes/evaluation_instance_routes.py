@@ -32,9 +32,13 @@ def show(id):
 def create():
     if request.method == 'POST':
         title = request.form['title']
-        instance_weighing = request.form['instance_weighing']
         optional = request.form.get("optional") == "on"
         evaluation_id = request.form['evaluation_id']
+        
+        evaluation = Evaluation.query.get_or_404(evaluation_id)
+        if evaluation is None:
+            flash("Invalid evaluation ID", "danger")
+            return redirect(url_for('evaluation_instance.create'))
 
         section_id = get_section_id(evaluation_id)
 
@@ -44,9 +48,10 @@ def create():
         
         evaluation_instance = EvaluationInstance(
             title=title,
-            instance_weighing=instance_weighing,
+            instance_weighing=0.0,
             optional=optional,
-            evaluation_id=evaluation_id
+            evaluation_id=evaluation_id,
+            index_in_evaluation=len(evaluation.instances) + 1,
         )
 
         try:
@@ -55,8 +60,8 @@ def create():
             return redirect(url_for('evaluation_instance.show', id=evaluation_instance.id))
         except Exception as e:
             kanvas_db.session.rollback()
-            print(f"Error creating evaluation_instance: {e}")
-    
+            flash(f"Error creating evaluation_instance: {e}", "danger")
+
     evaluations = Evaluation.query.all()
     return render_template('evaluation_instances/create.html', evaluations=evaluations)
 
@@ -68,7 +73,6 @@ def edit(id):
 
     if request.method == 'POST':
         evaluation_instance.title = request.form['title']
-        evaluation_instance.instance_weighing = request.form['instance_weighing']
         evaluation_instance.optional = request.form.get("optional") == "on"
         evaluation_id = request.form['evaluation_id']
 
