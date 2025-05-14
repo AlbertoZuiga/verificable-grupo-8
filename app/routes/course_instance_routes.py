@@ -23,18 +23,17 @@ def create():
         semester = request.form.get('semester')
 
         if not course_id or not year or not semester:
-            print("Todos los campos son obligatorios.")
-            print(course_id, year, semester)
+            flash("Todos los campos son obligatorios.", "warning")
         else:
             new_course_instance = CourseInstance(course_id=course_id, year=year, semester=semester)
             try:
                 kanvas_db.session.add(new_course_instance)
                 kanvas_db.session.commit()
-                print("Instancia del curso creada exitosamente.")
+                flash("Instancia del curso creada exitosamente.", "success")
                 return redirect(url_for('course_instance.index'))
             except Exception as e:
                 kanvas_db.session.rollback()
-                print(f"Error al crear la instancia del curso: {str(e)}")
+                flash(f"Error al crear la instancia del curso: {str(e)}", "danger")
 
     courses = Course.query.all()
     return render_template('course_instances/create.html', courses=courses)
@@ -49,20 +48,19 @@ def edit(id):
         semester = request.form.get('semester')
 
         if not course_id or not year or not semester:
-            print("Todos los campos son obligatorios.")
-            print(course_id, year, semester)
+            flash("Todos los campos son obligatorios.", "warning")
         else:
             course_instance.course_id = course_id
             course_instance.year = year
             course_instance.semester = semester
             try:
                 kanvas_db.session.commit()
-                print("Instancia del curso editada exitosamente.")
+                flash("Instancia del curso editada exitosamente.", "success")
                 return redirect(url_for('course_instance.index'))
             except Exception as e:
                 kanvas_db.session.rollback()
-                print(f"Error al editar la instancia del curso: {str(e)}")
-    
+                flash(f"Error al editar la instancia del curso: {str(e)}", "danger")
+
     courses = Course.query.all()
     return render_template('course_instances/edit.html', course_instance=course_instance, courses=courses)
 
@@ -75,8 +73,7 @@ def delete(id):
         flash("Instancia del curso eliminada con éxito.", "success")
     except Exception as e:
         kanvas_db.session.rollback()
-        flash("No se puede eliminar esta instancia porque tiene elementos asociados. Elimínalos primero.", "danger")
-        print(f"Error deleting course_instance: {e}")
+        flash(f"Error deleting course_instance: {e}", "danger")
         return redirect(url_for('course_instance.show', id=id))
     
     return redirect(url_for('course_instance.index'))
