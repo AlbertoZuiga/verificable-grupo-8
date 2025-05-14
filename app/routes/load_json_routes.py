@@ -1,14 +1,12 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, url_for
 
 from app.models import (
     Classroom,
     Course,
     CourseInstance,
-    EvaluationInstance,
     Requisite,
     Section,
     Student,
-    StudentEvaluationInstance,
     StudentSection,
     Teacher,
     User,
@@ -16,17 +14,8 @@ from app.models import (
 
 from app import kanvas_db
 from app.services.create_object_instances import (
-    create_classroom_instances,
-    create_course_instance_instances,
-    create_course_instances,
-    create_evaluation_instance_instances,
-    create_evaluation_instances,
-    create_grade_instances,
-    create_requisite_instances,
-    create_section_instances,
-    create_student_instances,
-    create_student_section_instances,
-    create_teacher_instances,
+    add_objects_to_session,
+    build_requisite_objects_from_codes
 )
 from app.utils import json_constants as JC
 from app.utils.parse_json import (
@@ -42,7 +31,7 @@ from app.utils.parse_json import (
 
 from app.services.database_validations import filter_existing_by_field, filter_existing_by_two_fields, filter_grades
 
-from app.utils.flash_messages import flash_successful_load, flash_invalid_grades
+from app.utils.flash_messages import flash_successful_load, flash_invalid_grades, flash_invalid_load
 
 load_json_bp = Blueprint('load_json', __name__, url_prefix='/load_json')
 
@@ -71,16 +60,19 @@ def students():
                     for (user, student) in user_student_pairs
                     if user in filtered_users and student in filtered_students
                 ]
+                filtered_student_objects = [student for _, student in filtered_pairs]
+                filtered_user_objects = [user for user, _ in filtered_pairs]
 
-                created_count = create_student_instances(filtered_pairs)
+                created_students_count = add_objects_to_session(filtered_student_objects)
+                add_objects_to_session(filtered_user_objects)
 
                 kanvas_db.session.commit()
-                flash_successful_load(created_count, JC.STUDENTS_LABEL)
+                flash_successful_load(created_students_count, JC.STUDENTS_LABEL)
                 return redirect(url_for('load_json.index'))
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading students: {str(e)}", "danger")
+                flash_invalid_load(JC.STUDENTS_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/students.html')
@@ -107,15 +99,19 @@ def teachers():
                     if user in filtered_users and teacher in filtered_teachers
                 ]
 
-                created_count = create_teacher_instances(filtered_pairs)
+                filtered_teacher_objects = [teacher for _, teacher in filtered_pairs]
+                filtered_user_objects = [user for user, _ in filtered_pairs]
+
+                created_teachers_count = add_objects_to_session(filtered_teacher_objects)
+                add_objects_to_session(filtered_user_objects)
 
                 kanvas_db.session.commit()
-                flash_successful_load(created_count, JC.TEACHERS_LABEL)
+                flash_successful_load(created_teachers_count, JC.TEACHERS_LABEL)
                 return redirect(url_for('load_json.index'))
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading teachers: {str(e)}", "danger")
+                flash_invalid_load(JC.TEACHERS_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/teachers.html')
@@ -131,18 +127,19 @@ def classrooms():
                 file_content = json_file.read().decode('utf-8')
                 classroom_objects = parse_classroom_json(file_content)
                 filtered_classrooms = filter_existing_by_field(model=Classroom, field_name="id", objects=classroom_objects)
-                created_count = create_classroom_instances(filtered_classrooms)
+                created_classrooms_count = add_objects_to_session(filtered_classrooms)
                 kanvas_db.session.commit()
                 
-                flash_successful_load(created_count, JC.CLASSROOMS_LABEL)
+                flash_successful_load(created_classrooms_count, JC.CLASSROOMS_LABEL)
                 return redirect(url_for('load_json.index'))
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading classrooms: {str(e)}", "danger")
+                flash_invalid_load(JC.CLASSROOMS_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/classrooms.html')
+
 
 @load_json_bp.route('/courses', methods=['GET', 'POST'])
 def courses():
@@ -153,27 +150,26 @@ def courses():
         if json_file and json_file.filename.endswith('.json') and json_type == JC.COURSES:
             try:
                 file_content = json_file.read().decode('utf-8')
-                parsed = parse_courses_json(file_content)
+                courses, requisite_code_pairs = parse_courses_json(file_content)
+                filtered_courses = filter_existing_by_field(Course, "id", courses)
+                created_courses_count = add_objects_to_session(filtered_courses)
 
-                filtered_courses = filter_existing_by_field(
-                    model=Course,
-                    field_name="id",
-                    objects=parsed[JC.COURSES]
+                kanvas_db.session.flush()
+
+                requisites, skipped = build_requisite_objects_from_codes(requisite_code_pairs)
+                filtered_requisites = filter_existing_by_two_fields(
+                    Requisite, "course_id", "course_requisite_id", requisites
                 )
-
-                created_courses = create_course_instances(filtered_courses)
-                kanvas_db.session.flush()  
-
-                created_requisites = create_requisite_instances(parsed[JC.REQUISITES])
+                created_requisites_count = add_objects_to_session(filtered_requisites)
 
                 kanvas_db.session.commit()
-                flash_successful_load(created_courses, JC.COURSES_LABEL)
-                flash_successful_load(created_requisites, JC.REQUISITES_LABEL)
+                flash_successful_load(created_courses_count, JC.COURSES_LABEL)
+                flash_successful_load(created_requisites_count, JC.REQUISITES_LABEL)
                 return redirect(url_for('load_json.index'))
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading courses: {str(e)}", "danger")
+                flash_invalid_load(JC.COURSES_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/courses.html')
@@ -195,15 +191,15 @@ def course_instances():
                     objects=parsed_instances
                 )
 
-                created_count = create_course_instance_instances(filtered_instances)
+                created_courses_count = add_objects_to_session(filtered_instances)
 
                 kanvas_db.session.commit()
-                flash_successful_load(created_count, JC.COURSE_INSTANCES_LABEL)
+                flash_successful_load(created_courses_count, JC.COURSE_INSTANCES_LABEL)
                 return redirect(url_for('load_json.index'))
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading course instances: {str(e)}", "danger")
+                flash_invalid_load(JC.COURSE_INSTANCES_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/course_instances.html')
@@ -225,21 +221,21 @@ def sections():
                     objects=parsed_sections
                 )
 
-                count_sections = create_section_instances(filtered_sections)
-                count_evaluations = create_evaluation_instances(parsed_evaluations)
-                count_instances = create_evaluation_instance_instances(parsed_instances)
-                
+                created_sections_count = add_objects_to_session(filtered_sections)
+                created_evaluations_count = add_objects_to_session(parsed_evaluations)
+                created_evaluation_instances_count = add_objects_to_session(parsed_instances)
+
                 kanvas_db.session.commit()
 
-                flash_successful_load(count_sections, JC.SECTIONS_LABEL)
-                flash_successful_load(count_evaluations, JC.EVALUATIONS_LABEL)
-                flash_successful_load(count_instances, JC.EVALUATION_INSTANCES_LABEL)
+                flash_successful_load(created_sections_count, JC.SECTIONS_LABEL)
+                flash_successful_load(created_evaluations_count, JC.EVALUATIONS_LABEL)
+                flash_successful_load(created_evaluation_instances_count, JC.EVALUATION_INSTANCES_LABEL)
 
                 return redirect(url_for('load_json.index'))
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading sections: {str(e)}", "danger")
+                flash_invalid_load(JC.SECTIONS_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/sections.html')
@@ -262,15 +258,15 @@ def student_sections():
                     objects=parsed_links
                 )
 
-                created_count = create_student_section_instances(filtered_links)
+                created_student_sections_count = add_objects_to_session(filtered_links)
 
                 kanvas_db.session.commit()
-                flash_successful_load(created_count, JC.STUDENT_SECTIONS_LABEL)
+                flash_successful_load(created_student_sections_count, JC.STUDENT_SECTIONS_LABEL)
                 return redirect(url_for('load_json.index'))
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading student-section assignments: {str(e)}", "danger")
+                flash_invalid_load(JC.STUDENT_SECTIONS_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/student_sections.html')
@@ -289,15 +285,15 @@ def grades():
                 valid_entries = filter_grades(parsed_data)
                 flash_invalid_grades(parsed_data)
 
-                created_count = create_grade_instances(valid_entries)
+                created_grades_count = add_objects_to_session(valid_entries)
 
                 kanvas_db.session.commit()
-                flash_successful_load(created_count, JC.GRADES_LABEL)
+                flash_successful_load(created_grades_count, JC.GRADES_LABEL)
                 return redirect(url_for('load_json.index'))
 
             except Exception as e:
                 kanvas_db.session.rollback()
-                flash(f"Error loading grades: {str(e)}", "danger")
+                flash_invalid_load(JC.GRADES_LABEL, e)
                 return f"Error: {str(e)}", 400
 
     return render_template('load_json/grades.html')

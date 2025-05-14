@@ -1,25 +1,11 @@
 from flask import flash
 
-from app.models import (
-    Evaluation,
-    EvaluationInstance,
-    Student,
-    StudentEvaluationInstance,
-    StudentSection,
-    Teacher,
-    User,
-    Course,
-    CourseInstance,
-    Section,
-    Classroom,
-    Requisite,
-    WeighingType,
-    Semester,
-)
-
-def flash_successful_load(count, entity):
-    message = f"{count} {entity} loaded successfully."
+def flash_successful_load(object_count: int, object_label: str):
+    message = f"{object_count} {object_label} cargados con éxito."
     flash(message, "success")
+
+def flash_invalid_load(object_label: str, exception: Exception):
+    flash(f"Error cargando {object_label}: {str(exception)}", "danger")
 
 # Created to handle grades, which is a special case
 def flash_invalid_grades(parsed_data: list):
@@ -30,7 +16,7 @@ def flash_invalid_grades(parsed_data: list):
         student_id = entry.get("student_id")
 
         if reason == "missing_eval_instance":
-            flash(f"No EvaluationInstance found for topic ID {topic_id} and index {index}. Skipping.", "warning")
+            flash(f"No hay EvaluationInstance encontrado para topic ID {topic_id} e índice {index}. Saltando.", "warning")
 
         elif reason == "grade_exists":
-            flash(f"Grade already exists for student {student_id} in instance ({topic_id}, {index}). Skipping.", "info")
+            flash(f"Nota ya existe para alumno {student_id} en instancia ({topic_id}, {index}). Saltando.", "info")

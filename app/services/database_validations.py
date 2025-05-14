@@ -24,7 +24,7 @@ def filter_existing_by_two_fields(model, field_1: str, field_2: str, objects) ->
 
 # Created to handle grades, which is a special case
 def filter_grades(parsed_data: list) -> list:
-    filtered_grades = []
+    filtered = []
 
     for entry in parsed_data:
         topic_id = entry["topic_id"]
@@ -48,10 +48,10 @@ def filter_grades(parsed_data: list) -> list:
             entry["__reason__"] = "grade_exists"
             continue
 
-        filtered_grades.append({
-            "evaluation_instance_id": eval_instance.id,
-            "student_id": student_id,
-            "grade": entry["grade"]
-        })
+        filtered.append(StudentEvaluationInstance(
+            evaluation_instance_id=eval_instance.id,
+            student_id=student_id,
+            grade=entry["grade"]
+        ))
 
-    return filtered_grades
+    return filtered

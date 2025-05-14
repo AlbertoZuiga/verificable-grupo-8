@@ -1,6 +1,22 @@
 import json
+
 from flask import flash
-from app.models import Classroom, User, Student, Teacher, Course, Semester, CourseInstance, Section, Evaluation, EvaluationInstance, WeighingType, StudentSection, StudentEvaluationInstance
+
+from app.models import (
+    Classroom,
+    Course,
+    CourseInstance,
+    Evaluation,
+    EvaluationInstance,
+    Section,
+    Semester,
+    Student,
+    StudentSection,
+    Teacher,
+    User,
+    WeighingType,
+)
+
 from app.utils import json_constants as JC
 
 def parse_classroom_json(json_data):
@@ -76,28 +92,20 @@ def parse_courses_json(json_data):
     course_list = data[JC.COURSES]
 
     courses = []
-    requisite_relations = []
+    requisite_code_pairs = [] 
 
     for item in course_list:
-        course = Course(
+        courses.append(Course(
             id=item[JC.ID],
             code=item[JC.CODE],
             title=item[JC.DESCRIPTION],
             credits=item[JC.CREDITS],
-        )
-        courses.append(course)
+        ))
 
-        # Store requisite links (by course code)
         for req_code in item.get(JC.REQUISITES, []):
-            requisite_relations.append({
-                JC.MAIN_COURSE_CODE: item[JC.CODE],
-                JC.REQUISITE_CODE: req_code
-            })
+            requisite_code_pairs.append((item[JC.CODE], req_code))
 
-    return {
-        JC.COURSES: courses,
-        JC.REQUISITES: requisite_relations
-    }
+    return courses, requisite_code_pairs
 
 def parse_course_instances_json(json_data):
     data = json.loads(json_data)
