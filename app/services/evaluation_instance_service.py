@@ -1,6 +1,10 @@
 from app import kanvas_db
-from app.models import EvaluationInstance, StudentSection, StudentEvaluationInstance
+from app.models import EvaluationInstance, StudentSection, StudentEvaluationInstance, Evaluation
 
+
+def get_section_id(evaluation_id):
+    section = Evaluation.query.get_or_404(evaluation_id).section
+    return section.id
 
 def get_evaluation_instance_with_students_and_grades(evaluation_instance_id):
     evaluation_instance = EvaluationInstance.query.get_or_404(evaluation_instance_id)

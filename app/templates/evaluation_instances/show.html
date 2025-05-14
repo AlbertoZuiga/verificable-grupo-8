@@ -1,24 +1,32 @@
 {% extends "base.html" %}
 
-{% block title %} Evaluación: {{evaluation_instance.title}} {% endblock %}
+{% block title %} Evaluación: {{ evaluation_instance.title }} {% endblock %}
 
 {% block content %}
 
 <div class="container">
   <h1 class="mb-4 text-primary">Detalles de la Evaluación</h1>
+
+  {% if evaluation_instance.evaluation.section.closed %}
+    <div class="alert alert-warning">Esta sección está <strong>cerrada</strong>. No se permiten más modificaciones.</div>
+  {% endif %}
+
   <div class="card shadow-lg p-4">
     <p><strong>Nombre:</strong> {{ evaluation_instance.title }}</p>
     <p><strong>Grupo de Evaluaciones:</strong> {{ evaluation_instance.evaluation.title }}</p>
     <p><strong>Ramo:</strong> {{ evaluation_instance.evaluation.section.course_instance.course.title }} ({{ evaluation_instance.evaluation.section.course_instance.year }}-{{ evaluation_instance.evaluation.section.course_instance.semester }})</p>
-    <p><strong>Seccion:</strong> {{ evaluation_instance.evaluation.section.code }}</p>
+    <p><strong>Sección:</strong> {{ evaluation_instance.evaluation.section.code }}</p>
     <p><strong>Ponderación:</strong> {{ evaluation_instance.instance_weighing }}</p>
 
     <div class="mt-4 d-flex justify-content-between">
       <a href="{{ url_for('evaluation_instance.index') }}" class="btn btn-secondary"> ⬅ Volver al listado </a>
-      <div class="btn-group" role="group">
-        <a href="{{ url_for('evaluation_instance.edit', id=evaluation_instance.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
-        <a href="{{ url_for('evaluation_instance.delete', id=evaluation_instance.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta evaluación?');"> 🗑 Eliminar </a>
-      </div>
+      
+      {% if not evaluation_instance.evaluation.section.closed %}
+        <div class="btn-group" role="group">
+          <a href="{{ url_for('evaluation_instance.edit', id=evaluation_instance.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
+          <a href="{{ url_for('evaluation_instance.delete', id=evaluation_instance.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta evaluación?');"> 🗑 Eliminar </a>
+        </div>
+      {% endif %}
     </div>
   </div>
 
@@ -31,23 +39,25 @@
           <div class="d-flex align-items-center gap-2">
             {% if student.id in student_grades %}
               {% set grade = student_grades[student.id] %}
-              <a href="{{ url_for('grades.assign_or_edit_grade', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
-                class="btn btn-sm {% if grade >= 4.0 %}btn-success{% else %}btn-danger{% endif %}">
-                {{ grade }} ✏️
-              </a>
-
-              <form method="post"
-                    action="{{ url_for('grades.delete_grade', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
-                    onsubmit="return confirm('¿Estás seguro de que quieres eliminar la nota de {{ student.user.first_name }}?')">
-                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar nota">
-                      <i class="fas fa-trash-alt"></i>
-                    </button>
-              </form>
+              {% if evaluation_instance.evaluation.section.closed %}
+                <span class="badge {% if grade >= 4.0 %}bg-success{% else %}bg-danger{% endif %}">
+                  {{ grade }}
+                </span>
+              {% else %}
+                <a href="{{ url_for('grades.assign_or_edit_grade', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
+                   class="btn btn-sm {% if grade >= 4.0 %}btn-success{% else %}btn-danger{% endif %}">
+                  {{ grade }} ✏️
+                </a>
+                <form method="post"
+                      action="{{ url_for('grades.delete_grade', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
+                      onsubmit="return confirm('¿Estás seguro de que quieres eliminar la nota de {{ student.user.first_name }}?')">
+                      <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar nota">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                </form>
+              {% endif %}
             {% else %}
-              <a href="{{ url_for('grades.assign_or_edit_grade', evaluation_instance_id=evaluation_instance.id, student_id=student.id) }}"
-                class="btn btn-sm btn-outline-primary">
-                Calificar
-              </a>
+              <span>-</span>
             {% endif %}
           </div>
         </li>

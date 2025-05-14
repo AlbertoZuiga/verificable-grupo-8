@@ -1,9 +1,12 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import kanvas_db
-from app.models import EvaluationInstance, Evaluation
+from app.models import EvaluationInstance, Evaluation, Section
 from app.services.evaluation_instance_service import (
-    get_evaluation_instance_with_students_and_grades
+    get_evaluation_instance_with_students_and_grades,
+    get_section_id
 )
+from app.services.decorators import require_section_open
+from app.services.validations import validate_section_for_evaluation
 
 evaluation_instance_bp = Blueprint('evaluation_instance', __name__, url_prefix='/evaluation_instances')
 
@@ -32,10 +35,13 @@ def create():
         instance_weighing = request.form['instance_weighing']
         optional = request.form.get("optional") == "on"
         evaluation_id = request.form['evaluation_id']
-        
-        if Evaluation.query.get(evaluation_id) is None:
-            return "Invalid evaluation ID", 400
 
+        section_id = get_section_id(evaluation_id)
+
+        validation_error = validate_section_for_evaluation(section_id)
+        if validation_error:
+            return validation_error
+        
         evaluation_instance = EvaluationInstance(
             title=title,
             instance_weighing=instance_weighing,
@@ -56,6 +62,7 @@ def create():
 
 
 @evaluation_instance_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
+@require_section_open(lambda id: Evaluation.query.get_or_404(id).section) 
 def edit(id):
     evaluation_instance = EvaluationInstance.query.get_or_404(id)
 
@@ -82,6 +89,7 @@ def edit(id):
 
 
 @evaluation_instance_bp.route('/delete/<int:id>')
+@require_section_open(lambda id: Evaluation.query.get_or_404(id).section)
 def delete(id):
     evaluation_instance = EvaluationInstance.query.get_or_404(id)
     try:
