@@ -11,7 +11,7 @@ class EvaluationInstance(kanvas_db.Model):
     evaluation = kanvas_db.relationship('Evaluation', back_populates='instances')
 
     title = kanvas_db.Column(kanvas_db.String(100), nullable=False)
-    instance_weighing = kanvas_db.Column(kanvas_db.Integer, nullable=False)
+    instance_weighing = kanvas_db.Column(kanvas_db.Float, nullable=False)
     optional = kanvas_db.Column(kanvas_db.Boolean, default=False, nullable=False)
 
     student_evaluation_instances = kanvas_db.relationship('StudentEvaluationInstance', back_populates='evaluation_instance', cascade='all, delete-orphan', passive_deletes=True)

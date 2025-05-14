@@ -29,14 +29,12 @@ def edit_instance_weights(id):
             flash(f"Entrada inválida para los pesos: {e}", "danger")
             return redirect(url_for('evaluation.edit_instance_weights', id=evaluation.id))
 
-        # Validación para evaluaciones con porcentajes
         if evaluation.weighing_system == WeighingType.PERCENTAGE:
             total = sum(weights.values())
             if round(total, 2) != 100.0:
                 flash("La suma de los pesos de las instancias debe ser 100 para las evaluaciones ponderadas.", "danger")
                 return redirect(url_for('evaluation.edit_instance_weights', id=evaluation.id))
 
-        # Asignar pesos nuevos
         for instance in evaluation.instances:
             instance.instance_weighing = weights[instance.id]
 
