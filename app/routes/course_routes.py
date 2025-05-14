@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from app import kanvas_db
 from app.models.course import Course
 from app.services.course_service import get_course_and_other_courses
-from app.utils.form_fields_constants import CourseFields
 
 course_bp = Blueprint('course', __name__, url_prefix='/courses')
 
