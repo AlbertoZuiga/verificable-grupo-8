@@ -1,3 +1,19 @@
+{% set nav_items = [
+  ('Cursos', 'course.index', 'Ver cursos disponibles'),
+  ('Instancias Cursos', 'course_instance.index', 'Ver instancias de cursos disponibles'),
+  ('Secciones', 'section.index', 'Ver secciones disponibles'),
+  ('Salas', 'classroom.index', 'Ver salas disponibles'),
+  ('Evaluaciones', 'evaluation.index', 'Ver evaluaciones disponibles'),
+  ('Instancias Evaluaciones', 'evaluation_instance.index', 'Ver instancias de evaluaciones disponibles'),
+  ('Carga masiva', 'load_json.index', 'Cargar archivos JSON'),
+  ('Horario', 'schedule.index', 'Ver horario'),
+  ('Usuarios', None, None, [
+    ('Todos', 'user.index', 'fas fa-users'),
+    ('Profesores', 'teacher.index', 'fas fa-chalkboard-teacher'),
+    ('Alumnos', 'student.index', 'fas fa-user-graduate')
+  ])
+] %}
+
 <header>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
@@ -7,47 +23,25 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Usuarios </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-              <li><a class="dropdown-item" href="{{ url_for('user.index') }}"><i class="fas fa-users"></i> Todos</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('teacher.index') }}"><i class="fas fa-chalkboard-teacher"></i> Profesores</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('student.index') }}"><i class="fas fa-user-graduate"></i> Alumnos</a></li>
-            </ul>
-          </li>
+          {% for item in nav_items %}
+            {% if item[2] %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for(item[1]) }}" aria-label="{{ item[2] }}">{{ item[0] }}</a>
+              </li>
+            {% else %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown{{ loop.index }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{ item[0] }}
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown{{ loop.index }}">
+                  {% for sublabel, subendpoint, subicon in item[3] %}
+                    <li><a class="dropdown-item" href="{{ url_for(subendpoint) }}"><i class="{{ subicon }}"></i> {{ sublabel }}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% endif %}
+          {% endfor %}
 
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('course.index') }}" aria-label="Ver cursos disponibles"> Cursos </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('course_instance.index') }}" aria-label="Ver instancias de cursos disponibles"> Instancias Cursos </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('section.index') }}" aria-label="Ver secciones disponibles"> Secciones </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('classroom.index') }}" aria-label="Ver salas disponibles"> Salas </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('evaluation.index') }}" aria-label="Ver evaluaciones disponibles"> Evaluaciones </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('evaluation_instance.index') }}" aria-label="Ver instancias de evaluaciones disponibles"> Instancias Evaluaciones </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('load_json.index') }}" aria-label="Cargar archivos JSON"> Carga masiva </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('schedule.index') }}" aria-label="Ver horario"> Horario </a>
-          </li>
-          
           {% if current_user.is_authenticated %}
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('auth.logout') }}" aria-label="Cerrar sesión">Cerrar sesión</a>
