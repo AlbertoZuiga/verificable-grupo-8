@@ -3,16 +3,9 @@
 {% block title %} Subir Archivo JSON {% endblock %}
 
 {% block content %}
-    <div class="container mt-4">
-        <h2>Subir Archivo JSON</h2>
-        <form action="{{ url_for('load_json.sections') }}" method="post" enctype="multipart/form-data" class="mt-3">
-            <div class="mb-3">
-                <label for="jsonFile" class="form-label">Selecciona un archivo JSON:</label>
-                <input type="file" id="jsonFile" name="file" accept=".json" required class="form-control">
-                <input type="hidden" name="json_type" value="secciones">
-            </div>
-            <a href="{{ url_for('load_json.index') }}" class="btn btn-secondary">Cancelar</a>
-            <button type="submit" class="btn btn-success">Subir</button>
-        </form>
-    </div>
+    {% include 'load_json/_form.html' with context %}
 {% endblock %}
+
+{% set title = 'secciones' %}
+{% set form_action = url_for('load_json.sections') %}
+{% set json_type = 'secciones' %}
