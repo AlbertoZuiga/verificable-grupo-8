@@ -39,37 +39,37 @@ load_json_bp = Blueprint('load_json', __name__, url_prefix='/load_json')
 def index():
     return render_template('load_json/index.html')
 
+def process_students_json(json_file):
+    file_content = json_file.read().decode('utf-8')
+    user_student_pairs = parse_students_json(file_content)
+    users, students = zip(*user_student_pairs) if user_student_pairs else ([], [])
+    filtered_users = filter_existing_by_field(User, "email", users)
+    filtered_students = filter_existing_by_field(Student, "id", students)
+
+    filtered_pairs = [
+        (user, student)
+        for (user, student) in user_student_pairs
+        if user in filtered_users and student in filtered_students
+    ]
+    filtered_student_objects = [student for _, student in filtered_pairs]
+    filtered_user_objects = [user for user, _ in filtered_pairs]
+
+    created_students_count = add_objects_to_session(filtered_student_objects)
+    add_objects_to_session(filtered_user_objects)
+
+    kanvas_db.session.commit()
+    flash_successful_load(created_students_count, JC.STUDENTS_LABEL)
+
 @load_json_bp.route('/students', methods=['GET', 'POST'])
-def students():
+def load_students_from_json():
     if request.method == 'POST':
         json_file = request.files['file']
         json_type = request.form['json_type']
 
         if json_file and json_file.filename.endswith('.json') and json_type == JC.STUDENTS:
             try:
-                file_content = json_file.read().decode('utf-8')
-                user_student_pairs = parse_students_json(file_content)
-
-                # Handled slightly differently to account for two models
-                users, students = zip(*user_student_pairs) if user_student_pairs else ([], [])
-                filtered_users = filter_existing_by_field(User, "email", users)
-                filtered_students = filter_existing_by_field(Student, "id", students)
-
-                filtered_pairs = [
-                    (user, student)
-                    for (user, student) in user_student_pairs
-                    if user in filtered_users and student in filtered_students
-                ]
-                filtered_student_objects = [student for _, student in filtered_pairs]
-                filtered_user_objects = [user for user, _ in filtered_pairs]
-
-                created_students_count = add_objects_to_session(filtered_student_objects)
-                add_objects_to_session(filtered_user_objects)
-
-                kanvas_db.session.commit()
-                flash_successful_load(created_students_count, JC.STUDENTS_LABEL)
+                process_students_json(json_file)
                 return redirect(url_for('load_json.index'))
-
             except Exception as e:
                 kanvas_db.session.rollback()
                 flash_invalid_load(JC.STUDENTS_LABEL, e)
@@ -77,38 +77,37 @@ def students():
 
     return render_template('load_json/students.html')
 
+def process_teachers_json(json_file):
+    file_content = json_file.read().decode('utf-8')
+    user_teacher_pairs = parse_teachers_json(file_content)
+    users, teachers = zip(*user_teacher_pairs) if user_teacher_pairs else ([], [])
+    filtered_users = filter_existing_by_field(User, "email", users)
+    filtered_teachers = filter_existing_by_field(Teacher, "user_id", teachers)
+
+    filtered_pairs = [
+        (user, teacher)
+        for (user, teacher) in user_teacher_pairs
+        if user in filtered_users and teacher in filtered_teachers
+    ]
+    filtered_teacher_objects = [teacher for _, teacher in filtered_pairs]
+    filtered_user_objects = [user for user, _ in filtered_pairs]
+
+    created_teachers_count = add_objects_to_session(filtered_teacher_objects)
+    add_objects_to_session(filtered_user_objects)
+
+    kanvas_db.session.commit()
+    flash_successful_load(created_teachers_count, JC.TEACHERS_LABEL)
+
 @load_json_bp.route('/teachers', methods=['GET', 'POST'])
-def teachers():
+def load_teachers_from_json():
     if request.method == 'POST':
         json_file = request.files['file']
         json_type = request.form['json_type']
 
         if json_file and json_file.filename.endswith('.json') and json_type == JC.TEACHERS:
             try:
-                file_content = json_file.read().decode('utf-8')
-                user_teacher_pairs = parse_teachers_json(file_content)
-
-                users, teachers = zip(*user_teacher_pairs) if user_teacher_pairs else ([], [])
-                
-                filtered_users = filter_existing_by_field(User, "email", users)
-                filtered_teachers = filter_existing_by_field(Teacher, "user_id", teachers)
-
-                filtered_pairs = [
-                    (user, teacher)
-                    for (user, teacher) in user_teacher_pairs
-                    if user in filtered_users and teacher in filtered_teachers
-                ]
-
-                filtered_teacher_objects = [teacher for _, teacher in filtered_pairs]
-                filtered_user_objects = [user for user, _ in filtered_pairs]
-
-                created_teachers_count = add_objects_to_session(filtered_teacher_objects)
-                add_objects_to_session(filtered_user_objects)
-
-                kanvas_db.session.commit()
-                flash_successful_load(created_teachers_count, JC.TEACHERS_LABEL)
+                process_teachers_json(json_file)
                 return redirect(url_for('load_json.index'))
-
             except Exception as e:
                 kanvas_db.session.rollback()
                 flash_invalid_load(JC.TEACHERS_LABEL, e)
@@ -117,7 +116,7 @@ def teachers():
     return render_template('load_json/teachers.html')
 
 @load_json_bp.route('/classrooms', methods=['GET', 'POST'])
-def classrooms():
+def load_classrooms_from_json():
     if request.method == 'POST':
         json_file = request.files['file']
         json_type = request.form['json_type']
@@ -140,9 +139,8 @@ def classrooms():
 
     return render_template('load_json/classrooms.html')
 
-
 @load_json_bp.route('/courses', methods=['GET', 'POST'])
-def courses():
+def load_courses_from_json():
     if request.method == 'POST':
         json_file = request.files.get('file')
         json_type = request.form.get('json_type')
@@ -175,7 +173,7 @@ def courses():
     return render_template('load_json/courses.html')
 
 @load_json_bp.route('/course_instances', methods=['GET', 'POST'])
-def course_instances():
+def load_course_instances_from_json():
     if request.method == 'POST':
         json_file = request.files.get('file')
         json_type = request.form.get('json_type')
@@ -205,7 +203,7 @@ def course_instances():
     return render_template('load_json/course_instances.html')
 
 @load_json_bp.route('/sections', methods=['GET', 'POST'])
-def sections():
+def load_sections_from_json():
     if request.method == 'POST':
         json_file = request.files.get('file')
         json_type = request.form.get('json_type')
@@ -241,7 +239,7 @@ def sections():
     return render_template('load_json/sections.html')
 
 @load_json_bp.route('/student_sections', methods=['GET', 'POST'])
-def student_sections():
+def load_student_sections_from_json():
     if request.method == 'POST':
         json_file = request.files.get('file')
         json_type = request.form.get('json_type')
@@ -272,7 +270,7 @@ def student_sections():
     return render_template('load_json/student_sections.html')
 
 @load_json_bp.route('/grades', methods=['GET', 'POST'])
-def grades():
+def load_grades_from_json():
     if request.method == 'POST':
         json_file = request.files.get('file')
         json_type = request.form.get('json_type')

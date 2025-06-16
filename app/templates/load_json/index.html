@@ -4,14 +4,14 @@
 
 {% block content %}
 {% set json_buttons = [
-    ('Alumnos', 'students'),
-    ('Profesores', 'teachers'),
-    ('Cursos', 'courses'),
-    ('Instancias de Cursos', 'course_instances'),
-    ('Secciones', 'sections'),
-    ('Alumnos por Sección', 'student_sections'),
-    ('Notas de Alumnos', 'grades'),
-    ('Salas de Clase', 'classrooms')
+    ('Alumnos', 'load_students_from_json'),
+    ('Profesores', 'load_teachers_from_json'),
+    ('Cursos', 'load_courses_from_json'),
+    ('Instancias de Cursos', 'load_course_instances_from_json'),
+    ('Secciones', 'load_sections_from_json'),
+    ('Alumnos por Sección', 'load_student_sections_from_json'),
+    ('Notas de Alumnos', 'load_grades_from_json'),
+    ('Salas de Clase', 'load_classrooms_from_json')
 ] %}
 
 <ul class="list-unstyled mt-4">
