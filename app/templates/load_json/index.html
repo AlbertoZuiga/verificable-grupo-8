@@ -3,14 +3,22 @@
 {% block title %} Cargar JSON {% endblock %}
 
 {% block content %}
-    <ul class="list-unstyled mt-4">
-        <li><a href="{{ url_for('load_json.students') }}" class="btn btn-primary mb-2">📤 Cargar JSON Alumnos</a></li>
-        <li><a href="{{ url_for('load_json.teachers') }}" class="btn btn-primary mb-2">📤 Cargar JSON Profesores</a></li>
-        <li><a href="{{ url_for('load_json.courses') }}" class="btn btn-primary mb-2">📤 Cargar JSON Cursos</a></li>
-        <li><a href="{{ url_for('load_json.course_instances') }}" class="btn btn-primary mb-2">📤 Cargar JSON Instancias de Cursos</a></li>
-        <li><a href="{{ url_for('load_json.sections') }}" class="btn btn-primary mb-2">📤 Cargar JSON Secciones</a></li>
-        <li><a href="{{ url_for('load_json.student_sections') }}" class="btn btn-primary mb-2">📤 Cargar JSON Alumnos por Sección</a></li>
-        <li><a href="{{ url_for('load_json.grades') }}" class="btn btn-primary mb-2">📤 Cargar JSON Notas de Alumnos</a></li>
-        <li><a href="{{ url_for('load_json.classrooms') }}" class="btn btn-primary mb-2">📤 Cargar JSON Salas de Clase</a></li>
-    </ul>
+{% set json_buttons = [
+    ('Alumnos', 'students'),
+    ('Profesores', 'teachers'),
+    ('Cursos', 'courses'),
+    ('Instancias de Cursos', 'course_instances'),
+    ('Secciones', 'sections'),
+    ('Alumnos por Sección', 'student_sections'),
+    ('Notas de Alumnos', 'grades'),
+    ('Salas de Clase', 'classrooms')
+] %}
+
+<ul class="list-unstyled mt-4">
+  {% for label, endpoint in json_buttons %}
+    <li>
+      <a href="{{ url_for('load_json.' ~ endpoint) }}" class="btn btn-primary mb-2">📤 Cargar JSON {{ label }}</a>
+    </li>
+  {% endfor %}
+</ul>
 {% endblock %}
