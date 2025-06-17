@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %} Subir Archivo JSON {% endblock %}
+{% block title %} Subir JSON {{title}} {% endblock %}
 
 {% block content %}
     {% include 'load_json/_form.html' with context %}
@@ -8,4 +8,3 @@
 
 {% set title = 'alumnos' %}
 {% set form_action = url_for('load_json.load_students_from_json') %}
-{% set json_type = 'alumnos' %}
