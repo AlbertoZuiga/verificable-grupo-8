@@ -45,10 +45,24 @@ def edit(id):
     course = Course.query.get_or_404(id)
     form = CourseForm(obj=course)
     if form.validate_on_submit():
-        course.title = form.title.data
-        course.code = form.code.data
-        course.credits = form.credits.data
+        title = form.title.data
+        code = form.code.data
+        credits = form.credits.data
 
+        existing_course = Course.query.filter_by(title=title)
+        if existing_course and existing_course.id != id:
+            flash("Ya existe un curso con ese título.", 'danger')
+            return render_template('courses/create.html', form=form, course=course)
+        
+        existing_course = Course.query.filter_by(code=code)
+        if existing_course and existing_course.id != id:
+            flash("Ya existe un curso con ese codigo.", 'danger')
+            return render_template('courses/create.html', form=form, course=course)
+        
+        course.title = title
+        course.code = code
+        course.credits = credits
+        
         kanvas_db.session.commit()
         flash("Instancia del curso actualizada exitosamente.", "success")
         return redirect(url_for('course.show', id=course.id))
