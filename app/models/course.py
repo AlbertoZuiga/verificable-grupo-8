@@ -4,8 +4,8 @@ class Course(kanvas_db.Model):
     __tablename__ = 'courses'
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)
-    title = kanvas_db.Column(kanvas_db.String(100), nullable=False, unique=True)
-    code = kanvas_db.Column(kanvas_db.String(20), nullable=False, unique=True)
+    title = kanvas_db.Column(kanvas_db.String(60), nullable=False, unique=True)
+    code = kanvas_db.Column(kanvas_db.String(15), nullable=False, unique=True)
     credits = kanvas_db.Column(kanvas_db.Integer, nullable=False)
 
     prerequisites = kanvas_db.relationship('Requisite', foreign_keys='Requisite.course_id', back_populates='course', overlaps="course_requisite,requisites_as_main", cascade='all, delete-orphan')
