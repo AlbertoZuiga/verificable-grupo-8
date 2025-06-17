@@ -73,7 +73,8 @@ def load_students_from_json():
         except Exception as e:
             kanvas_db.session.rollback()
             flash_invalid_load(JC.STUDENTS_LABEL, e)
-            return f"Error: {str(e)}", 400
+            print(f"Error: {str(e)}", 400)
+            return render_template('load_json/students.html', form=form)
     
     form.json_type.data = JC.STUDENTS
     return render_template('load_json/students.html', form=form)
@@ -111,7 +112,8 @@ def load_teachers_from_json():
         except Exception as e:
             kanvas_db.session.rollback()
             flash_invalid_load(JC.TEACHERS_LABEL, e)
-            return f"Error: {str(e)}", 400
+            print(f"Error: {str(e)}", 400)
+            return render_template('load_json/teachers.html', form=form)
 
     return render_template('load_json/teachers.html', form=form)
 
@@ -134,7 +136,8 @@ def load_classrooms_from_json():
         except Exception as e:
             kanvas_db.session.rollback()
             flash_invalid_load(JC.CLASSROOMS_LABEL, e)
-            return f"Error: {str(e)}", 400
+            print(f"Error: {str(e)}", 400)
+            return render_template('load_json/classrooms.html', form=form)
 
     return render_template('load_json/classrooms.html', form=form)
 
@@ -166,7 +169,8 @@ def load_courses_from_json():
         except Exception as e:
             kanvas_db.session.rollback()
             flash_invalid_load(JC.COURSES_LABEL, e)
-            return f"Error: {str(e)}", 400
+            print(f"Error: {str(e)}", 400)
+            return render_template('load_json/courses.html', form=form)
 
     return render_template('load_json/courses.html', form=form)
 
@@ -195,7 +199,8 @@ def load_course_instances_from_json():
         except Exception as e:
             kanvas_db.session.rollback()
             flash_invalid_load(JC.COURSE_INSTANCES_LABEL, e)
-            return f"Error: {str(e)}", 400
+            print(f"Error: {str(e)}", 400)
+            return render_template('load_json/course_instances.html', form=form)
 
     return render_template('load_json/course_instances.html', form=form)
 
@@ -230,7 +235,8 @@ def load_sections_from_json():
         except Exception as e:
             kanvas_db.session.rollback()
             flash_invalid_load(JC.SECTIONS_LABEL, e)
-            return f"Error: {str(e)}", 400
+            print(f"Error: {str(e)}", 400)
+            return render_template('load_json/sections.html', form=form)
 
     return render_template('load_json/sections.html', form=form)
 
@@ -260,7 +266,8 @@ def load_student_sections_from_json():
         except Exception as e:
             kanvas_db.session.rollback()
             flash_invalid_load(JC.STUDENT_SECTIONS_LABEL, e)
-            return f"Error: {str(e)}", 400
+            print(f"Error: {str(e)}", 400)
+            return render_template('load_json/student_sections.html', form=form)
 
     return render_template('load_json/student_sections.html', form=form)
 
@@ -286,6 +293,7 @@ def load_grades_from_json():
         except Exception as e:
             kanvas_db.session.rollback()
             flash_invalid_load(JC.GRADES_LABEL, e)
-            return f"Error: {str(e)}", 400
+            print(f"Error: {str(e)}", 400)
+            return render_template('load_json/grades.html', form=form)
 
     return render_template('load_json/grades.html', form=form)
