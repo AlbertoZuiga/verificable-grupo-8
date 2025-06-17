@@ -12,3 +12,4 @@ from app.models.student_evaluation_instance import StudentEvaluationInstance
 from app.models.classroom import Classroom
 from app.models.time_block import TimeBlock
 from app.models.assigned_time_block import AssignedTimeBlock
+from app.models.section_grade import SectionGrade

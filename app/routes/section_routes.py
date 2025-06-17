@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import kanvas_db
-from app.models import CourseInstance, Section, WeighingType, Teacher
+from app.models import CourseInstance, Section, WeighingType, Teacher, StudentEvaluationInstance, SectionGrade
 from app.services.section_service import create_section
 from app.services.decorators import require_section_open
 
 from app.forms.section_forms import SectionForm
+
+MINIMUM_GRADE=1.0
 
 section_bp = Blueprint('section', __name__, url_prefix='/sections')
 
@@ -124,7 +126,42 @@ def delete(id):
 @section_bp.route('/<int:section_id>/close', methods=['POST'])
 def close(section_id):
     section = Section.query.get_or_404(section_id)
+    students = section.students
+    evaluations = section.evaluations
+
+    final_grades = {}
+
+    for student in students:
+        total_grade = 0.0
+        for evaluation in evaluations:
+            evaluation_grade = 0.0
+            total_instance_weight = 0.0
+            for instance in evaluation.instances:
+                student_instance = StudentEvaluationInstance.query.filter_by(student_id=student.id, evaluation_instance_id=instance.id).first()
+
+                if student_instance and student_instance.grade is not None:
+                    evaluation_grade += student_instance.grade * instance.instance_weighing
+                    total_instance_weight += instance.instance_weighing
+                elif not instance.optional:
+                    evaluation_grade += MINIMUM_GRADE * instance.instance_weighing
+                    total_instance_weight += instance.instance_weighing
+
+            if total_instance_weight > 0:
+                evaluation_grade /= total_instance_weight
+            else:
+                evaluation_grade = 0
+            
+            total_grade += evaluation_grade * evaluation.weighing
+        total_grade /= section.total_weighing
+        grade = SectionGrade(student_id=student.id, section_id=section_id, grade=total_grade)
+        kanvas_db.session.add(grade)
+        final_grades[student.id] = total_grade
+
+    for student_id, grade in final_grades.items():
+        print(f"Alumno {student_id} - Nota final: {grade}")
+
     section.closed = True
     kanvas_db.session.commit()
+    
     flash("La sección fue cerrada exitosamente.", "success")
-    return redirect(url_for('section.index', section_id=section.id))
+    return redirect(url_for('section.index', section_id=section_id))
