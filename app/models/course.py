@@ -15,3 +15,22 @@ class Course(kanvas_db.Model):
 
     def __repr__(self):
         return f"<Course id={self.id}, title={self.title}, code={self.code}, credits={self.credits}>"
+
+    def has_cyclic_requisite(self, new_requisite_course):
+        def _check_cycle(course, target_course_id, visited=None):
+            if visited is None:
+                visited = set()
+            if course.id in visited:
+                return False
+            visited.add(course.id)
+          
+            if course.id == target_course_id:
+                return True
+            for requisite in course.prerequisites:
+              
+                if _check_cycle(requisite.course_requisite, target_course_id, visited):
+                    return True
+            return False
+
+      
+        return _check_cycle(new_requisite_course, self.id)

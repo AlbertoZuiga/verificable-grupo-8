@@ -8,8 +8,8 @@ class User(UserMixin, kanvas_db.Model):
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)
     email = kanvas_db.Column(kanvas_db.String(120), nullable=False, unique=True, index=True)
     password_hash = kanvas_db.Column(kanvas_db.String(256), nullable=False)
-    first_name = kanvas_db.Column(kanvas_db.String(100), nullable=False)
-    last_name = kanvas_db.Column(kanvas_db.String(100), nullable=False)
+    first_name = kanvas_db.Column(kanvas_db.String(60), nullable=False)
+    last_name = kanvas_db.Column(kanvas_db.String(60), nullable=False)
 
     student = kanvas_db.relationship("Student", back_populates="user", uselist=False, cascade="all, delete-orphan")
     teacher = kanvas_db.relationship("Teacher", back_populates="user", uselist=False, cascade="all, delete-orphan")
