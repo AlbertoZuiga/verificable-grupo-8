@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, request, redirect, url_for, flash
 from app import kanvas_db
 from app.models.course import Course
 from app.models.requisite import Requisite
@@ -11,7 +11,11 @@ def create():
     requisite_id = request.form.get('requisite_id')
 
     if not course_id or not requisite_id:
-        print("Debe seleccionar un curso y su requisito.")
+        flash("Debe seleccionar un curso y su requisito.", "danger")
+        return redirect(url_for('course.show', id=course_id))
+    
+    if Requisite.query.filter_by(course_id=requisite_id, course_requisite_id=course_id).first():
+        flash("No se puede asignar como requisito un curso que depende del curso actual.", "danger")
         return redirect(url_for('course.show', id=course_id))
 
     new_requisite = Requisite(course_id=course_id, course_requisite_id=requisite_id)
