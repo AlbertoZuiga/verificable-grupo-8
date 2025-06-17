@@ -8,4 +8,7 @@ class CourseGrade(kanvas_db.Model):
     course_id = kanvas_db.Column(kanvas_db.Integer, kanvas_db.ForeignKey('courses.id'), nullable=False)
     grade = kanvas_db.Column(kanvas_db.Float, nullable=False)
 
+    __table_args__ = (
+        kanvas_db.UniqueConstraint('user_id', 'course_id', name='unique_user_course'),
+    )
     user = kanvas_db.relationship('User', backref='course_grades')

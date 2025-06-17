@@ -21,5 +21,8 @@ class CourseInstance(kanvas_db.Model):
 
     sections = kanvas_db.relationship('Section', back_populates='course_instance', cascade='all, delete-orphan')
 
+    __table_args__ = (
+        kanvas_db.UniqueConstraint('course_id', 'year', 'semester', name='unique_course_year_semester'),
+    )
     def __repr__(self):
         return f"<CourseInstance id={self.id}, course_id={self.course_id}, year={self.year}, semester={self.semester}>"

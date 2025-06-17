@@ -15,6 +15,10 @@ class Evaluation(kanvas_db.Model):
 
     instances = kanvas_db.relationship('EvaluationInstance', back_populates='evaluation', cascade='all, delete-orphan')
 
+    __table_args__ = (
+        kanvas_db.UniqueConstraint('section_id', 'title', name='unique_section_title'),
+    )
+
     def __repr__(self):
         return f"<Evaluation id={self.id}, title={self.title}, weighing_system={self.weighing_system}>"
 

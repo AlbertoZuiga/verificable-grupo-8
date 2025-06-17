@@ -1,6 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, flash
 from app import kanvas_db
-from app.models.course import Course
 from app.models.requisite import Requisite
 
 requisite_bp = Blueprint('requisite', __name__, url_prefix='/requisites')
