@@ -43,9 +43,6 @@ def edit(id):
     user = student.user
 
     form = StudentEditForm(original_email=user.email, obj=user)
-    # Pre-carga el año de ingreso en el formulario
-    if request.method == 'GET':
-        form.university_entry_year.data = student.university_entry_year
 
     if form.validate_on_submit():
         user.first_name = form.first_name.data

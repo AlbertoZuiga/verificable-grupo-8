@@ -6,33 +6,7 @@
 
 <div class="container py-5">
   <h1 class="mb-4 text-success">➕ Nuevo Profesor</h1>
-
-  <form method="POST" action="{{ url_for('teacher.create') }}" class="card p-4 shadow-sm border-0 rounded-4">
-    <div class="mb-3">
-      <label for="first_name" class="form-label">Nombre</label>
-      <input type="text" class="form-control" id="first_name" name="first_name" required/>
-    </div>
-
-    <div class="mb-3">
-      <label for="last_name" class="form-label">Apellido</label>
-      <input type="text" class="form-control" id="last_name" name="last_name" required/>
-    </div>
-
-    <div class="mb-3">
-      <label for="email" class="form-label">Correo electrónico</label>
-      <input type="email" class="form-control" id="email" name="email" required/>
-    </div>
-
-    <div class="mb-3">
-      <label for="password" class="form-label">Contraseña</label>
-      <input type="password" class="form-control" id="password" name="password" required/>
-    </div>
-
-    <div class="d-flex gap-2 mt-4">
-      <a href="{{ url_for('teacher.index') }}" class="btn btn-secondary">⬅ Cancelar</a>
-      <button type="submit" class="btn btn-success">💾 Guardar</button>
-    </div>
-  </form>
+  {% include 'teachers/_form.html' with context %}
 </div>
 
 {% endblock %}
