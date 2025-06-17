@@ -1,0 +1,21 @@
+<form method="POST">
+  {{ form.hidden_tag() }}
+
+  <div class="mb-3">
+    {{ form.evaluation_id.label(class="form-label") }}
+    {{ form.evaluation_id(class="form-select") }}
+  </div>
+
+  <div class="mb-3">
+    {{ form.title.label(class="form-label") }}
+    {{ form.title(class="form-control") }}
+  </div>
+
+  <div class="mb-3">
+    {{ form.optional.label(class="form-check-label") }}
+    {{ form.optional(class="form-check-input") }}
+  </div>
+
+  <a href="{{ url_for('evaluation_instance.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
+  {{ form.submit(class="btn btn-primary") }}
+</form>

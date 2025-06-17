@@ -8,14 +8,14 @@ from app.services.evaluation_instance_service import (
 from app.services.decorators import require_section_open
 from app.services.validations import validate_section_for_evaluation
 
-evaluation_instance_bp = Blueprint('evaluation_instance', __name__, url_prefix='/evaluation_instances')
+from app.forms.evaluation_instance_forms import EvaluationInstanceForm
 
+evaluation_instance_bp = Blueprint('evaluation_instance', __name__, url_prefix='/evaluation_instances')
 
 @evaluation_instance_bp.route('/')
 def index():
     evaluation_instances = EvaluationInstance.query.all()
     return render_template('evaluation_instances/index.html', evaluation_instances=evaluation_instances)
-
 
 @evaluation_instance_bp.route('/<int:id>')
 def show(id):
@@ -27,25 +27,26 @@ def show(id):
         student_grades=student_grades
     )
 
-
 @evaluation_instance_bp.route('/create', methods=['GET', 'POST'])
 def create():
-    if request.method == 'POST':
-        title = request.form['title']
-        optional = request.form.get("optional") == "on"
-        evaluation_id = request.form['evaluation_id']
-        
-        evaluation = Evaluation.query.get_or_404(evaluation_id)
-        if evaluation is None:
-            flash("Invalid evaluation ID", "danger")
-            return redirect(url_for('evaluation_instance.create'))
+    form = EvaluationInstanceForm()
 
-        section_id = get_section_id(evaluation_id)
+    if form.validate_on_submit():
+        evaluation = Evaluation.query.get_or_404(form.evaluation_id.data)
+        section_id = get_section_id(form.evaluation_id.data)
 
         validation_error = validate_section_for_evaluation(section_id)
         if validation_error:
             return validation_error
         
+        title=form.title.data
+        optional=form.optional.data
+        evaluation_id=form.evaluation_id.data
+
+        if EvaluationInstance.query.filter_by(title=title, evaluation_id=evaluation_id).first():
+            flash("Instancia de evaluación ya existe.", 'danger')
+            return render_template('evaluation_instances/create.html', form=form)
+
         evaluation_instance = EvaluationInstance(
             title=title,
             instance_weighing=0.0,
@@ -62,23 +63,29 @@ def create():
             kanvas_db.session.rollback()
             flash(f"Error creating evaluation_instance: {e}", "danger")
 
-    evaluations = Evaluation.query.all()
-    return render_template('evaluation_instances/create.html', evaluations=evaluations)
-
+    return render_template('evaluation_instances/create.html', form=form)
 
 @evaluation_instance_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
-@require_section_open(lambda id: Evaluation.query.get_or_404(id).section) 
+@require_section_open(lambda id: EvaluationInstance.query.get_or_404(id).evaluation.section)
 def edit(id):
     evaluation_instance = EvaluationInstance.query.get_or_404(id)
+    form = EvaluationInstanceForm(obj=evaluation_instance)
 
-    if request.method == 'POST':
-        evaluation_instance.title = request.form['title']
-        evaluation_instance.optional = request.form.get("optional") == "on"
-        evaluation_id = request.form['evaluation_id']
-
-        if Evaluation.query.get(evaluation_id) is None:
+    if form.validate_on_submit():
+        if Evaluation.query.get(form.evaluation_id.data) is None:
             return "Invalid evaluation ID", 400
 
+        title=form.title.data
+        optional=form.optional.data
+        evaluation_id=form.evaluation_id.data
+
+        existing_evaluation_instance = EvaluationInstance.query.filter_by(title=title, evaluation_id=evaluation_id).first()
+        if existing_evaluation_instance and existing_evaluation_instance.id != id:
+            flash("Instancia de evaluación con ese nombre ya existe.", 'danger')
+            return render_template('evaluation_instances/create.html', form=form, evaluation_instance=evaluation_instance)
+
+        evaluation_instance.title = title
+        evaluation_instance.optional = optional
         evaluation_instance.evaluation_id = evaluation_id
 
         try:
@@ -86,14 +93,12 @@ def edit(id):
             return redirect(url_for('evaluation_instance.show', id=evaluation_instance.id))
         except Exception as e:
             kanvas_db.session.rollback()
-            print(f"Error updating evaluation_instance: {e}")
-    
-    evaluations = Evaluation.query.all()
-    return render_template('evaluation_instances/edit.html', evaluation_instance=evaluation_instance, evaluations=evaluations)
+            flash(f"Error updating evaluation_instance: {e}", "danger")
 
+    return render_template('evaluation_instances/edit.html', form=form, evaluation_instance=evaluation_instance)
 
 @evaluation_instance_bp.route('/delete/<int:id>')
-@require_section_open(lambda id: Evaluation.query.get_or_404(id).section)
+@require_section_open(lambda id: EvaluationInstance.query.get_or_404(id).evaluation.section)
 def delete(id):
     evaluation_instance = EvaluationInstance.query.get_or_404(id)
     try:
