@@ -1,0 +1,38 @@
+<form method="POST" action="">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+    {{ form.course_instance_id.label(class="form-label") }}
+    {{ form.course_instance_id(class="form-select") }}
+    {% for error in form.course_instance_id.errors %}
+        <div class="text-danger">{{ error }}</div>
+    {% endfor %}
+    </div>
+
+    <div class="mb-3">
+    {{ form.teacher_id.label(class="form-label") }}
+    {{ form.teacher_id(class="form-select") }}
+    {% for error in form.teacher_id.errors %}
+        <div class="text-danger">{{ error }}</div>
+    {% endfor %}
+    </div>
+
+    <div class="mb-3">
+    {{ form.code.label(class="form-label") }}
+    {{ form.code(class="form-control") }}
+    {% for error in form.code.errors %}
+        <div class="text-danger">{{ error }}</div>
+    {% endfor %}
+    </div>
+
+    <div class="mb-3">
+    {{ form.weighing_type.label(class="form-label") }}
+    {{ form.weighing_type(class="form-select") }}
+    {% for error in form.weighing_type.errors %}
+        <div class="text-danger">{{ error }}</div>
+    {% endfor %}
+    </div>
+
+    <a href="{{ url_for('section.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
+    {{ form.submit(class="btn btn-primary") }}
+</form>

@@ -4,6 +4,7 @@ from app.models import CourseInstance, Section, WeighingType, Teacher
 from app.services.section_service import create_section
 from app.services.decorators import require_section_open
 
+from app.forms.section_forms import SectionForm
 
 section_bp = Blueprint('section', __name__, url_prefix='/sections')
 
@@ -54,14 +55,20 @@ def edit_evaluation_weights(id):
 
 @section_bp.route('/create', methods=['GET', 'POST'])
 def create():
-    if request.method == 'POST':
-        course_instance_id = request.form['course_instance_id']
-        teacher_id = request.form['teacher_id']
-        code = request.form['code']
-        weighing_type = request.form['weighing_type']
+    form = SectionForm()
 
+    form.course_instance_id.choices = [(ci.id, f"{ci.course.title} - {ci.year} (Semestre {ci.semester})") for ci in CourseInstance.query.all()]
+    form.teacher_id.choices = [(t.id, f"{t.user.first_name} {t.user.last_name} ({t.user.email})") for t in Teacher.query.all()]
+    form.weighing_type.choices = [(wt.name, wt.value) for wt in WeighingType]
+
+    if form.validate_on_submit():
         try:
-            create_section(course_instance_id, teacher_id, code, weighing_type)
+            create_section(
+                form.course_instance_id.data,
+                form.teacher_id.data,
+                form.code.data,
+                form.weighing_type.data
+            )
             flash("Sección creada exitosamente", "success")
             return redirect(url_for('section.index'))
         except ValueError as ve:
@@ -70,51 +77,33 @@ def create():
             flash("Error al crear la sección", "danger")
             print(f"Error al crear la sección: {str(e)}")
 
-    course_instances = CourseInstance.query.all()
-    teachers = Teacher.query.all()
-    context = {
-        "course_instances": course_instances,
-        "weighing_types": WeighingType,
-        "teachers": teachers
-    }
-    return render_template('sections/create.html', **context)
+    return render_template('sections/create.html', form=form)
 
 @section_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
 @require_section_open(lambda id: Section.query.get_or_404(id))
 def edit(id):
     section = Section.query.get_or_404(id)
+    form = SectionForm(obj=section)
 
-    if request.method == 'POST':
-        course_instance_id = request.form['course_instance_id']
-        teacher_id = request.form['teacher_id']
-        code = request.form['code']
-        weighing_type = request.form['weighing_type']
-        
-        if not course_instance_id or not teacher_id or not code or not weighing_type:
-            print("Todos los campos son obligatorios.")
-        else:
-            try:
-                section.course_instance_id = course_instance_id
-                section.teacher_id = teacher_id
-                section.code = code
-                section.weighing_type = weighing_type
-                
-                kanvas_db.session.commit()
-                print("Sección actualizada exitosamente.")
-                return redirect(url_for('section.index'))
-            except Exception as e:
-                kanvas_db.session.rollback()
-                print(f"Error al editar la sección: {str(e)}")
+    form.course_instance_id.choices = [(ci.id, f"{ci.course.title} - {ci.year} (Semestre {ci.semester})") for ci in CourseInstance.query.all()]
+    form.teacher_id.choices = [(t.id, f"{t.user.first_name} {t.user.last_name} ({t.user.email})") for t in Teacher.query.all()]
+    form.weighing_type.choices = [(wt.name, wt.value) for wt in WeighingType]
 
-    course_instances = CourseInstance.query.all()
-    teachers = Teacher.query.all()
+    if form.validate_on_submit():
+        try:
+            section.course_instance_id = form.course_instance_id.data
+            section.teacher_id = form.teacher_id.data
+            section.code = form.code.data
+            section.weighing_type = form.weighing_type.data
 
-    context = {
-        "course_instances": course_instances,
-        "weighing_types": WeighingType,
-        "teachers": teachers
-    }
-    return render_template('sections/edit.html', section=section, **context)
+            kanvas_db.session.commit()
+            print("Sección actualizada exitosamente.")
+            return redirect(url_for('section.index'))
+        except Exception as e:
+            kanvas_db.session.rollback()
+            print(f"Error al editar la sección: {str(e)}")
+
+    return render_template('sections/edit.html', section=section, form=form)
 
 @section_bp.route('/delete/<int:id>', methods=['POST'])
 @require_section_open(lambda id: Section.query.get_or_404(id))
@@ -139,4 +128,3 @@ def close(section_id):
     kanvas_db.session.commit()
     flash("La sección fue cerrada exitosamente.", "success")
     return redirect(url_for('section.index', section_id=section.id))
-
