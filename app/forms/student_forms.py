@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, NumberRange
+from wtforms.validators import DataRequired, Email, ValidationError, NumberRange, Length
 from app.models import User
 from app import kanvas_db
 
@@ -9,9 +9,9 @@ from datetime import datetime
 current_year = datetime.now().year
 
 class StudentCreateForm(FlaskForm):
-    first_name = StringField('Nombre', validators=[DataRequired()])
-    last_name = StringField('Apellido', validators=[DataRequired()])
-    email = StringField('Correo electrónico', validators=[DataRequired(), Email()])
+    first_name = StringField('Nombre', validators=[DataRequired(), Length(max=60)])
+    last_name = StringField('Apellido', validators=[DataRequired(), Length(max=60)])
+    email = StringField('Correo electrónico', validators=[DataRequired(), Email(), Length(max=60)])
     university_entry_year = IntegerField('Año de ingreso', validators=[DataRequired(), NumberRange(min=current_year-20, max=current_year+5)])
     password = PasswordField('Contraseña', validators=[DataRequired()])
     submit = SubmitField('Guardar')
@@ -22,9 +22,9 @@ class StudentCreateForm(FlaskForm):
             raise ValidationError('El correo electrónico ya está registrado.')
 
 class StudentEditForm(FlaskForm):
-    first_name = StringField('Nombre', validators=[DataRequired()])
-    last_name = StringField('Apellido', validators=[DataRequired()])
-    email = StringField('Correo electrónico', validators=[DataRequired(), Email()])
+    first_name = StringField('Nombre', validators=[DataRequired(), Length(max=60)])
+    last_name = StringField('Apellido', validators=[DataRequired(), Length(max=60)])
+    email = StringField('Correo electrónico', validators=[DataRequired(), Email(), Length(max=60)])
     university_entry_year = IntegerField('Año de ingreso', validators=[DataRequired(), NumberRange(min=current_year-20, max=current_year+5)])
     submit = SubmitField('Guardar')
 
