@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import kanvas_db
 from app.models.course import Course
 from app.services.course_service import get_course_and_other_courses
@@ -25,12 +25,18 @@ def create():
         credits = form.credits.data
 
         if Course.query.filter_by(title=title).first():
-            return render_template('courses/create.html', form=form, error="Ya existe un curso con ese título.")
+            flash("Ya existe un curso con ese título.", 'danger')
+            return render_template('courses/create.html', form=form)
+
+        if Course.query.filter_by(code=code).first():
+            flash("Ya existe un curso con ese codigo.", 'danger')
+            return render_template('courses/create.html', form=form)
 
         new_course = Course(title=title, code=code, credits=credits)
         kanvas_db.session.add(new_course)
         kanvas_db.session.commit()
-        return redirect(url_for('course.index'))
+        flash("Instancia del curso creada exitosamente.", "success")
+        return redirect(url_for('course.show', id=new_course.id))
 
     return render_template('courses/create.html', form=form)
 
@@ -42,8 +48,11 @@ def edit(id):
         course.title = form.title.data
         course.code = form.code.data
         course.credits = form.credits.data
+
         kanvas_db.session.commit()
-        return redirect(url_for('course.index'))
+        flash("Instancia del curso actualizada exitosamente.", "success")
+        return redirect(url_for('course.show', id=course.id))
+
     return render_template('courses/edit.html', form=form, course=course)
 
 @course_bp.route('/delete/<int:id>')
