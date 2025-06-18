@@ -11,4 +11,5 @@ class SectionGrade(kanvas_db.Model):
     __table_args__ = (
         kanvas_db.UniqueConstraint('student_id', 'section_id', name='unique_student_section'),
     )
-    student = kanvas_db.relationship('Student', backref='section_grades')
+    student = kanvas_db.relationship('Student', backref='grades')
+    section = kanvas_db.relationship('Section', backref='grades')

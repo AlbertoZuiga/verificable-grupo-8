@@ -64,7 +64,12 @@
                             </td>
                         {% endfor %}
                         <td class="fw-bold text-end">
-                            {{ (SectionGrade.query.filter_by(student_id=student.id, section_id=section.id).first().grade)|round(1) }}
+                            {% set section_grade = SectionGrade.query.filter_by(student_id=student.id, section_id=section.id).first() %}
+                            {% if section_grade and section_grade.grade is not none %}
+                                {{ (section_grade.grade)|round(1) }}
+                                {% else %}
+                                -
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
