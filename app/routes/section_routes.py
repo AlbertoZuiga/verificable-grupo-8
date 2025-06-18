@@ -1,9 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import kanvas_db
-from app.models import CourseInstance, Section, WeighingType, Teacher
+from app.models import CourseInstance, Section, WeighingType, Teacher, StudentEvaluationInstance, SectionGrade
 from app.services.section_service import create_section
 from app.services.decorators import require_section_open
 
+from app.forms.section_forms import SectionForm
+
+MINIMUM_GRADE=1.0
 
 section_bp = Blueprint('section', __name__, url_prefix='/sections')
 
@@ -54,14 +57,20 @@ def edit_evaluation_weights(id):
 
 @section_bp.route('/create', methods=['GET', 'POST'])
 def create():
-    if request.method == 'POST':
-        course_instance_id = request.form['course_instance_id']
-        teacher_id = request.form['teacher_id']
-        code = request.form['code']
-        weighing_type = request.form['weighing_type']
+    form = SectionForm()
 
+    form.course_instance_id.choices = [(ci.id, f"{ci.course.title} - {ci.year} (Semestre {ci.semester})") for ci in CourseInstance.query.all()]
+    form.teacher_id.choices = [(t.id, f"{t.user.first_name} {t.user.last_name} ({t.user.email})") for t in Teacher.query.all()]
+    form.weighing_type.choices = [(wt.name, wt.value) for wt in WeighingType]
+
+    if form.validate_on_submit():
         try:
-            create_section(course_instance_id, teacher_id, code, weighing_type)
+            create_section(
+                form.course_instance_id.data,
+                form.teacher_id.data,
+                form.code.data,
+                form.weighing_type.data
+            )
             flash("Sección creada exitosamente", "success")
             return redirect(url_for('section.index'))
         except ValueError as ve:
@@ -70,51 +79,33 @@ def create():
             flash("Error al crear la sección", "danger")
             print(f"Error al crear la sección: {str(e)}")
 
-    course_instances = CourseInstance.query.all()
-    teachers = Teacher.query.all()
-    context = {
-        "course_instances": course_instances,
-        "weighing_types": WeighingType,
-        "teachers": teachers
-    }
-    return render_template('sections/create.html', **context)
+    return render_template('sections/create.html', form=form)
 
 @section_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
 @require_section_open(lambda id: Section.query.get_or_404(id))
 def edit(id):
     section = Section.query.get_or_404(id)
+    form = SectionForm(obj=section)
 
-    if request.method == 'POST':
-        course_instance_id = request.form['course_instance_id']
-        teacher_id = request.form['teacher_id']
-        code = request.form['code']
-        weighing_type = request.form['weighing_type']
-        
-        if not course_instance_id or not teacher_id or not code or not weighing_type:
-            print("Todos los campos son obligatorios.")
-        else:
-            try:
-                section.course_instance_id = course_instance_id
-                section.teacher_id = teacher_id
-                section.code = code
-                section.weighing_type = weighing_type
-                
-                kanvas_db.session.commit()
-                print("Sección actualizada exitosamente.")
-                return redirect(url_for('section.index'))
-            except Exception as e:
-                kanvas_db.session.rollback()
-                print(f"Error al editar la sección: {str(e)}")
+    form.course_instance_id.choices = [(ci.id, f"{ci.course.title} - {ci.year} (Semestre {ci.semester})") for ci in CourseInstance.query.all()]
+    form.teacher_id.choices = [(t.id, f"{t.user.first_name} {t.user.last_name} ({t.user.email})") for t in Teacher.query.all()]
+    form.weighing_type.choices = [(wt.name, wt.value) for wt in WeighingType]
 
-    course_instances = CourseInstance.query.all()
-    teachers = Teacher.query.all()
+    if form.validate_on_submit():
+        try:
+            section.course_instance_id = form.course_instance_id.data
+            section.teacher_id = form.teacher_id.data
+            section.code = form.code.data
+            section.weighing_type = form.weighing_type.data
 
-    context = {
-        "course_instances": course_instances,
-        "weighing_types": WeighingType,
-        "teachers": teachers
-    }
-    return render_template('sections/edit.html', section=section, **context)
+            kanvas_db.session.commit()
+            print("Sección actualizada exitosamente.")
+            return redirect(url_for('section.index'))
+        except Exception as e:
+            kanvas_db.session.rollback()
+            print(f"Error al editar la sección: {str(e)}")
+
+    return render_template('sections/edit.html', section=section, form=form)
 
 @section_bp.route('/delete/<int:id>', methods=['POST'])
 @require_section_open(lambda id: Section.query.get_or_404(id))
@@ -135,8 +126,49 @@ def delete(id):
 @section_bp.route('/<int:section_id>/close', methods=['POST'])
 def close(section_id):
     section = Section.query.get_or_404(section_id)
+    students = section.students
+    evaluations = section.evaluations
+
+    final_grades = {}
+
+    for student in students:
+        total_grade = 0.0
+        total_weighing = 0.0
+        for evaluation in evaluations:
+            evaluation_grade = 0.0
+            total_instance_weight = 0.0
+            for instance in evaluation.instances:
+                student_instance = StudentEvaluationInstance.query.filter_by(student_id=student.id, evaluation_instance_id=instance.id).first()
+
+                if student_instance and student_instance.grade is not None:
+                    evaluation_grade += student_instance.grade * instance.instance_weighing
+                    total_instance_weight += instance.instance_weighing
+                elif not instance.optional:
+                    evaluation_grade += MINIMUM_GRADE * instance.instance_weighing
+                    total_instance_weight += instance.instance_weighing
+
+            if total_instance_weight > 0:
+                evaluation_grade /= total_instance_weight
+                total_grade += evaluation_grade * evaluation.weighing
+                total_weighing += evaluation.weighing
+            
+        total_grade /= total_weighing
+        grade = SectionGrade(student_id=student.id, section_id=section_id, grade=total_grade)
+        kanvas_db.session.add(grade)
+        final_grades[student.id] = total_grade
+
     section.closed = True
     kanvas_db.session.commit()
+    
     flash("La sección fue cerrada exitosamente.", "success")
-    return redirect(url_for('section.index', section_id=section.id))
+    return redirect(url_for('section.grades', section_id=section_id))
 
+@section_bp.route('/<int:section_id>/grades', methods=['GET'])
+def grades(section_id):
+    section = Section.query.get_or_404(section_id)
+    return render_template(
+        'sections/grades.html',
+        section=section,
+        StudentEvaluationInstance=StudentEvaluationInstance,
+        SectionGrade=SectionGrade
+    )

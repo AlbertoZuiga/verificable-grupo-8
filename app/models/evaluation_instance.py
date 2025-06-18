@@ -17,5 +17,9 @@ class EvaluationInstance(kanvas_db.Model):
     student_evaluation_instances = kanvas_db.relationship('StudentEvaluationInstance', back_populates='evaluation_instance', cascade='all, delete-orphan', passive_deletes=True)
     students = kanvas_db.relationship('Student', secondary='student_evaluation_instances', viewonly=True, back_populates='evaluation_instances')
 
+    __table_args__ = (
+        kanvas_db.UniqueConstraint('evaluation_id', 'title', name='unique_evaluation_title'),
+    )
+
     def __repr__(self):
         return f"<EvaluationInstance id={self.id}, title={self.title}, weighing={self.instance_weighing}>"

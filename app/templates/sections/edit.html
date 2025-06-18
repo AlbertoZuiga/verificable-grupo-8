@@ -3,52 +3,11 @@
 {% block title %} Editar Sección: {{section.course_instance.course.title}} ({{section.code}}) {% endblock %}
 
 {% block content %}
-
-<div class="container">
+<div class="container py-4">
   <h1 class="mb-4 text-primary">Editar Sección</h1>
+
   <div class="card shadow-lg p-4">
-    <form action="{{ url_for('section.edit', id=section.id) }}" method="POST">
-      <div class="mb-3">
-        <label for="course_instance_id" class="form-label">Instancia del Curso</label>
-        <select class="form-select" id="course_instance_id" name="course_instance_id" required>
-          {% for instance in course_instances %}
-            <option value="{{ instance.id }}" {% if instance.id == section.course_instance_id %}selected{% endif %}>
-              {{ instance.course.title }} - {{ instance.year }} (Semestre {{ instance.semester }})
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-      
-      <div class="mb-3">
-        <label for="teacher_id" class="form-label">Profesor</label>
-        <select class="form-select" id="teacher_id" name="teacher_id" required>
-          <option selected>Seleccionar profesor</option>
-          {% for teacher in teachers %}
-            <option value="{{ teacher.id }}" {% if teacher.id == section.teacher_id %}selected{% endif %}>
-              {{ teacher.user.first_name }} {{ teacher.user.last_name }} ({{ teacher.user.email }})
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="code" class="form-label">Código de Sección</label>
-        <input type="number" id="code" name="code" class="form-control" value="{{ section.code }}" required>
-      </div>
-      
-      <div class="mb-3">
-        <label for="weighing_type" class="form-label">Tipo de Ponderación</label>
-        <select class="form-select" id="weighing_type" name="weighing_type" required>
-          {% for type in weighing_types %}
-            <option value="{{ type.name }}" {% if type.name == section.weighing_type %}selected{% endif %}>{{ type.value }}</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <a href="{{ url_for('section.show',id=section.id) }}" class="btn btn-secondary">Cancelar</a>
-      <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
-    </form>
+    {% include 'sections/_form.html' with context %}
   </div>
 </div>
-
 {% endblock %}

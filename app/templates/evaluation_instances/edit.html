@@ -4,34 +4,10 @@
 
 {% block content %}
 
-<div class="container">
+<div class="container py-4">
   <h1 class="mb-4 text-primary">Editar Instancia de Evaluación</h1>
   <div class="card shadow-lg p-4">
-    <form action="{{ url_for('evaluation_instance.edit', id=evaluation_instance.id) }}" method="POST">
-      <div class="mb-3">
-        <label for="evaluation_id" class="form-label">Sección</label>
-        <select class="form-select" id="evaluation_id" name="evaluation_id" required>
-          {% for evaluation in evaluations %}
-            <option value="{{ evaluation.id }}" {% if evaluation.id == evaluation_instance.evaluation_id %}selected{% endif %}>
-              {{ evaluation.title }} - {{ evaluation.section.course_instance.course.title }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="title" class="form-label">Título de la Instancia de Evaluación</label>
-        <input type="text" id="title" name="title" class="form-control" value="{{ evaluation_instance.title }}" required/>
-      </div>
-
-      <div class="mb-3">
-        <label for="optional" class="form-label">¿Es opcional?</label>
-        <input type="checkbox" name="optional" id="optional" class="form-check-input" {% if evaluation_instance.optional %}checked{% endif %}>
-      </div>
-
-      <a href="{{ url_for('evaluation_instance.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
-      <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
-    </form>
+    {% include 'evaluation_instances/_form.html' with context%}
   </div>
 </div>
 

@@ -19,14 +19,14 @@
 
     <div class="mt-4 d-flex justify-content-between">
       <a href="{{ url_for('section.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
-      <a href="{{ url_for('student_section.index', section_id=section.id) }}" class="btn btn-info">👥 Ver Alumnos</a>
+      <a href="{{ url_for('student_section.index', section_id=section.id) }}" class="btn btn-outline-info">👥 Ver Alumnos</a>
 
       <div class="btn-group" role="group">
         {% if not section.closed %}
-          <a href="{{ url_for('section.edit', id=section.id) }}" class="btn btn-warning text-dark">✏ Editar</a>
+          <a href="{{ url_for('section.edit', id=section.id) }}" class="btn btn-outline-warning">✏ Editar</a>
           
           <form action="{{ url_for('section.delete', id=section.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta sección?');">
-            <button type="submit" class="btn btn-danger">🗑 Eliminar</button>
+            <button type="submit" class="btn btn-outline-danger">🗑 Eliminar</button>
           </form>
         {% endif %}
       </div>
@@ -34,16 +34,18 @@
 
     {% if not section.closed %}
       <form method="POST" action="{{ url_for('section.close', section_id=section.id) }}" class="mt-4">
-        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('¿Estás seguro de que deseas cerrar esta sección? Esta acción no se puede deshacer.')">
+        <button type="submit" class="btn btn-outline-danger fw-semibold" onclick="return confirm('¿Estás seguro de que deseas cerrar esta sección? Esta acción no se puede deshacer.')">
           🚫 Cerrar Sección
         </button>
       </form>
     {% endif %}
+
+    <a href="{{ url_for('section.grades', section_id=section.id) }}" class="btn btn-outline-primary mt-3"> Reporte de notas</a>
   </div>
 
   <h3 class="mt-5 text-primary">Evaluaciones</h3>
 
-  <a href="{{ url_for('section.edit_evaluation_weights', id=section.id) }}" class="btn btn-sm btn-success"> Editar pesos de evaluaciones</a>
+  <a href="{{ url_for('section.edit_evaluation_weights', id=section.id) }}" class="btn btn-sm btn-outline-success"> Editar pesos de evaluaciones</a>
   
   <div class="list-group mt-3 shadow-sm rounded-3">
     {% for evaluation in section.evaluations %}
@@ -56,7 +58,7 @@
             <span class="badge bg-primary ms-2">{{ evaluation.weighing }}%</span>
           {% endif %}
         </div>
-        <a href="{{ url_for('evaluation.show', id=evaluation.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+        <a href="{{ url_for('evaluation.show', id=evaluation.id) }}" class="btn btn-sm btn-outline-secondary">Ver</a>
       </div>    
     {% else %}
       <p class="text-muted">No hay evaluaciones para esta sección.</p>

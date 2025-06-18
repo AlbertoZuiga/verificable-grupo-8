@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app import kanvas_db
 from app.models import Teacher, User
+from app.forms.teacher_forms import TeacherCreateForm, TeacherEditForm
 
 teacher_bp = Blueprint('teacher', __name__, url_prefix='/teachers')
 
@@ -16,36 +17,35 @@ def show(id):
 
 @teacher_bp.route('/create', methods=['GET', 'POST'])
 def create():
-    if request.method == 'POST':
+    form = TeacherCreateForm()
+    if form.validate_on_submit():
         new_user = User(
-            first_name=request.form['first_name'],
-            last_name=request.form['last_name'],
-            email=request.form['email']
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            email=form.email.data
         )
-        new_user.set_password(request.form['password'])
+        new_user.set_password(form.password.data)
         kanvas_db.session.add(new_user)
         kanvas_db.session.flush()
 
-        new_teacher = Teacher(
-            user_id=new_user.id
-        )
+        new_teacher = Teacher(user_id=new_user.id)
         kanvas_db.session.add(new_teacher)
-        
         kanvas_db.session.commit()
         return redirect(url_for('teacher.index'))
-    return render_template('teachers/create.html')
+    return render_template('teachers/create.html', form=form)
 
 @teacher_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):
     teacher = Teacher.query.get_or_404(id)
     user = teacher.user
-    if request.method == 'POST':
-        user.first_name = request.form['first_name']
-        user.last_name = request.form['last_name']
-        user.email = request.form['email']
+    form = TeacherEditForm(original_email=user.email, obj=user)
+    if form.validate_on_submit():
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        user.email = form.email.data
         kanvas_db.session.commit()
         return redirect(url_for('teacher.index'))
-    return render_template('teachers/edit.html', teacher=teacher)
+    return render_template('teachers/edit.html', form=form, teacher=teacher)
 
 @teacher_bp.route('/delete/<int:id>')
 def delete(id):

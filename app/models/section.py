@@ -30,7 +30,10 @@ class Section(kanvas_db.Model):
     evaluations = kanvas_db.relationship('Evaluation', back_populates='section', cascade='all, delete-orphan')
     closed = kanvas_db.Column(kanvas_db.Boolean, default=False)
 
-    
+    __table_args__ = (
+        kanvas_db.UniqueConstraint('course_instance_id', 'code', name='unique_course_instance_code'),
+        kanvas_db.UniqueConstraint('course_instance_id', 'teacher_id', name='unique_teacher_in_course_instance'),
+    )
     def __repr__(self):
         return f"<Section id={self.id}, code={self.code}, weighing_type={self.weighing_type}>"
     

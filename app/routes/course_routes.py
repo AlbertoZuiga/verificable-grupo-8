@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import kanvas_db
 from app.models.course import Course
 from app.services.course_service import get_course_and_other_courses
+from app.forms.course_forms import CourseForm
 
 course_bp = Blueprint('course', __name__, url_prefix='/courses')
 
@@ -17,29 +18,56 @@ def show(id):
 
 @course_bp.route('/create', methods=['GET', 'POST'])
 def create():
-    if request.method == 'POST':
-        title = request.form['title']
-        code = request.form['code']
-        credits = int(request.form['credits'])
+    form = CourseForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        code = form.code.data
+        credits = form.credits.data
+
         if Course.query.filter_by(title=title).first():
-            return render_template('courses/create.html', error="Ya existe un curso con ese título.")
+            flash("Ya existe un curso con ese título.", 'danger')
+            return render_template('courses/create.html', form=form)
+
+        if Course.query.filter_by(code=code).first():
+            flash("Ya existe un curso con ese codigo.", 'danger')
+            return render_template('courses/create.html', form=form)
 
         new_course = Course(title=title, code=code, credits=credits)
         kanvas_db.session.add(new_course)
         kanvas_db.session.commit()
-        return redirect(url_for('course.index'))
-    return render_template('courses/create.html')
+        flash("Instancia del curso creada exitosamente.", "success")
+        return redirect(url_for('course.show', id=new_course.id))
+
+    return render_template('courses/create.html', form=form)
 
 @course_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):
     course = Course.query.get_or_404(id)
-    if request.method == 'POST':
-        course.title = request.form['title']
-        course.code = request.form['code']
-        course.credits = int(request.form['credits'])
+    form = CourseForm(obj=course)
+    if form.validate_on_submit():
+        title = form.title.data
+        code = form.code.data
+        credits = form.credits.data
+
+        existing_course = Course.query.filter_by(title=title)
+        if existing_course and existing_course.id != id:
+            flash("Ya existe un curso con ese título.", 'danger')
+            return render_template('courses/create.html', form=form, course=course)
+        
+        existing_course = Course.query.filter_by(code=code)
+        if existing_course and existing_course.id != id:
+            flash("Ya existe un curso con ese codigo.", 'danger')
+            return render_template('courses/create.html', form=form, course=course)
+        
+        course.title = title
+        course.code = code
+        course.credits = credits
+        
         kanvas_db.session.commit()
-        return redirect(url_for('course.index'))
-    return render_template('courses/edit.html', course=course)
+        flash("Instancia del curso actualizada exitosamente.", "success")
+        return redirect(url_for('course.show', id=course.id))
+
+    return render_template('courses/edit.html', form=form, course=course)
 
 @course_bp.route('/delete/<int:id>')
 def delete(id):

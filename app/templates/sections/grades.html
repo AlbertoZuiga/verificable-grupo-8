@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %} Notas {{section.course_instance.course.title}} ({{section.code}}) {% endblock %}
+
+{% block content %}
+
+{% if not section.closed %}
+<div class="alert alert-warning" role="alert">
+    La sección está abierta, por lo que las notas pueden cambiar.
+</div>
+{% endif %}
+<a href="{{ url_for('section.show', id=section.id) }}" class="btn btn-secondary mb-3">
+    ← Volver
+</a>
+<div class="container py-4">
+    <h1 class="my-4 text-primary">Notas</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th rowspan="2" class="">Estudiante</th>
+                    {% for evaluation in section.evaluations %}
+                    <th colspan="{{ evaluation.instances|length }}" class="text-center">
+                        {{ evaluation.title }} ({{ evaluation.weighing }}%)
+                    </th>
+                    <th rowspan="2" class="text-center">Nota {{ evaluation.title }}</th>
+                    {% endfor %}
+                    <th rowspan="2" class="text-center">Promedio Final</th>
+                </tr>
+                <tr>
+                    {% for evaluation in section.evaluations %}
+                        {% for instance in evaluation.instances %}
+                        <th class="text-center">{{ instance.name }} ({{ instance.instance_weighing }}%)</th>
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in section.students %}
+                    <tr>
+                        <td class="fw-semibold">{{ student.user.first_name }} {{ student.user.last_name }}</td>
+                        {% for evaluation in section.evaluations %}
+                            {% set eval_total = namespace(grade=0, total_weight=0) %}
+                            {% for instance in evaluation.instances %}
+                                {% set student_instance = StudentEvaluationInstance.query.filter_by(student_id=student.id, evaluation_instance_id=instance.id).first() %}
+                                <td class="text-end">
+                                    {% if student_instance and student_instance.grade is not none %}
+                                        {{ student_instance.grade }}
+                                        {% set eval_total.grade = eval_total.grade + (student_instance.grade * instance.instance_weighing) %}
+                                        {% set eval_total.total_weight = eval_total.total_weight + instance.instance_weighing %}
+                                    {% else %}
+                                        {% if instance.optional %}
+                                            -
+                                        {% else %}
+                                            1
+                                            {% set eval_total.grade = eval_total.grade + (1 * instance.instance_weighing) %}
+                                            {% set eval_total.total_weight = eval_total.total_weight + instance.instance_weighing %}
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                            <td class="fw-bold text-end">
+                                {{ (eval_total.grade / eval_total.total_weight)|round(1) }}
+                            </td>
+                        {% endfor %}
+                        <td class="fw-bold text-end">
+                            {% set section_grade = SectionGrade.query.filter_by(student_id=student.id, section_id=section.id).first() %}
+                            {% if section_grade and section_grade.grade is not none %}
+                                {{ (section_grade.grade)|round(1) }}
+                                {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+<div class="container mt-4">
+    <h2>Subir Archivo JSON de {{title}}</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.file.label(class="form-label") }}
+            {{ form.file(class="form-control") }}
+            {% for error in form.file.errors %}
+                <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {{ form.json_type }}
+        {% for error in form.json_type.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+        <a href="{{ url_for('load_json.index') }}" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-success">Subir</button>
+    </form>
+</div>

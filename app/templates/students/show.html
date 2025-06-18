@@ -26,4 +26,32 @@
   </div>
 </div>
 
+<h2 class="mt-5 mb-3 text-primary">📊 Reporte Histórico de Notas</h2>
+<div class="table-responsive">
+  <table class="table table-striped table-bordered align-middle">
+    <thead class="table-primary">
+      <tr>
+        <th>Curso</th>
+        <th>Código</th>
+        <th>Año</th>
+        <th>Semestre</th>
+        <th>Sección</th>
+        <th>Nota</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for grade in student.grades %}
+        <tr>
+          <td>{{ grade.section.course_instance.course.title }}</td>
+          <td>{{ grade.section.course_instance.course.code }}</td>
+          <td>{{ grade.section.course_instance.year }}</td>
+          <td>{{ grade.section.course_instance.semester }}</td>
+          <td>{{ grade.section.code }}</td>
+          <td>{{ (grade.grade if grade.grade is not none else 0)|round(1) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
 {% endblock %}

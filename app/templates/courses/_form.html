@@ -1,0 +1,32 @@
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+    {{ form.title.label(class="form-label") }}
+    {{ form.title(class="form-control", maxlength=60) }}
+    {% if form.title.errors %}
+        <div class="text-danger small">{{ form.title.errors[0] }}</div>
+    {% endif %}
+    </div>
+
+    <div class="mb-3">
+    {{ form.code.label(class="form-label") }}
+    {{ form.code(class="form-control", maxlength=15) }}
+    {% if form.code.errors %}
+        <div class="text-danger small">{{ form.code.errors[0] }}</div>
+    {% endif %}
+    </div>
+
+    <div class="mb-3">
+    {{ form.credits.label(class="form-label") }}
+    {{ form.credits(class="form-control", min=0, max=20) }}
+    {% if form.credits.errors %}
+        <div class="text-danger small">{{ form.credits.errors[0] }}</div>
+    {% endif %}
+    </div>
+
+    <div class="mt-3 d-flex gap-2">
+    <a href="{{ url_for('course.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
+    <button type="submit" class="btn btn-primary">💾 Crear</button>
+    </div>
+</form>

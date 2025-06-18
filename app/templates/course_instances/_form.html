@@ -1,0 +1,18 @@
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+    {{ form.course_id.label(class="form-label") }}
+    {{ form.course_id(class="form-select") }}
+    </div>
+    <div class="mb-3">
+    {{ form.year.label(class="form-label") }}
+    {{ form.year(class="form-control", required=True) }}
+    </div>
+    <div class="mb-3">
+    {{ form.semester.label(class="form-label") }}
+    {{ form.semester(class="form-select", required=True) }}
+    </div>
+
+    <a href="{{ url_for('course_instance.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
+    <button type="submit" class="btn btn-primary">💾 Crear</button>
+</form>
