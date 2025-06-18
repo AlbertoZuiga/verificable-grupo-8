@@ -9,6 +9,9 @@
     La sección está abierta, por lo que las notas pueden cambiar.
 </div>
 {% endif %}
+<a href="{{ url_for('section.show', id=section.id) }}" class="btn btn-secondary mb-3">
+    ← Volver
+</a>
 <div class="container py-4">
     <h1 class="my-4 text-primary">Notas</h1>
     <div class="table-responsive">
@@ -43,23 +46,25 @@
                                 <td class="text-end">
                                     {% if student_instance and student_instance.grade is not none %}
                                         {{ student_instance.grade }}
-                                        {% set eval_total.grade = eval_total.grade + (student_instance.grade * instance.instance_weighing / 100) %}
+                                        {% set eval_total.grade = eval_total.grade + (student_instance.grade * instance.instance_weighing) %}
+                                        {% set eval_total.total_weight = eval_total.total_weight + instance.instance_weighing %}
                                     {% else %}
                                         {% if instance.optional %}
                                             -
                                         {% else %}
                                             1
-                                            {% set eval_total.grade = eval_total.grade + (1 * instance.instance_weighing / 100) %}
+                                            {% set eval_total.grade = eval_total.grade + (1 * instance.instance_weighing) %}
+                                            {% set eval_total.total_weight = eval_total.total_weight + instance.instance_weighing %}
                                         {% endif %}
                                     {% endif %}
                                 </td>
                             {% endfor %}
                             <td class="fw-bold text-end">
-                                {{ (eval_total.grade * 100 / evaluation.weighing)|round(1) }}
+                                {{ (eval_total.grade / eval_total.total_weight)|round(1) }}
                             </td>
                         {% endfor %}
                         <td class="fw-bold text-end">
-                            {{ SectionGrade.query.filter_by(student_id=student.id, section_id=section.id).first().grade }}
+                            {{ (SectionGrade.query.filter_by(student_id=student.id, section_id=section.id).first().grade)|round(1) }}
                         </td>
                     </tr>
                 {% endfor %}
