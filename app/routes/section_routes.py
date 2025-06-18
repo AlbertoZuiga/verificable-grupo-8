@@ -133,6 +133,7 @@ def close(section_id):
 
     for student in students:
         total_grade = 0.0
+        total_weighing = 0.0
         for evaluation in evaluations:
             evaluation_grade = 0.0
             total_instance_weight = 0.0
@@ -148,20 +149,26 @@ def close(section_id):
 
             if total_instance_weight > 0:
                 evaluation_grade /= total_instance_weight
-            else:
-                evaluation_grade = 0
+                total_grade += evaluation_grade * evaluation.weighing
+                total_weighing += evaluation.weighing
             
-            total_grade += evaluation_grade * evaluation.weighing
-        total_grade /= section.total_weighing
+        total_grade /= total_weighing
         grade = SectionGrade(student_id=student.id, section_id=section_id, grade=total_grade)
         kanvas_db.session.add(grade)
         final_grades[student.id] = total_grade
-
-    for student_id, grade in final_grades.items():
-        print(f"Alumno {student_id} - Nota final: {grade}")
 
     section.closed = True
     kanvas_db.session.commit()
     
     flash("La sección fue cerrada exitosamente.", "success")
-    return redirect(url_for('section.index', section_id=section_id))
+    return redirect(url_for('section.grades', section_id=section_id))
+
+@section_bp.route('/<int:section_id>/grades', methods=['GET'])
+def grades(section_id):
+    section = Section.query.get_or_404(section_id)
+    return render_template(
+        'sections/grades.html',
+        section=section,
+        StudentEvaluationInstance=StudentEvaluationInstance,
+        SectionGrade=SectionGrade
+    )
