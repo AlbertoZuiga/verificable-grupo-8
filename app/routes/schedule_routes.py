@@ -1,7 +1,8 @@
 import io
 
 import pandas as pd
-from flask import Blueprint, flash, redirect, render_template, send_file, url_for
+from flask import (Blueprint, flash, redirect, render_template, send_file,
+                   url_for)
 
 from app import kanvas_db
 from app.models import AssignedTimeBlock, TimeBlock

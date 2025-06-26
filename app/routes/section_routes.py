@@ -2,14 +2,8 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from app import kanvas_db
 from app.forms.section_forms import SectionForm
-from app.models import (
-    CourseInstance,
-    Section,
-    SectionGrade,
-    StudentEvaluationInstance,
-    Teacher,
-    WeighingType,
-)
+from app.models import (CourseInstance, Section, SectionGrade,
+                        StudentEvaluationInstance, Teacher, WeighingType)
 from app.services.decorators import require_section_open
 from app.services.section_service import create_section
 
@@ -108,7 +102,7 @@ def create():
 
 
 @section_bp.route("/edit/<int:id>", methods=["GET", "POST"])
-@require_section_open(lambda id: Section.query.get_or_404(id))
+@require_section_open(Section.query.get_or_404(id))
 def edit(id):
     section = Section.query.get_or_404(id)
     form = SectionForm(obj=section)
@@ -141,7 +135,7 @@ def edit(id):
 
 
 @section_bp.route("/delete/<int:id>", methods=["POST"])
-@require_section_open(lambda id: Section.query.get_or_404(id))
+@require_section_open(Section.query.get_or_404(id))
 def delete(id):
     section = Section.query.get_or_404(id)
     try:

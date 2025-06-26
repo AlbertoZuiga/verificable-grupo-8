@@ -18,8 +18,7 @@ def login():
             login_user(user)
             flash("Sesión iniciada", "success")
             return redirect(url_for("main.index"))
-        else:
-            flash("Usuario o contraseña inválidos", "danger")
+        flash("Usuario o contraseña inválidos", "danger")
     return render_template("auth/login.html", form=form)
 
 

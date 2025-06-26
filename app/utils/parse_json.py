@@ -3,20 +3,9 @@ import re
 from collections import defaultdict
 from datetime import datetime
 
-from app.models import (
-    Classroom,
-    Course,
-    CourseInstance,
-    Evaluation,
-    EvaluationInstance,
-    Section,
-    Semester,
-    Student,
-    StudentSection,
-    Teacher,
-    User,
-    WeighingType,
-)
+from app.models import (Classroom, Course, CourseInstance, Evaluation,
+                        EvaluationInstance, Section, Semester, Student,
+                        StudentSection, Teacher, User, WeighingType)
 from app.utils import json_constants as JC
 
 
@@ -33,8 +22,11 @@ def parse_classroom_json(json_data):
     for item in json_dictionary:
         for key in (JC.ID, JC.NAME, JC.CAPACITY):
             if key not in item:
-                raise ValueError(f"Falta la clave '{key}'\
-                     en un elemento de " f"'{JC.CLASSROOMS}'.")
+                raise ValueError(
+                    f"Falta la clave '{key}'\
+                     en un elemento de "
+                    f"'{JC.CLASSROOMS}'."
+                )
 
         if not isinstance(item[JC.ID], int):
             raise ValueError(
@@ -55,12 +47,12 @@ def parse_classroom_json(json_data):
         name = item[JC.NAME]
         if len(name) == 0 or len(name) > 60:
             raise ValueError(
-                "El largo del nombre debe ser mayor que 0 y menor o igual " "que 60 caracteres."
+                "El largo del nombre debe ser mayor que 0 y menor o igual que 60 caracteres."
             )
 
         capacity = item[JC.CAPACITY]
         if capacity < 0 or capacity > 1000:
-            raise ValueError("La capacidad debe ser mayor o igual a 0 y menor o igual " "que 1000.")
+            raise ValueError("La capacidad debe ser mayor o igual a 0 y menor o igual que 1000.")
 
         if item[JC.ID] in ids_seen:
             raise ValueError(f"ID duplicado '{item[JC.ID]}' encontrado en " f"'{JC.CLASSROOMS}'.")
@@ -92,8 +84,10 @@ def parse_students_json(json_data):
         # Verificar claves requeridas
         for key in (JC.NAME, JC.EMAIL, JC.ID, JC.ENTRY_YEAR):
             if key not in item:
-                raise ValueError(f"Falta la clave '{key}'\
-                     en un elemento de '{JC.STUDENTS}'.")
+                raise ValueError(
+                    f"Falta la clave '{key}'\
+                     en un elemento de '{JC.STUDENTS}'."
+                )
 
         # Verificar tipos de datos
         if not isinstance(item[JC.NAME], str):
@@ -118,7 +112,7 @@ def parse_students_json(json_data):
             )
 
         entry_year = item[JC.ENTRY_YEAR]
-        if not (current_year - 20 <= entry_year <= current_year + 5):
+        if not current_year - 20 <= entry_year <= current_year + 5:
             raise ValueError(
                 f"El campo '{JC.ENTRY_YEAR}' debe estar entre "
                 f"{current_year - 20} y {current_year + 5}\
@@ -150,11 +144,11 @@ def parse_students_json(json_data):
         # Validación de contenido
         if len(name) == 0 or len(name) > 60:
             raise ValueError(
-                "El largo del nombre debe ser mayor que 0 y menor o igual " "que 60 caracteres."
+                "El largo del nombre debe ser mayor que 0 y menor o igual que 60 caracteres."
             )
         if len(email) == 0 or len(email) > 60:
             raise ValueError(
-                "El largo del correo debe ser mayor que 0 y menor o igual " "que 60 caracteres."
+                "El largo del correo debe ser mayor que 0 y menor o igual que 60 caracteres."
             )
 
         email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
@@ -189,8 +183,10 @@ def parse_teachers_json(json_data):
     for item in teacher_list:
         for key in (JC.NAME, JC.EMAIL, JC.ID):
             if key not in item:
-                raise ValueError(f"Falta la clave '{key}'\
-                     en un elemento de '{JC.TEACHERS}'.")
+                raise ValueError(
+                    f"Falta la clave '{key}'\
+                     en un elemento de '{JC.TEACHERS}'."
+                )
 
         if not isinstance(item[JC.NAME], str):
             raise ValueError(
@@ -214,12 +210,12 @@ def parse_teachers_json(json_data):
 
         if len(name) == 0 or len(name) > 60:
             raise ValueError(
-                "El largo del nombre debe ser mayor que 0 y menor o igual " "que 60 caracteres."
+                "El largo del nombre debe ser mayor que 0 y menor o igual que 60 caracteres."
             )
 
         if len(email) == 0 or len(email) > 60:
             raise ValueError(
-                "El largo del correo debe ser mayor que 0 y menor o igual " "que 60 caracteres."
+                "El largo del correo debe ser mayor que 0 y menor o igual que 60 caracteres."
             )
 
         email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
@@ -272,8 +268,10 @@ def parse_courses_json(json_data):
         # Validar existencia de claves
         for key in (JC.ID, JC.CODE, JC.DESCRIPTION, JC.CREDITS):
             if key not in item:
-                raise ValueError(f"Falta la clave '{key}'\
-                    en un elemento de '{JC.COURSES}'.")
+                raise ValueError(
+                    f"Falta la clave '{key}'\
+                    en un elemento de '{JC.COURSES}'."
+                )
 
         # Validar tipos de datos
         if not isinstance(item[JC.ID], int):
@@ -325,7 +323,7 @@ def parse_courses_json(json_data):
                 f"El campo '{JC.DESCRIPTION}' debe ser\
                     más largo que 0 y más corto que 60 caracteres."
             )
-        if not (0 < item[JC.CREDITS] <= 15):
+        if not 0 < item[JC.CREDITS] <= 15:
             raise ValueError(
                 f"El campo '{JC.CREDITS}' debe ser mayor que 0 y menor o igual que 15."
             )
@@ -395,7 +393,7 @@ def parse_course_instances_json(json_data):
     # Validación de año
     if not isinstance(year, int):
         raise ValueError(f"El campo '{JC.YEAR}' debe ser un número entero.")
-    if not (current_year - 5 <= year <= current_year + 5):
+    if not current_year - 5 <= year <= current_year + 5:
         raise ValueError(
             f"El campo '{JC.YEAR}' debe estar entre " f"{current_year - 5} y {current_year + 5}."
         )
@@ -483,8 +481,10 @@ def parse_sections_json(json_data):
         ]
         for key in required_section_keys:
             if key not in section_data:
-                raise ValueError(f"Falta la clave '{key}'\
-                     en un elemento de '{JC.SECTIONS}'.")
+                raise ValueError(
+                    f"Falta la clave '{key}'\
+                     en un elemento de '{JC.SECTIONS}'."
+                )
 
         evaluation_data = section_data[JC.EVALUATION]
 
@@ -692,13 +692,15 @@ def parse_student_sections_json(json_data):
         if JC.SECTION_ID not in item:
             raise ValueError(
                 f"Falta la clave '{JC.SECTION_ID}'\
-                     en un elemento de " f"'{JC.STUDENT_SECTIONS}'."
+                     en un elemento de "
+                f"'{JC.STUDENT_SECTIONS}'."
             )
 
         if JC.STUDENT_ID not in item:
             raise ValueError(
                 f"Falta la clave '{JC.STUDENT_ID}'\
-                     en un elemento de " f"'{JC.STUDENT_SECTIONS}'."
+                     en un elemento de "
+                f"'{JC.STUDENT_SECTIONS}'."
             )
 
         section_id = item[JC.SECTION_ID]
@@ -752,17 +754,25 @@ def parse_grades_json(json_data):
 
     for entry in grades_raw:
         if JC.STUDENT_ID not in entry:
-            raise ValueError(f"Falta la clave '{JC.STUDENT_ID}'\
-                 en un elemento de '{JC.GRADES}'.")
+            raise ValueError(
+                f"Falta la clave '{JC.STUDENT_ID}'\
+                 en un elemento de '{JC.GRADES}'."
+            )
         if JC.TOPIC_ID not in entry:
-            raise ValueError(f"Falta la clave '{JC.TOPIC_ID}'\
-                 en un elemento de '{JC.GRADES}'.")
+            raise ValueError(
+                f"Falta la clave '{JC.TOPIC_ID}'\
+                 en un elemento de '{JC.GRADES}'."
+            )
         if JC.INSTANCE not in entry:
-            raise ValueError(f"Falta la clave '{JC.INSTANCE}'\
-                 en un elemento de '{JC.GRADES}'.")
+            raise ValueError(
+                f"Falta la clave '{JC.INSTANCE}'\
+                 en un elemento de '{JC.GRADES}'."
+            )
         if JC.GRADE not in entry:
-            raise ValueError(f"Falta la clave '{JC.GRADE}'\
-                 en un elemento de '{JC.GRADES}'.")
+            raise ValueError(
+                f"Falta la clave '{JC.GRADE}'\
+                 en un elemento de '{JC.GRADES}'."
+            )
 
         student_id = entry[JC.STUDENT_ID]
         topic_id = entry[JC.TOPIC_ID]
@@ -789,7 +799,7 @@ def parse_grades_json(json_data):
                 f"El campo '{JC.GRADE}' debe ser un número\
                      en un elemento de '{JC.GRADES}'."
             )
-        if not (1 <= grade_value <= 7):
+        if not 1 <= grade_value <= 7:
             raise ValueError(
                 f"La nota '{grade_value}' no es válida. Debe ser un número entre 1 y 7."
             )

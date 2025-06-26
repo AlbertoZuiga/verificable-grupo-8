@@ -14,7 +14,6 @@ def create_database():
         FROM INFORMATION_SCHEMA.SCHEMATA
         WHERE SCHEMA_NAME = '{Config.DB_NAME}';
         """
-
     )
     result = cursor.fetchone()
     if result:

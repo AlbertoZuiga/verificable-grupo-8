@@ -1,5 +1,6 @@
 from app import kanvas_db
-from app.models import Evaluation, EvaluationInstance, StudentEvaluationInstance, StudentSection
+from app.models import (Evaluation, EvaluationInstance,
+                        StudentEvaluationInstance, StudentSection)
 
 
 def get_section_id(evaluation_id):

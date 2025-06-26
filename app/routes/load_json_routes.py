@@ -2,38 +2,22 @@ from flask import Blueprint, redirect, render_template, url_for
 
 from app import kanvas_db
 from app.forms.load_json import UploadJSONForm
-from app.models import (
-    Classroom,
-    Course,
-    CourseInstance,
-    Requisite,
-    Section,
-    Student,
-    StudentSection,
-    Teacher,
-    User,
-)
+from app.models import (Classroom, Course, CourseInstance, Requisite, Section,
+                        Student, StudentSection, Teacher, User)
 from app.services.create_object_instances import (
-    add_objects_to_session,
-    build_requisite_objects_from_codes,
-)
-from app.services.database_validations import (
-    filter_existing_by_field,
-    filter_existing_by_two_fields,
-    filter_grades,
-)
+    add_objects_to_session, build_requisite_objects_from_codes)
+from app.services.database_validations import (filter_existing_by_field,
+                                               filter_existing_by_two_fields,
+                                               filter_grades)
 from app.utils import json_constants as JC
-from app.utils.flash_messages import flash_invalid_grades, flash_invalid_load, flash_successful_load
-from app.utils.parse_json import (
-    parse_classroom_json,
-    parse_course_instances_json,
-    parse_courses_json,
-    parse_grades_json,
-    parse_sections_json,
-    parse_student_sections_json,
-    parse_students_json,
-    parse_teachers_json,
-)
+from app.utils.flash_messages import (flash_invalid_grades, flash_invalid_load,
+                                      flash_successful_load)
+from app.utils.parse_json import (parse_classroom_json,
+                                  parse_course_instances_json,
+                                  parse_courses_json, parse_grades_json,
+                                  parse_sections_json,
+                                  parse_student_sections_json,
+                                  parse_students_json, parse_teachers_json)
 
 load_json_bp = Blueprint("load_json", __name__, url_prefix="/load_json")
 
