@@ -1,3 +1,7 @@
+import json
+from json import JSONDecodeError
+from sqlalchemy.exc import SQLAlchemyError
+
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from app.models import Section, StudentSection
@@ -21,11 +25,6 @@ def index(section_id):
         section=section,
         student_sections=student_sections,
     )
-
-
-import json
-
-from flask import flash, redirect, render_template, request, url_for
 
 
 @student_section_bp.route("/add", methods=["GET", "POST"])
@@ -54,9 +53,8 @@ def add_user(section_id):
                     flash(f"{added} estudiante(s) agregados exitosamente.", "success")
                 else:
                     flash("Los estudiantes ya estaban en esta sección.", "warning")
-            except Exception as e:
+            except (JSONDecodeError, SQLAlchemyError):
                 flash("Error al procesar los estudiantes.", "danger")
-                print("Error:", e)
 
         return redirect(url_for("student_section.index", section_id=section_id))
 
