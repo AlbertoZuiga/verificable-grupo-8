@@ -1,7 +1,7 @@
 from app import kanvas_db
 
 
-class StudentSection(kanvas_db.Model):
+class StudentSection(kanvas_db.Model):  # type: ignore[name-defined]
     __tablename__ = "student_sections"
 
     section_id = kanvas_db.Column(

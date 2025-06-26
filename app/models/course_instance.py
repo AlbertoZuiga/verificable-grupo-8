@@ -11,7 +11,7 @@ class Semester(Enum):
         return str(self.value)
 
 
-class CourseInstance(kanvas_db.Model):
+class CourseInstance(kanvas_db.Model):  # type: ignore[name-defined]
     __tablename__ = "course_instances"
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)

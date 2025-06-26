@@ -1,7 +1,7 @@
 from app import kanvas_db
 
 
-class AssignedTimeBlock(kanvas_db.Model):
+class AssignedTimeBlock(kanvas_db.Model):  # type: ignore[name-defined]
     __tablename__ = "assigned_time_blocks"
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True)

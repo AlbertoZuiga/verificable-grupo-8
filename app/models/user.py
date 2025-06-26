@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app import kanvas_db
 
 
-class User(UserMixin, kanvas_db.Model):
+class User(UserMixin, kanvas_db.Model):  # type: ignore[name-defined]
     __tablename__ = "users"
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)

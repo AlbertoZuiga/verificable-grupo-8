@@ -1,7 +1,7 @@
 from app import kanvas_db
 
 
-class StudentEvaluationInstance(kanvas_db.Model):
+class StudentEvaluationInstance(kanvas_db.Model):  # type: ignore[name-defined]
     __tablename__ = "student_evaluation_instances"
 
     student_id = kanvas_db.Column(

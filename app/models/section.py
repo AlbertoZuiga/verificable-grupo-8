@@ -11,7 +11,7 @@ class WeighingType(enum.Enum):
         return self.value
 
 
-class Section(kanvas_db.Model):
+class Section(kanvas_db.Model):  # type: ignore[name-defined]
     __tablename__ = "sections"
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)

@@ -2,7 +2,7 @@ from app import kanvas_db
 from app.models.section import WeighingType
 
 
-class Evaluation(kanvas_db.Model):
+class Evaluation(kanvas_db.Model):  # type: ignore[name-defined]
     __tablename__ = "evaluations"
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)

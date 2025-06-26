@@ -1,7 +1,7 @@
 from app import kanvas_db
 
 
-class SectionGrade(kanvas_db.Model):
+class SectionGrade(kanvas_db.Model):  # type: ignore[name-defined]
     __tablename__ = "section_grades"
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True)

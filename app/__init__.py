@@ -6,7 +6,7 @@ from app.models.user import User
 from app.routes import blueprints
 from config import Config
 
-kanvas_db = SQLAlchemy()
+kanvas_db: SQLAlchemy = SQLAlchemy()
 login_manager = LoginManager()
 
 

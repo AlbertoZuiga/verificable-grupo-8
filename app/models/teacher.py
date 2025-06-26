@@ -1,7 +1,7 @@
 from app import kanvas_db
 
 
-class Teacher(kanvas_db.Model):
+class Teacher(kanvas_db.Model):  # type: ignore[name-defined]
     __tablename__ = "teachers"
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, autoincrement=True)
