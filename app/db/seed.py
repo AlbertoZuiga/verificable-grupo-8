@@ -10,12 +10,11 @@ from app.models import (
     Teacher,
     User,
     WeighingType,
+    Student,
 )
 
 
-def seed_database():
-    print("Creando datos...\n\n")
-
+def seed_users(db):
     print("Creando usuarios...")
     users_data = [
         {
@@ -349,7 +348,6 @@ def seed_database():
             "password": "password",
         },
     ]
-
     for user_data in users_data:
         user = User.query.filter_by(email=user_data["email"]).first()
         if not user:
@@ -359,39 +357,39 @@ def seed_database():
                 email=user_data["email"],
             )
             user.set_password(user_data["password"])
-            kanvas_db.session.add(user)
-
-    kanvas_db.session.commit()
+            db.session.add(user)
+    db.session.commit()
     print("Usuarios creados correctamente!\n")
 
+
+def seed_teachers(db):
     print("Creando profesores...")
     users = User.query.all()
     teachers = random.sample(users, 10)
-    teacher_ids = {user.id for user in teachers}
     for user in teachers:
         teacher = Teacher.query.filter_by(user_id=user.id).first()
-
         if not teacher:
             teacher = Teacher(user_id=user.id)
-
-            kanvas_db.session.add(teacher)
-
-    kanvas_db.session.commit()
+            db.session.add(teacher)
+    db.session.commit()
     print("Profesores creados correctamente!\n")
 
-    print("Creando alumnos...")
-    students = [user for user in users if user.id not in teacher_ids]
-    from app.models import Student
 
+def seed_students(db):
+    print("Creando alumnos...")
+    users = User.query.all()
+    teacher_ids = {teacher.user_id for teacher in Teacher.query.all()}
+    students = [user for user in users if user.id not in teacher_ids]
     for user in students:
         student = Student.query.filter_by(user_id=user.id).first()
-
         if not student:
             student = Student(user_id=user.id, university_entry_year=random.randint(2015, 2025))
-
-            kanvas_db.session.add(student)
+            db.session.add(student)
+    db.session.commit()
     print("Alumnos creados correctamente!\n")
 
+
+def seed_courses(db):
     print("Creando cursos y secciones...")
     courses_data = [
         {"title": "Matemáticas Avanzadas", "code": "MA101", "credits": 5},
@@ -405,31 +403,31 @@ def seed_database():
         {"title": "Economía Global", "code": "EG101", "credits": 4},
         {"title": "Biología Molecular", "code": "BM101", "credits": 5},
     ]
-
     courses = []
     for course_data in courses_data:
         course = Course.query.filter_by(title=course_data["title"]).first()
         if not course:
-            # Aquí asignamos el código y los créditos al crear el curso
             course = Course(
                 title=course_data["title"],
                 code=course_data["code"],
                 credits=course_data["credits"],
             )
-            kanvas_db.session.add(course)
+            db.session.add(course)
+            courses.append(course)
         else:
             print(f"\tEl curso '{course_data['title']}' ya existe, no se añadirá de nuevo.")
-
-        courses.append(course)
-
-    kanvas_db.session.commit()
-
+            courses.append(course)
+    db.session.commit()
     if len(courses) < len(courses_data):
         print("Error: No se pudieron obtener todos los cursos correctamente.\n")
     else:
         print("Cursos creados correctamente!\n")
+    return courses
 
+
+def seed_course_instances(db):
     print("Creando instancias de cursos...")
+    courses = Course.query.all()
     for course in courses:
         for _ in range(random.randint(1, 5)):
             course_instance = CourseInstance(
@@ -437,13 +435,15 @@ def seed_database():
                 year=random.randint(2015, 2025),
                 semester=random.choice([Semester.FIRST, Semester.SECOND]),
             )
-            kanvas_db.session.add(course_instance)
-
-    kanvas_db.session.commit()
+            db.session.add(course_instance)
+    db.session.commit()
     print("Instancias de cursos creadas correctamente!\n")
 
+
+def seed_sections(db):
     print("Creando secciones...")
     course_instances = CourseInstance.query.all()
+    teachers = Teacher.query.all()
     for instance in course_instances:
         for _ in range(random.randint(1, 3)):
             unique_code = False
@@ -451,33 +451,46 @@ def seed_database():
                 code = random.randint(100, 999)
                 if not Section.query.filter_by(code=code).first():
                     unique_code = True
-            teacher = random.choice(Teacher.query.all())
+            teacher = random.choice(teachers)
             section = Section(
                 course_instance_id=instance.id,
                 code=code,
                 weighing_type=random.choice([WeighingType.PERCENTAGE, WeighingType.WEIGHT]),
                 teacher=teacher,
             )
-            kanvas_db.session.add(section)
-
-    kanvas_db.session.commit()
+            db.session.add(section)
+    db.session.commit()
     print("Secciones creadas correctamente!\n")
 
+
+def seed_requisites(db):
     print("Creando requisitos...")
+    courses = Course.query.all()
     for course in courses:
         possible_prerequisites = [c for c in courses if c.id != course.id]
+        if not possible_prerequisites:
+            continue
         num_prerequisites = random.randint(1, min(3, len(possible_prerequisites)))
-
         selected_prerequisites = random.sample(possible_prerequisites, num_prerequisites)
         for prerequisite in selected_prerequisites:
             if not Requisite.query.filter_by(
                 course_id=course.id, course_requisite_id=prerequisite.id
             ).first():
                 requisite = Requisite(course_id=course.id, course_requisite_id=prerequisite.id)
-                kanvas_db.session.add(requisite)
-    kanvas_db.session.commit()
+                db.session.add(requisite)
+    db.session.commit()
     print("Requisitos creados correctamente!\n")
 
+
+def seed_database():
+    print("Creando datos...\n\n")
+    seed_users(kanvas_db)
+    seed_teachers(kanvas_db)
+    seed_students(kanvas_db)
+    seed_courses(kanvas_db)
+    seed_course_instances(kanvas_db)
+    seed_sections(kanvas_db)
+    seed_requisites(kanvas_db)
     print("Datos creados correctamente!")
 
 
