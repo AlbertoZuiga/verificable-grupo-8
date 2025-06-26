@@ -1,17 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from app import kanvas_db
-from app.models import (
-    CourseInstance,
-    Section,
-    WeighingType,
-    Teacher,
-    StudentEvaluationInstance,
-    SectionGrade,
-)
-from app.services.section_service import create_section
-from app.services.decorators import require_section_open
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
+from app import kanvas_db
 from app.forms.section_forms import SectionForm
+from app.models import (CourseInstance, Section, SectionGrade,
+                        StudentEvaluationInstance, Teacher, WeighingType)
+from app.services.decorators import require_section_open
+from app.services.section_service import create_section
 
 MINIMUM_GRADE = 1.0
 

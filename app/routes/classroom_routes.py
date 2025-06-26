@@ -1,8 +1,8 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from app import kanvas_db
-from app.models.classroom import Classroom
 from app.forms.classroom_forms import ClassroomForm
+from app.models.classroom import Classroom
 
 classroom_bp = Blueprint("classroom", __name__, url_prefix="/classrooms")
 

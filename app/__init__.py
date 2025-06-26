@@ -1,10 +1,10 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 
-from config import Config
 from app.models.user import User
 from app.routes import blueprints
+from config import Config
 
 kanvas_db = SQLAlchemy()
 login_manager = LoginManager()

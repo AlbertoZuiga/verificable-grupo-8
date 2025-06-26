@@ -1,5 +1,5 @@
 from app import kanvas_db
-from app.models import StudentSection, Student, Section
+from app.models import Section, Student, StudentSection
 
 
 def get_students_not_in_section(section_id):

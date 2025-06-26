@@ -1,7 +1,8 @@
 import json
+
 from flask import request
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed, FileRequired
+from flask_wtf.file import FileAllowed, FileField, FileRequired
 from wtforms import HiddenField, SubmitField, ValidationError
 
 from app.utils import json_constants as JC

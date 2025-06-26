@@ -1,14 +1,12 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from app import kanvas_db
-from app.models import EvaluationInstance, Evaluation, Section
-from app.services.evaluation_instance_service import (
-    get_evaluation_instance_with_students_and_grades,
-    get_section_id,
-)
-from app.services.decorators import require_section_open
-from app.services.validations import validate_section_for_evaluation
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
+from app import kanvas_db
 from app.forms.evaluation_instance_forms import EvaluationInstanceForm
+from app.models import Evaluation, EvaluationInstance, Section
+from app.services.decorators import require_section_open
+from app.services.evaluation_instance_service import (
+    get_evaluation_instance_with_students_and_grades, get_section_id)
+from app.services.validations import validate_section_for_evaluation
 
 evaluation_instance_bp = Blueprint(
     "evaluation_instance", __name__, url_prefix="/evaluation_instances"

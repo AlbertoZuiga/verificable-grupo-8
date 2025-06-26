@@ -1,23 +1,11 @@
 import json
-from datetime import datetime
 import re
 from collections import defaultdict
+from datetime import datetime
 
-from app.models import (
-    Classroom,
-    Course,
-    CourseInstance,
-    Evaluation,
-    EvaluationInstance,
-    Section,
-    Semester,
-    Student,
-    StudentSection,
-    Teacher,
-    User,
-    WeighingType,
-)
-
+from app.models import (Classroom, Course, CourseInstance, Evaluation,
+                        EvaluationInstance, Section, Semester, Student,
+                        StudentSection, Teacher, User, WeighingType)
 from app.utils import json_constants as JC
 
 

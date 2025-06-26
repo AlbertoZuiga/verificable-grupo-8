@@ -1,5 +1,6 @@
 # app/validators.py
 from flask import flash, redirect, url_for
+
 from app.models import Section
 
 

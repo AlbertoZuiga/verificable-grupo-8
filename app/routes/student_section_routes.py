@@ -1,13 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
-from app import kanvas_db
-from app.models import Section
-from app.models import StudentSection
+from flask import (Blueprint, flash, jsonify, redirect, render_template,
+                   request, url_for)
 
-from app.services.student_section_service import (
-    get_students_not_in_section,
-    add_student_to_section,
-    remove_student_from_section,
-)
+from app import kanvas_db
+from app.models import Section, StudentSection
+from app.services.student_section_service import (add_student_to_section,
+                                                  get_students_not_in_section,
+                                                  remove_student_from_section)
 
 student_section_bp = Blueprint(
     "student_section", __name__, url_prefix="/sections/<int:section_id>/students/"
@@ -25,8 +23,9 @@ def index(section_id):
     )
 
 
-from flask import request, render_template, redirect, url_for, flash
 import json
+
+from flask import flash, redirect, render_template, request, url_for
 
 
 @student_section_bp.route("/add", methods=["GET", "POST"])

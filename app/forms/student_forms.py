@@ -1,10 +1,12 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, SubmitField
-from wtforms.validators import DataRequired, Email, ValidationError, NumberRange, Length
-from app.models import User
-from app import kanvas_db
-
 from datetime import datetime
+
+from flask_wtf import FlaskForm
+from wtforms import IntegerField, PasswordField, StringField, SubmitField
+from wtforms.validators import (DataRequired, Email, Length, NumberRange,
+                                ValidationError)
+
+from app import kanvas_db
+from app.models import User
 
 current_year = datetime.now().year
 

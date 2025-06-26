@@ -1,4 +1,2 @@
-from app.services.generate_schedule import (
-    generate_schedule,
-    delete_assigned_time_blocks,
-)
+from app.services.generate_schedule import (delete_assigned_time_blocks,
+                                            generate_schedule)

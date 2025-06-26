@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+
 from app import kanvas_db
+from app.forms.course_forms import CourseForm
 from app.models.course import Course
 from app.services.course_service import get_course_and_other_courses
-from app.forms.course_forms import CourseForm
 
 course_bp = Blueprint("course", __name__, url_prefix="/courses")
 

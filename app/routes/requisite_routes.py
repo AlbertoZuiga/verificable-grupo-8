@@ -1,4 +1,5 @@
-from flask import Blueprint, request, redirect, url_for, flash
+from flask import Blueprint, flash, redirect, request, url_for
+
 from app import kanvas_db
 from app.models import Course, Requisite
 

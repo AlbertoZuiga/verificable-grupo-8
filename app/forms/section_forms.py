@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import SelectField, IntegerField, SubmitField
+from wtforms import IntegerField, SelectField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
 
 from app.models.section import WeighingType

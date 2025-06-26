@@ -1,18 +1,9 @@
 import random
+
 from app import kanvas_app, kanvas_db
-from app.models import (
-    Course,
-    CourseInstance,
-    Semester,
-    Section,
-    WeighingType,
-    Requisite,
-    User,
-    Teacher,
-    Evaluation,
-    EvaluationInstance,
-    StudentSection,
-)
+from app.models import (Course, CourseInstance, Evaluation, EvaluationInstance,
+                        Requisite, Section, Semester, StudentSection, Teacher,
+                        User, WeighingType)
 
 
 def seed_database():
