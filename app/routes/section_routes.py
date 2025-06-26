@@ -2,8 +2,14 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from app import kanvas_db
 from app.forms.section_forms import SectionForm
-from app.models import (CourseInstance, Section, SectionGrade,
-                        StudentEvaluationInstance, Teacher, WeighingType)
+from app.models import (
+    CourseInstance,
+    Section,
+    SectionGrade,
+    StudentEvaluationInstance,
+    Teacher,
+    WeighingType,
+)
 from app.services.decorators import require_section_open
 from app.services.section_service import create_section
 

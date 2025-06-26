@@ -5,7 +5,9 @@ from app.forms.evaluation_instance_forms import EvaluationInstanceForm
 from app.models import Evaluation, EvaluationInstance
 from app.services.decorators import require_section_open
 from app.services.evaluation_instance_service import (
-    get_evaluation_instance_with_students_and_grades, get_section_id)
+    get_evaluation_instance_with_students_and_grades,
+    get_section_id,
+)
 from app.services.validations import validate_section_for_evaluation
 
 evaluation_instance_bp = Blueprint(
