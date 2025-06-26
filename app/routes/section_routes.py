@@ -2,8 +2,14 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from app import kanvas_db
 from app.forms.section_forms import SectionForm
-from app.models import (CourseInstance, Section, SectionGrade,
-                        StudentEvaluationInstance, Teacher, WeighingType)
+from app.models import (
+    CourseInstance,
+    Section,
+    SectionGrade,
+    StudentEvaluationInstance,
+    Teacher,
+    WeighingType,
+)
 from app.services.decorators import require_section_open
 from app.services.section_service import create_section
 
@@ -21,9 +27,7 @@ def index():
 @section_bp.route("/<int:id>")
 def show(id):
     section = Section.query.get_or_404(id)
-    return render_template(
-        "sections/show.html", section=section, WeighingType=WeighingType
-    )
+    return render_template("sections/show.html", section=section, WeighingType=WeighingType)
 
 
 @section_bp.route("/<int:id>/edit_evaluation_weights", methods=["GET", "POST"])
@@ -45,12 +49,11 @@ def edit_evaluation_weights(id):
             total = sum(weights.values())
             if round(total, 2) != 100.0:
                 flash(
-                    "La suma de los pesos de las evaluaciones debe ser 100 para las evaluaciones ponderadas.",
+                    "La suma de los pesos de las evaluaciones\
+                    debe ser 100 para las evaluaciones ponderadas.",
                     "danger",
                 )
-                return redirect(
-                    url_for("section.edit_evaluation_weights", id=section.id)
-                )
+                return redirect(url_for("section.edit_evaluation_weights", id=section.id))
 
         # Asignar pesos nuevos
         for evaluation in section.evaluations:
@@ -148,7 +151,8 @@ def delete(id):
     except Exception as e:
         kanvas_db.session.rollback()
         flash(
-            "No se puede eliminar esta sección porque tiene elementos asociados. Elimínalos primero.",
+            "No se puede eliminar esta sección porque tiene elementos asociados.\
+            Elimínalos primero.",
             "danger",
         )
         print(f"Error deleting section: {e}")
@@ -177,9 +181,7 @@ def close(section_id):
                 ).first()
 
                 if student_instance and student_instance.grade is not None:
-                    evaluation_grade += (
-                        student_instance.grade * instance.instance_weighing
-                    )
+                    evaluation_grade += student_instance.grade * instance.instance_weighing
                     total_instance_weight += instance.instance_weighing
                 elif not instance.optional:
                     evaluation_grade += MINIMUM_GRADE * instance.instance_weighing
@@ -191,9 +193,7 @@ def close(section_id):
                 total_weighing += evaluation.weighing
 
         total_grade /= total_weighing
-        grade = SectionGrade(
-            student_id=student.id, section_id=section_id, grade=total_grade
-        )
+        grade = SectionGrade(student_id=student.id, section_id=section_id, grade=total_grade)
         kanvas_db.session.add(grade)
         final_grades[student.id] = total_grade
 

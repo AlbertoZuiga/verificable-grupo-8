@@ -16,9 +16,7 @@ def exists_by_two_fields(model, field_1: str, value_1, field_2: str, value_2) ->
 
 def filter_existing_by_field(model, field_name: str, objects) -> list:
     return [
-        obj
-        for obj in objects
-        if not exists_by_field(model, field_name, getattr(obj, field_name))
+        obj for obj in objects if not exists_by_field(model, field_name, getattr(obj, field_name))
     ]
 
 

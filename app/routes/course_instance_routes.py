@@ -5,25 +5,19 @@ from app.forms.course_instance_forms import CourseInstanceForm
 from app.models.course import Course
 from app.models.course_instance import CourseInstance, Semester
 
-course_instance_bp = Blueprint(
-    "course_instance", __name__, url_prefix="/course_instances"
-)
+course_instance_bp = Blueprint("course_instance", __name__, url_prefix="/course_instances")
 
 
 @course_instance_bp.route("/")
 def index():
     course_instances = CourseInstance.query.all()
-    return render_template(
-        "course_instances/index.html", course_instances=course_instances
-    )
+    return render_template("course_instances/index.html", course_instances=course_instances)
 
 
 @course_instance_bp.route("/<int:id>")
 def show(id):
     course_instance = CourseInstance.query.get_or_404(id)
-    return render_template(
-        "course_instances/show.html", course_instance=course_instance
-    )
+    return render_template("course_instances/show.html", course_instance=course_instance)
 
 
 @course_instance_bp.route("/create", methods=["GET", "POST"])
@@ -41,9 +35,7 @@ def create():
             course_id=course_id, year=year, semester=semester
         ).first():
             flash("Ya existe la instancia de curso.", "danger")
-            return render_template(
-                "course_instances/create.html", form=form, courses=courses
-            )
+            return render_template("course_instances/create.html", form=form, courses=courses)
 
         new_course_instance = CourseInstance(
             course_id=course_id, year=year, semester=Semester[semester]

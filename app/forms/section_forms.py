@@ -6,9 +6,7 @@ from app.models.section import WeighingType
 
 
 class SectionForm(FlaskForm):
-    course_instance_id = SelectField(
-        "Instancia del Curso", coerce=int, validators=[DataRequired()]
-    )
+    course_instance_id = SelectField("Instancia del Curso", coerce=int, validators=[DataRequired()])
     teacher_id = SelectField("Profesor", coerce=int, validators=[DataRequired()])
     code = IntegerField(
         "Código de Sección", validators=[DataRequired(), NumberRange(min=1, max=5000)]

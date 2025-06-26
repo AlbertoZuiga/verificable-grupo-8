@@ -29,9 +29,7 @@ def create():
             flash("Ya existe un usuario con ese correo.", "danger")
             return render_template("users/create.html", form=form)
 
-        new_user = User(
-            first_name=form.first_name.data, last_name=form.last_name.data, email=email
-        )
+        new_user = User(first_name=form.first_name.data, last_name=form.last_name.data, email=email)
         new_user.set_password(form.password.data)
         kanvas_db.session.add(new_user)
         kanvas_db.session.commit()

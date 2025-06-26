@@ -8,9 +8,7 @@ class User(UserMixin, kanvas_db.Model):  # type: ignore[name-defined]
     __tablename__ = "users"
 
     id = kanvas_db.Column(kanvas_db.Integer, primary_key=True, nullable=False)
-    email = kanvas_db.Column(
-        kanvas_db.String(120), nullable=False, unique=True, index=True
-    )
+    email = kanvas_db.Column(kanvas_db.String(120), nullable=False, unique=True, index=True)
     password_hash = kanvas_db.Column(kanvas_db.String(256), nullable=False)
     first_name = kanvas_db.Column(kanvas_db.String(60), nullable=False)
     last_name = kanvas_db.Column(kanvas_db.String(60), nullable=False)

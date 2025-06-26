@@ -38,4 +38,7 @@ class CourseInstance(kanvas_db.Model):  # type: ignore[name-defined]
     )
 
     def __repr__(self):
-        return f"<CourseInstance id={self.id}, course_id={self.course_id}, year={self.year}, semester={self.semester}>"
+        return f"<CourseInstance id={self.id},\
+                                course_id={self.course_id},\
+                                year={self.year},\
+                                semester={self.semester}>"

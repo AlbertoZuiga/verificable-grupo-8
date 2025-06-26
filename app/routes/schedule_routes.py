@@ -1,8 +1,7 @@
 import io
 
 import pandas as pd
-from flask import (Blueprint, flash, redirect, render_template, request,
-                   send_file, url_for)
+from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
 
 from app import kanvas_db
 from app.models import AssignedTimeBlock, TimeBlock
@@ -32,9 +31,7 @@ def build_clean_schedule(schedule):
         if section_id not in clean_schedule:
             clean_schedule[section_id] = build_schedule_entry(entry)
         else:
-            clean_schedule[section_id]["stop_time"] = (
-                entry.time_block.stop_time.strftime("%H:%M")
-            )
+            clean_schedule[section_id]["stop_time"] = entry.time_block.stop_time.strftime("%H:%M")
     return clean_schedule
 
 

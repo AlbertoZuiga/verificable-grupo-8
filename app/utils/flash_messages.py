@@ -20,12 +20,14 @@ def flash_invalid_grades(parsed_data: list):
 
         if reason == "missing_eval_instance":
             flash(
-                f"No hay EvaluationInstance encontrado para topic ID {topic_id} e índice {index}. Saltando.",
+                f"No hay EvaluationInstance encontrado para topic ID {topic_id} e índice {index}.\
+                Saltando.",
                 "warning",
             )
 
         elif reason == "grade_exists":
             flash(
-                f"Nota ya existe para alumno {student_id} en instancia ({topic_id}, {index}). Saltando.",
+                f"Nota ya existe para alumno {student_id} en instancia ({topic_id}, {index}).\
+                Saltando.",
                 "info",
             )

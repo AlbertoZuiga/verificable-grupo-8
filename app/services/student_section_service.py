@@ -49,18 +49,14 @@ def _add_student_to_section(section_id, student_id):
 
     existing_ids = {s.id for s in section.students}
     if student_id in existing_ids:
-        print(
-            f"⏭️  Estudiante {student_id} ya está en la sección {section_id}, se omite."
-        )
+        print(f"⏭️  Estudiante {student_id} ya está en la sección {section_id}, se omite.")
         return 0
 
     new_link = StudentSection(student_id=student_id, section_id=section_id)
     try:
         kanvas_db.session.add(new_link)
         kanvas_db.session.commit()
-        print(
-            f"✅ Estudiante {student_id} agregado correctamente a la sección {section_id}"
-        )
+        print(f"✅ Estudiante {student_id} agregado correctamente a la sección {section_id}")
         return 1
     except Exception as e:
         kanvas_db.session.rollback()

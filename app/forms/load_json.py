@@ -34,9 +34,7 @@ def validate_file(form, field):
             raise ValidationError("Tipo de JSON inválido.")
 
         if not isinstance(data, dict):
-            raise ValidationError(
-                "El archivo JSON debe tener un objeto como estructura principal."
-            )
+            raise ValidationError("El archivo JSON debe tener un objeto como estructura principal.")
 
     except json.JSONDecodeError as exc:
         raise ValidationError("El contenido del archivo no es un JSON válido.") from exc

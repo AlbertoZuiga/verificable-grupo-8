@@ -13,9 +13,7 @@ class Requisite(kanvas_db.Model):  # type: ignore[name-defined]
     )
 
     __table_args__ = (
-        kanvas_db.UniqueConstraint(
-            "course_id", "course_requisite_id", name="uq_course_requisite"
-        ),
+        kanvas_db.UniqueConstraint("course_id", "course_requisite_id", name="uq_course_requisite"),
     )
 
     course = kanvas_db.relationship(
@@ -32,4 +30,6 @@ class Requisite(kanvas_db.Model):  # type: ignore[name-defined]
     )
 
     def __repr__(self):
-        return f"<Requisite id={self.id}, course_id={self.course_id}, course_requisite_id={self.course_requisite_id}>"
+        return f"<Requisite id={self.id},\
+                            course_id={self.course_id},\
+                            course_requisite_id={self.course_requisite_id}>"

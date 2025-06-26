@@ -22,9 +22,7 @@ class Section(kanvas_db.Model):  # type: ignore[name-defined]
         nullable=False,
         index=True,
     )
-    course_instance = kanvas_db.relationship(
-        "CourseInstance", back_populates="sections"
-    )
+    course_instance = kanvas_db.relationship("CourseInstance", back_populates="sections")
 
     code = kanvas_db.Column(kanvas_db.Integer, nullable=False, index=True, unique=True)
     weighing_type = kanvas_db.Column(kanvas_db.Enum(WeighingType), nullable=False)

@@ -29,7 +29,9 @@ class Course(kanvas_db.Model):  # type: ignore[name-defined]
     )
 
     def __repr__(self):
-        return f"<Course id={self.id}, title={self.title}, code={self.code}, credits={self.credits}>"
+        return (
+            f"<Course id={self.id}, title={self.title}, code={self.code}, credits={self.credits}>"
+        )
 
     def has_cyclic_requisite(self, new_requisite_course):
         def _check_cycle(course, target_course_id, visited=None):

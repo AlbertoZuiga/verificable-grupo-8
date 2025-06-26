@@ -2,22 +2,38 @@ from flask import Blueprint, redirect, render_template, request, url_for
 
 from app import kanvas_db
 from app.forms.load_json import UploadJSONForm
-from app.models import (Classroom, Course, CourseInstance, Requisite, Section,
-                        Student, StudentSection, Teacher, User)
+from app.models import (
+    Classroom,
+    Course,
+    CourseInstance,
+    Requisite,
+    Section,
+    Student,
+    StudentSection,
+    Teacher,
+    User,
+)
 from app.services.create_object_instances import (
-    add_objects_to_session, build_requisite_objects_from_codes)
-from app.services.database_validations import (filter_existing_by_field,
-                                               filter_existing_by_two_fields,
-                                               filter_grades)
+    add_objects_to_session,
+    build_requisite_objects_from_codes,
+)
+from app.services.database_validations import (
+    filter_existing_by_field,
+    filter_existing_by_two_fields,
+    filter_grades,
+)
 from app.utils import json_constants as JC
-from app.utils.flash_messages import (flash_invalid_grades, flash_invalid_load,
-                                      flash_successful_load)
-from app.utils.parse_json import (parse_classroom_json,
-                                  parse_course_instances_json,
-                                  parse_courses_json, parse_grades_json,
-                                  parse_sections_json,
-                                  parse_student_sections_json,
-                                  parse_students_json, parse_teachers_json)
+from app.utils.flash_messages import flash_invalid_grades, flash_invalid_load, flash_successful_load
+from app.utils.parse_json import (
+    parse_classroom_json,
+    parse_course_instances_json,
+    parse_courses_json,
+    parse_grades_json,
+    parse_sections_json,
+    parse_student_sections_json,
+    parse_students_json,
+    parse_teachers_json,
+)
 
 load_json_bp = Blueprint("load_json", __name__, url_prefix="/load_json")
 
@@ -148,9 +164,7 @@ def load_courses_from_json():
 
             kanvas_db.session.flush()
 
-            requisites, skipped = build_requisite_objects_from_codes(
-                requisite_code_pairs
-            )
+            requisites, skipped = build_requisite_objects_from_codes(requisite_code_pairs)
             filtered_requisites = filter_existing_by_two_fields(
                 Requisite, "course_id", "course_requisite_id", requisites
             )
@@ -217,17 +231,13 @@ def load_sections_from_json():
 
             created_sections_count = add_objects_to_session(filtered_sections)
             created_evaluations_count = add_objects_to_session(parsed_evaluations)
-            created_evaluation_instances_count = add_objects_to_session(
-                parsed_instances
-            )
+            created_evaluation_instances_count = add_objects_to_session(parsed_instances)
 
             kanvas_db.session.commit()
 
             flash_successful_load(created_sections_count, JC.SECTIONS_LABEL)
             flash_successful_load(created_evaluations_count, JC.EVALUATIONS_LABEL)
-            flash_successful_load(
-                created_evaluation_instances_count, JC.EVALUATION_INSTANCES_LABEL
-            )
+            flash_successful_load(created_evaluation_instances_count, JC.EVALUATION_INSTANCES_LABEL)
 
             return redirect(url_for("load_json.index"))
 
@@ -260,9 +270,7 @@ def load_student_sections_from_json():
             created_student_sections_count = add_objects_to_session(filtered_links)
 
             kanvas_db.session.commit()
-            flash_successful_load(
-                created_student_sections_count, JC.STUDENT_SECTIONS_LABEL
-            )
+            flash_successful_load(created_student_sections_count, JC.STUDENT_SECTIONS_LABEL)
             return redirect(url_for("load_json.index"))
 
         except Exception as e:

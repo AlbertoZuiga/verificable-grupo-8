@@ -36,20 +36,17 @@ def edit_instance_weights(id):
                 weights[instance.id] = float(request.form[key])
         except (ValueError, KeyError) as e:
             flash(f"Entrada inválida para los pesos: {e}", "danger")
-            return redirect(
-                url_for("evaluation.edit_instance_weights", id=evaluation.id)
-            )
+            return redirect(url_for("evaluation.edit_instance_weights", id=evaluation.id))
 
         if evaluation.weighing_system == WeighingType.PERCENTAGE:
             total = sum(weights.values())
             if round(total, 2) != 100.0:
                 flash(
-                    "La suma de los pesos de las instancias debe ser 100 para las evaluaciones ponderadas.",
+                    "La suma de los pesos de las instancias debe ser\
+                    100 para las evaluaciones ponderadas.",
                     "danger",
                 )
-                return redirect(
-                    url_for("evaluation.edit_instance_weights", id=evaluation.id)
-                )
+                return redirect(url_for("evaluation.edit_instance_weights", id=evaluation.id))
 
         for instance in evaluation.instances:
             instance.instance_weighing = weights[instance.id]
@@ -130,14 +127,10 @@ def edit(id):
         if validation_error:
             return validation_error
 
-        existing_evaluation = Evaluation.query.filter_by(
-            title=title, section_id=section_id
-        ).first()
+        existing_evaluation = Evaluation.query.filter_by(title=title, section_id=section_id).first()
         if existing_evaluation and existing_evaluation.id != id:
             flash("Ya existe una evaluación con ese título para la seccion.", "danger")
-            return render_template(
-                "evaluations/edit.html", form=form, evaluation=evaluation
-            )
+            return render_template("evaluations/edit.html", form=form, evaluation=evaluation)
 
         evaluation.title = title
         evaluation.weighing = 0.0

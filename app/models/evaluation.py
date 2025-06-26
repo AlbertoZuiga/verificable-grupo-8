@@ -28,7 +28,9 @@ class Evaluation(kanvas_db.Model):  # type: ignore[name-defined]
     )
 
     def __repr__(self):
-        return f"<Evaluation id={self.id}, title={self.title}, weighing_system={self.weighing_system}>"
+        return (
+            f"<Evaluation id={self.id}, title={self.title}, weighing_system={self.weighing_system}>"
+        )
 
     @property
     def total_weighing(self):

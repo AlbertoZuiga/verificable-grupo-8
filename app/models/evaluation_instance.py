@@ -34,10 +34,10 @@ class EvaluationInstance(kanvas_db.Model):  # type: ignore[name-defined]
     )
 
     __table_args__ = (
-        kanvas_db.UniqueConstraint(
-            "evaluation_id", "title", name="unique_evaluation_title"
-        ),
+        kanvas_db.UniqueConstraint("evaluation_id", "title", name="unique_evaluation_title"),
     )
 
     def __repr__(self):
-        return f"<EvaluationInstance id={self.id}, title={self.title}, weighing={self.instance_weighing}>"
+        return f"<EvaluationInstance id={self.id},\
+                                    title={self.title},\
+                                    weighing={self.instance_weighing}>"

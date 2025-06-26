@@ -14,9 +14,7 @@ class SectionGrade(kanvas_db.Model):  # type: ignore[name-defined]
     grade = kanvas_db.Column(kanvas_db.Float, nullable=False)
 
     __table_args__ = (
-        kanvas_db.UniqueConstraint(
-            "student_id", "section_id", name="unique_student_section"
-        ),
+        kanvas_db.UniqueConstraint("student_id", "section_id", name="unique_student_section"),
     )
     student = kanvas_db.relationship("Student", backref="grades")
     section = kanvas_db.relationship("Section", backref="grades")

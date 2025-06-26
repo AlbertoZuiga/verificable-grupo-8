@@ -1,6 +1,5 @@
 from app import kanvas_db
-from app.models import (Evaluation, EvaluationInstance,
-                        StudentEvaluationInstance, StudentSection)
+from app.models import Evaluation, EvaluationInstance, StudentEvaluationInstance, StudentSection
 
 
 def get_section_id(evaluation_id):
@@ -28,11 +27,7 @@ def get_evaluation_instance_with_students_and_grades(evaluation_instance_id):
 def get_evaluation_instance_and_student(evaluation_instance_id, student_id):
     evaluation_instance = EvaluationInstance.query.get_or_404(evaluation_instance_id)
     student = next(
-        (
-            s
-            for s in evaluation_instance.evaluation.section.students
-            if s.id == student_id
-        ),
+        (s for s in evaluation_instance.evaluation.section.students if s.id == student_id),
         None,
     )
     return evaluation_instance, student

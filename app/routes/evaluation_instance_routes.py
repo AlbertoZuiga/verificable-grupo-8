@@ -5,7 +5,9 @@ from app.forms.evaluation_instance_forms import EvaluationInstanceForm
 from app.models import Evaluation, EvaluationInstance, Section
 from app.services.decorators import require_section_open
 from app.services.evaluation_instance_service import (
-    get_evaluation_instance_with_students_and_grades, get_section_id)
+    get_evaluation_instance_with_students_and_grades,
+    get_section_id,
+)
 from app.services.validations import validate_section_for_evaluation
 
 evaluation_instance_bp = Blueprint(
@@ -50,9 +52,7 @@ def create():
         optional = form.optional.data
         evaluation_id = form.evaluation_id.data
 
-        if EvaluationInstance.query.filter_by(
-            title=title, evaluation_id=evaluation_id
-        ).first():
+        if EvaluationInstance.query.filter_by(title=title, evaluation_id=evaluation_id).first():
             flash("Instancia de evaluación ya existe.", "danger")
             return render_template("evaluation_instances/create.html", form=form)
 
@@ -67,9 +67,7 @@ def create():
         try:
             kanvas_db.session.add(evaluation_instance)
             kanvas_db.session.commit()
-            return redirect(
-                url_for("evaluation_instance.show", id=evaluation_instance.id)
-            )
+            return redirect(url_for("evaluation_instance.show", id=evaluation_instance.id))
         except Exception as e:
             kanvas_db.session.rollback()
             flash(f"Error creating evaluation_instance: {e}", "danger")
@@ -78,9 +76,7 @@ def create():
 
 
 @evaluation_instance_bp.route("/edit/<int:id>", methods=["GET", "POST"])
-@require_section_open(
-    lambda id: EvaluationInstance.query.get_or_404(id).evaluation.section
-)
+@require_section_open(lambda id: EvaluationInstance.query.get_or_404(id).evaluation.section)
 def edit(id):
     evaluation_instance = EvaluationInstance.query.get_or_404(id)
     form = EvaluationInstanceForm(obj=evaluation_instance)
@@ -110,9 +106,7 @@ def edit(id):
 
         try:
             kanvas_db.session.commit()
-            return redirect(
-                url_for("evaluation_instance.show", id=evaluation_instance.id)
-            )
+            return redirect(url_for("evaluation_instance.show", id=evaluation_instance.id))
         except Exception as e:
             kanvas_db.session.rollback()
             flash(f"Error updating evaluation_instance: {e}", "danger")
@@ -125,9 +119,7 @@ def edit(id):
 
 
 @evaluation_instance_bp.route("/delete/<int:id>")
-@require_section_open(
-    lambda id: EvaluationInstance.query.get_or_404(id).evaluation.section
-)
+@require_section_open(lambda id: EvaluationInstance.query.get_or_404(id).evaluation.section)
 def delete(id):
     evaluation_instance = EvaluationInstance.query.get_or_404(id)
     try:

@@ -9,9 +9,7 @@ class StudentEvaluationInstance(kanvas_db.Model):  # type: ignore[name-defined]
         kanvas_db.ForeignKey("students.id", ondelete="CASCADE"),
         primary_key=True,
     )
-    student = kanvas_db.relationship(
-        "Student", back_populates="student_evaluation_instances"
-    )
+    student = kanvas_db.relationship("Student", back_populates="student_evaluation_instances")
 
     evaluation_instance_id = kanvas_db.Column(
         kanvas_db.Integer,
@@ -25,4 +23,6 @@ class StudentEvaluationInstance(kanvas_db.Model):  # type: ignore[name-defined]
     grade = kanvas_db.Column(kanvas_db.Float)
 
     def __repr__(self):
-        return f"<StudentEvaluationInstance student_id={self.student_id} evaluation_instance_id={self.evaluation_instance_id} grade={self.grade}>"
+        return f"<StudentEvaluationInstance student_id={self.student_id},\
+                                            evaluation_instance_id={self.evaluation_instance_id},\
+                                            grade={self.grade}>"

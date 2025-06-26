@@ -2,8 +2,7 @@ from datetime import datetime
 
 from flask_wtf import FlaskForm
 from wtforms import IntegerField, PasswordField, StringField, SubmitField
-from wtforms.validators import (DataRequired, Email, Length, NumberRange,
-                                ValidationError)
+from wtforms.validators import DataRequired, Email, Length, NumberRange, ValidationError
 
 from app import kanvas_db
 from app.models import User
@@ -14,9 +13,7 @@ current_year = datetime.now().year
 class StudentCreateForm(FlaskForm):
     first_name = StringField("Nombre", validators=[DataRequired(), Length(max=60)])
     last_name = StringField("Apellido", validators=[DataRequired(), Length(max=60)])
-    email = StringField(
-        "Correo electrónico", validators=[DataRequired(), Email(), Length(max=60)]
-    )
+    email = StringField("Correo electrónico", validators=[DataRequired(), Email(), Length(max=60)])
     university_entry_year = IntegerField(
         "Año de ingreso",
         validators=[
@@ -36,9 +33,7 @@ class StudentCreateForm(FlaskForm):
 class StudentEditForm(FlaskForm):
     first_name = StringField("Nombre", validators=[DataRequired(), Length(max=60)])
     last_name = StringField("Apellido", validators=[DataRequired(), Length(max=60)])
-    email = StringField(
-        "Correo electrónico", validators=[DataRequired(), Email(), Length(max=60)]
-    )
+    email = StringField("Correo electrónico", validators=[DataRequired(), Email(), Length(max=60)])
     university_entry_year = IntegerField(
         "Año de ingreso",
         validators=[
@@ -56,6 +51,4 @@ class StudentEditForm(FlaskForm):
         if email.data != self.original_email:
             user = User.query.filter_by(email=email.data).first()
             if user:
-                raise ValidationError(
-                    "El correo electrónico ya está registrado por otro usuario."
-                )
+                raise ValidationError("El correo electrónico ya está registrado por otro usuario.")

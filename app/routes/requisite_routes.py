@@ -15,9 +15,7 @@ def create():
         flash("Debe seleccionar un curso y su requisito.", "danger")
         return redirect(url_for("course.show", id=course_id))
 
-    if Requisite.query.filter_by(
-        course_id=requisite_id, course_requisite_id=course_id
-    ).first():
+    if Requisite.query.filter_by(course_id=requisite_id, course_requisite_id=course_id).first():
         flash(
             "No se puede asignar como requisito un curso que depende del curso actual.",
             "danger",
