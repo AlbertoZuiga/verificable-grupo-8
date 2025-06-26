@@ -4,12 +4,9 @@ from app import kanvas_app, kanvas_db
 from app.models import (
     Course,
     CourseInstance,
-    Evaluation,
-    EvaluationInstance,
     Requisite,
     Section,
     Semester,
-    StudentSection,
     Teacher,
     User,
     WeighingType,
@@ -434,7 +431,7 @@ def seed_database():
 
     print("Creando instancias de cursos...")
     for course in courses:
-        for i in range(random.randint(1, 5)):
+        for _ in range(random.randint(1, 5)):
             course_instance = CourseInstance(
                 course_id=course.id,
                 year=random.randint(2015, 2025),
@@ -448,7 +445,7 @@ def seed_database():
     print("Creando secciones...")
     course_instances = CourseInstance.query.all()
     for instance in course_instances:
-        for i in range(random.randint(1, 3)):
+        for _ in range(random.randint(1, 3)):
             unique_code = False
             while not unique_code:
                 code = random.randint(100, 999)

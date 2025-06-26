@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import flash, redirect, request, url_for
+from flask import flash, redirect, url_for
 
 
 def handle_closed_section(section):

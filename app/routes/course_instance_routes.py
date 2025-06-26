@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, url_for
 
 from app import kanvas_db
 from app.forms.course_instance_forms import CourseInstanceForm

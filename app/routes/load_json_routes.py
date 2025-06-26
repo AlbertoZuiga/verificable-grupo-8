@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, url_for
 
 from app import kanvas_db
 from app.forms.load_json import UploadJSONForm
@@ -164,7 +164,7 @@ def load_courses_from_json():
 
             kanvas_db.session.flush()
 
-            requisites, skipped = build_requisite_objects_from_codes(requisite_code_pairs)
+            requisites, _ = build_requisite_objects_from_codes(requisite_code_pairs)
             filtered_requisites = filter_existing_by_two_fields(
                 Requisite, "course_id", "course_requisite_id", requisites
             )

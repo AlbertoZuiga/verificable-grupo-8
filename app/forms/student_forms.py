@@ -4,7 +4,6 @@ from flask_wtf import FlaskForm
 from wtforms import IntegerField, PasswordField, StringField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, NumberRange, ValidationError
 
-from app import kanvas_db
 from app.models import User
 
 current_year = datetime.now().year
@@ -44,7 +43,7 @@ class StudentEditForm(FlaskForm):
     submit = SubmitField("Guardar")
 
     def __init__(self, original_email, *args, **kwargs):
-        super(StudentEditForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.original_email = original_email
 
     def validate_email(self, email):

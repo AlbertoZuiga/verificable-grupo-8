@@ -1,7 +1,6 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, url_for
 from flask_login import login_required, login_user, logout_user
 
-from app import kanvas_db
 from app.forms.auth_forms import LoginForm
 from app.models import User
 

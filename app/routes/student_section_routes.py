@@ -1,6 +1,5 @@
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from app import kanvas_db
 from app.models import Section, StudentSection
 from app.services.student_section_service import (
     add_student_to_section,
