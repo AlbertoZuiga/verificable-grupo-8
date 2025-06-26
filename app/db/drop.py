@@ -1,11 +1,10 @@
 import pymysql
 from config import Config
 
+
 def drop_database():
     conn = pymysql.connect(
-        host=Config.DB_HOST,
-        user=Config.DB_USER,
-        password=Config.DB_PASSWORD
+        host=Config.DB_HOST, user=Config.DB_USER, password=Config.DB_PASSWORD
     )
     cursor = conn.cursor()
     print("Eliminando base de datos...")
@@ -21,6 +20,7 @@ def drop_database():
         print(f"La base de datos '{Config.DB_NAME}' no existe.\n")
 
     conn.close()
+
 
 if __name__ == "__main__":
     drop_database()

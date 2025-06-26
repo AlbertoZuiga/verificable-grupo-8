@@ -1,11 +1,10 @@
 import pymysql
 from config import Config
 
+
 def create_database():
     conn = pymysql.connect(
-        host=Config.DB_HOST,
-        user=Config.DB_USER,
-        password=Config.DB_PASSWORD
+        host=Config.DB_HOST, user=Config.DB_USER, password=Config.DB_PASSWORD
     )
     cursor = conn.cursor()
     print("Creando base de datos...")
@@ -23,6 +22,7 @@ def create_database():
         print(f"Base de datos '{Config.DB_NAME}' creada.\n")
 
     conn.close()
+
 
 if __name__ == "__main__":
     create_database()

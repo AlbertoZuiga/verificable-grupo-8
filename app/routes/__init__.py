@@ -16,7 +16,6 @@ from app.routes.schedule_routes import schedule_bp
 from app.routes.grade_routes import grade_bp
 
 
-
 blueprints = [
     main_bp,
     course_bp,
@@ -33,5 +32,5 @@ blueprints = [
     load_json_bp,
     classroom_bp,
     schedule_bp,
-    grade_bp
+    grade_bp,
 ]

@@ -20,14 +20,13 @@ from app.models import (
 
 from app.utils import json_constants as JC
 
+
 def parse_classroom_json(json_data):
     classrooms = []
     data = json.loads(json_data)
 
     if JC.CLASSROOMS not in data:
-        raise ValueError(
-            f"Falta la clave '{JC.CLASSROOMS}' en el JSON."
-        )
+        raise ValueError(f"Falta la clave '{JC.CLASSROOMS}' en el JSON.")
 
     json_dictionary = data[JC.CLASSROOMS]
     ids_seen = set()
@@ -36,8 +35,7 @@ def parse_classroom_json(json_data):
         for key in (JC.ID, JC.NAME, JC.CAPACITY):
             if key not in item:
                 raise ValueError(
-                    f"Falta la clave '{key}' en un elemento de "
-                    f"'{JC.CLASSROOMS}'."
+                    f"Falta la clave '{key}' en un elemento de " f"'{JC.CLASSROOMS}'."
                 )
 
         if not isinstance(item[JC.ID], int):
@@ -66,14 +64,12 @@ def parse_classroom_json(json_data):
         capacity = item[JC.CAPACITY]
         if capacity < 0 or capacity > 1000:
             raise ValueError(
-                "La capacidad debe ser mayor o igual a 0 y menor o igual "
-                "que 1000."
+                "La capacidad debe ser mayor o igual a 0 y menor o igual " "que 1000."
             )
 
         if item[JC.ID] in ids_seen:
             raise ValueError(
-                f"ID duplicado '{item[JC.ID]}' encontrado en "
-                f"'{JC.CLASSROOMS}'."
+                f"ID duplicado '{item[JC.ID]}' encontrado en " f"'{JC.CLASSROOMS}'."
             )
         ids_seen.add(item[JC.ID])
 
@@ -85,6 +81,7 @@ def parse_classroom_json(json_data):
         classrooms.append(classroom)
 
     return classrooms
+
 
 def parse_students_json(json_data):
     result = []
@@ -155,15 +152,11 @@ def parse_students_json(json_data):
         # Verificar unicidad en la base de datos
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            raise ValueError(
-                f"Ya existe un usuario con el correo '{email}'."
-            )
+            raise ValueError(f"Ya existe un usuario con el correo '{email}'.")
 
         existing_student = Student.query.filter_by(id=student_id).first()
         if existing_student:
-            raise ValueError(
-                f"Ya existe un estudiante con ID '{student_id}'."
-            )
+            raise ValueError(f"Ya existe un estudiante con ID '{student_id}'.")
 
         # Validación de contenido
         if len(name) == 0 or len(name) > 60:
@@ -177,7 +170,7 @@ def parse_students_json(json_data):
                 "que 60 caracteres."
             )
 
-        email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
         if not re.match(email_regex, email):
             raise ValueError(f"El correo '{email}' no tiene un formato válido.")
 
@@ -185,22 +178,15 @@ def parse_students_json(json_data):
         first_name = name_parts[0]
         last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
 
-        user = User(
-            first_name=first_name,
-            last_name=last_name,
-            email=email
-        )
+        user = User(first_name=first_name, last_name=last_name, email=email)
         user.set_password(f"password_{first_name}")
 
-        student = Student(
-            id=student_id,
-            user=user,
-            university_entry_year=entry_year
-        )
+        student = Student(id=student_id, user=user, university_entry_year=entry_year)
 
         result.append((user, student))
 
     return result
+
 
 def parse_teachers_json(json_data):
     result = []
@@ -252,7 +238,7 @@ def parse_teachers_json(json_data):
                 "que 60 caracteres."
             )
 
-        email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
         if not re.match(email_regex, email):
             raise ValueError(f"El correo '{email}' no tiene un formato válido.")
 
@@ -269,35 +255,25 @@ def parse_teachers_json(json_data):
 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            raise ValueError(
-                f"Ya existe un usuario con el correo '{email}'."
-            )
+            raise ValueError(f"Ya existe un usuario con el correo '{email}'.")
 
         existing_teacher = Teacher.query.filter_by(id=teacher_id).first()
         if existing_teacher:
-            raise ValueError(
-                f"Ya existe un profesor con ID '{teacher_id}'."
-            )
+            raise ValueError(f"Ya existe un profesor con ID '{teacher_id}'.")
 
         name_parts = name.split()
         first_name = name_parts[0]
         last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
 
-        user = User(
-            first_name=first_name,
-            last_name=last_name,
-            email=email
-        )
+        user = User(first_name=first_name, last_name=last_name, email=email)
         user.set_password(f"password_{name}")
 
-        teacher = Teacher(
-            id=teacher_id,
-            user=user
-        )
+        teacher = Teacher(id=teacher_id, user=user)
 
         result.append((user, teacher))
 
     return result
+
 
 def parse_courses_json(json_data):
     data = json.loads(json_data)
@@ -378,7 +354,7 @@ def parse_courses_json(json_data):
             id=course_id,
             code=course_code,
             title=item[JC.DESCRIPTION],
-            credits=item[JC.CREDITS]
+            credits=item[JC.CREDITS],
         )
         courses.append(course)
 
@@ -417,6 +393,7 @@ def parse_courses_json(json_data):
         raise ValueError("Se detectó un ciclo en los requisitos de los cursos.")
 
     return courses, requisite_code_pairs
+
 
 def parse_course_instances_json(json_data):
     data = json.loads(json_data)
@@ -501,14 +478,12 @@ def parse_course_instances_json(json_data):
         seen_course_ids.add(course_id)
 
         instance = CourseInstance(
-            id=instance_id,
-            course_id=course_id,
-            year=year,
-            semester=semester_enum
+            id=instance_id, course_id=course_id, year=year, semester=semester_enum
         )
         instances.append(instance)
 
     return instances
+
 
 def parse_sections_json(json_data):
     data = json.loads(json_data)
@@ -523,7 +498,10 @@ def parse_sections_json(json_data):
     for section_data in data[JC.SECTIONS]:
         # Validación de claves en sección
         required_section_keys = [
-            JC.EVALUATION, JC.ID, JC.COURSE_INSTANCE, JC.TEACHER_ID
+            JC.EVALUATION,
+            JC.ID,
+            JC.COURSE_INSTANCE,
+            JC.TEACHER_ID,
         ]
         for key in required_section_keys:
             if key not in section_data:
@@ -534,9 +512,7 @@ def parse_sections_json(json_data):
         evaluation_data = section_data[JC.EVALUATION]
 
         # Validación de claves en evaluación
-        required_eval_keys = [
-            JC.EVALUATION_TYPE, JC.TOPIC_COMBINATIONS, JC.TOPICS
-        ]
+        required_eval_keys = [JC.EVALUATION_TYPE, JC.TOPIC_COMBINATIONS, JC.TOPICS]
         for key in required_eval_keys:
             if key not in evaluation_data:
                 raise ValueError(
@@ -564,9 +540,7 @@ def parse_sections_json(json_data):
         # Validación de profesor
         teacher_id = section_data[JC.TEACHER_ID]
         if not Teacher.query.filter_by(id=teacher_id).first():
-            raise ValueError(
-                f"No existe un profesor con ID '{teacher_id}'."
-            )
+            raise ValueError(f"No existe un profesor con ID '{teacher_id}'.")
 
         # Validación de tipos en evaluación
         eval_type_raw = evaluation_data[JC.EVALUATION_TYPE]
@@ -605,7 +579,7 @@ def parse_sections_json(json_data):
             code=section_data[JC.ID],
             course_instance_id=section_data[JC.COURSE_INSTANCE],
             teacher_id=teacher_id,
-            weighing_type=weighing_type
+            weighing_type=weighing_type,
         )
         parsed_sections.append(section)
 
@@ -635,8 +609,12 @@ def parse_sections_json(json_data):
 
             topic_def = topic_details[str(topic_id)]
 
-            for key in [JC.EVALUATION_TYPE, JC.TOPIC_VALUES,
-                        JC.TOPIC_COUNT, JC.TOPIC_MANDATORY]:
+            for key in [
+                JC.EVALUATION_TYPE,
+                JC.TOPIC_VALUES,
+                JC.TOPIC_COUNT,
+                JC.TOPIC_MANDATORY,
+            ]:
                 if key not in topic_def:
                     raise ValueError(
                         f"Falta la clave '{key}' en la definición de "
@@ -691,8 +669,7 @@ def parse_sections_json(json_data):
                 total = sum(topic_def[JC.TOPIC_VALUES])
                 if total not in (0, 100):
                     topic_def[JC.TOPIC_VALUES] = [
-                        round((v / total) * 100, 2)
-                        for v in topic_def[JC.TOPIC_VALUES]
+                        round((v / total) * 100, 2) for v in topic_def[JC.TOPIC_VALUES]
                     ]
                 if round(sum(topic_def[JC.TOPIC_VALUES]), 2) != 100:
                     raise ValueError(
@@ -705,7 +682,7 @@ def parse_sections_json(json_data):
                 section=section,
                 title=topic_name,
                 weighing=topic[JC.TOPIC_WEIGHT],
-                weighing_system=topic_weighing_type
+                weighing_system=topic_weighing_type,
             )
             parsed_evaluations.append(evaluation)
 
@@ -715,7 +692,7 @@ def parse_sections_json(json_data):
                     index_in_evaluation=i + 1,
                     title=f"{topic_name} {i + 1}",
                     instance_weighing=topic_def[JC.TOPIC_VALUES][i],
-                    optional=topic_def[JC.TOPIC_MANDATORY][i]
+                    optional=topic_def[JC.TOPIC_MANDATORY][i],
                 )
                 parsed_instances.append(instance)
 
@@ -726,13 +703,12 @@ def parse_sections_json(json_data):
     )
     return parsed_sections, parsed_evaluations, parsed_instances
 
+
 def parse_student_sections_json(json_data):
     data = json.loads(json_data)
 
     if JC.STUDENT_SECTIONS not in data:
-        raise ValueError(
-            f"Falta la clave '{JC.STUDENT_SECTIONS}' en el JSON."
-        )
+        raise ValueError(f"Falta la clave '{JC.STUDENT_SECTIONS}' en el JSON.")
 
     student_section_data = data[JC.STUDENT_SECTIONS]
     parsed_links = []
@@ -775,18 +751,13 @@ def parse_student_sections_json(json_data):
         visited_links.add(link)
 
         if not Section.query.filter_by(id=section_id).first():
-            raise ValueError(
-                f"No existe una sección con ID '{section_id}'."
-            )
+            raise ValueError(f"No existe una sección con ID '{section_id}'.")
 
         if not Student.query.filter_by(id=student_id).first():
-            raise ValueError(
-                f"No existe un estudiante con ID '{student_id}'."
-            )
+            raise ValueError(f"No existe un estudiante con ID '{student_id}'.")
 
         if StudentSection.query.filter_by(
-            section_id=section_id,
-            student_id=student_id
+            section_id=section_id, student_id=student_id
         ).first():
             raise ValueError(
                 f"La relación entre estudiante '{student_id}' y sección "
@@ -798,6 +769,7 @@ def parse_student_sections_json(json_data):
         )
 
     return parsed_links
+
 
 def parse_grades_json(json_data):
     data = json.loads(json_data)
@@ -880,11 +852,13 @@ def parse_grades_json(json_data):
             )
         visited_grades.add(grade_key)
 
-        parsed_grades.append({
-            "student_id": student_id,
-            "topic_id": topic_id,
-            "instance_index": instance_index,
-            "grade": grade_value,
-        })
+        parsed_grades.append(
+            {
+                "student_id": student_id,
+                "topic_id": topic_id,
+                "instance_index": instance_index,
+                "grade": grade_value,
+            }
+        )
 
     return parsed_grades

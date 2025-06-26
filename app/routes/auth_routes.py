@@ -5,9 +5,10 @@ from app import kanvas_db
 from app.models import User
 from app.forms.auth_forms import LoginForm
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint("auth", __name__)
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+
+@auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -16,15 +17,16 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password):
             login_user(user)
-            flash('Sesión iniciada', 'success')
-            return redirect(url_for('main.index'))
+            flash("Sesión iniciada", "success")
+            return redirect(url_for("main.index"))
         else:
-            flash('Usuario o contraseña inválidos', 'danger')
-    return render_template('auth/login.html', form=form)
+            flash("Usuario o contraseña inválidos", "danger")
+    return render_template("auth/login.html", form=form)
 
-@auth_bp.route('/logout')
+
+@auth_bp.route("/logout")
 @login_required
 def logout():
     logout_user()
-    flash('Sesión cerrada', 'success')
-    return redirect(url_for('auth.login'))
+    flash("Sesión cerrada", "success")
+    return redirect(url_for("auth.login"))

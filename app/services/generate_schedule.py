@@ -145,7 +145,9 @@ def assign_section_if_possible(section, classrooms, time_blocks):
                 candidate_time_blocks = sequence[i : i + required_blocks]
 
                 for classroom in classrooms:
-                    if is_valid_assignment(section, classroom.id, candidate_time_blocks):
+                    if is_valid_assignment(
+                        section, classroom.id, candidate_time_blocks
+                    ):
                         assign_blocks(section.id, classroom.id, candidate_time_blocks)
                         print(
                             f"Sección {section.id} asignada en sala {classroom.name}, "
@@ -181,7 +183,9 @@ def get_student_count(section_id):
     """
     Return the number of students enrolled in a given section.
     """
-    return kanvas_db.session.query(StudentSection).filter_by(section_id=section_id).count()
+    return (
+        kanvas_db.session.query(StudentSection).filter_by(section_id=section_id).count()
+    )
 
 
 def has_capacity(classroom, num_students):
