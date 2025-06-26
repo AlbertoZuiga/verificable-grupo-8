@@ -10,7 +10,7 @@ from app.utils import json_constants as JC
 MAX_FILE_SIZE = 2 * 1024 * 1024
 
 
-def validate_file_size(form, field):
+def validate_file_size(_):
     if request.content_length > MAX_FILE_SIZE:
         raise ValidationError("El archivo excede el tamaño máximo permitido (2MB).")
 
@@ -23,10 +23,10 @@ def validate_file(form, field):
 
         try:
             file_contents = file_bytes.decode("utf-8")
-        except UnicodeDecodeError:
+        except UnicodeDecodeError as exc:
             raise ValidationError(
                 "El archivo no está codificado en UTF-8 o no es texto válido."
-            )
+            ) from exc
 
         data = json.loads(file_contents)
 
@@ -38,8 +38,8 @@ def validate_file(form, field):
                 "El archivo JSON debe tener un objeto como estructura principal."
             )
 
-    except json.JSONDecodeError:
-        raise ValidationError("El contenido del archivo no es un JSON válido.")
+    except json.JSONDecodeError as exc:
+        raise ValidationError("El contenido del archivo no es un JSON válido.") from exc
 
 
 class UploadJSONForm(FlaskForm):
@@ -66,6 +66,6 @@ class UploadJSONForm(FlaskForm):
         JC.GRADES,
     }
 
-    def validate_json_type(form, field):
-        if field.data not in form.allowed_types:
+    def validate_json_type(self, field):
+        if field.data not in self.allowed_types:
             raise ValidationError("Tipo de JSON inválido.")
