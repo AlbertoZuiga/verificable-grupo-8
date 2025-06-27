@@ -1,4 +1,5 @@
 from flask import Blueprint, redirect, render_template, request, url_for
+from sqlalchemy.exc import SQLAlchemyError
 
 from app import kanvas_db
 from app.services.evaluation_instance_service import (
@@ -12,49 +13,47 @@ from app.services.validations import validate_section_for_evaluation
 grade_bp = Blueprint("grades", __name__, url_prefix="/grades")
 
 
-@grade_bp.route("/<int:evaluation_instance_id>/assign/<int:student_id>", methods=["GET", "POST"])
 def assign_or_edit_grade(evaluation_instance_id, student_id):
     evaluation_instance, student = get_evaluation_instance_and_student(
         evaluation_instance_id, student_id
     )
 
+    response = None
+
     if not student:
-        return "Estudiante no pertenece a esta sección", 404
+        response = ("Estudiante no pertenece a esta sección", 404)
+    else:
+        current_grade_instance = get_student_grade_instance(evaluation_instance_id, student_id)
+        current_grade = current_grade_instance.grade if current_grade_instance else None
 
-    current_grade_instance = get_student_grade_instance(evaluation_instance_id, student_id)
-    current_grade = current_grade_instance.grade if current_grade_instance else None
+        section_id = get_section_id_from_evaluation_instance(evaluation_instance_id)
 
-    section_id = get_section_id_from_evaluation_instance(evaluation_instance_id)
+        validation_error = validate_section_for_evaluation(section_id)
+        if validation_error:
+            response = validation_error
+        elif request.method == "POST":
+            grade_input = request.form.get("grade")
 
-    validation_error = validate_section_for_evaluation(section_id)
-    if validation_error:
-        return validation_error
+            if not grade_input or grade_input.strip() == "":
+                response = ("Nota vacía", 400)
+            else:
+                try:
+                    grade_value = float(grade_input)
+                    save_student_grade(evaluation_instance_id, student_id, grade_value)
+                    return redirect(url_for("evaluation_instance.show", id=evaluation_instance_id))
+                except (ValueError, SQLAlchemyError) as e:
+                    kanvas_db.session.rollback()
+                    print(f"Error al guardar la nota: {e}")
+                    response = ("Error al guardar la nota", 500)
+        else:
+            response = render_template(
+                "evaluation_instances/grade_user.html",
+                evaluation_instance=evaluation_instance,
+                student=student,
+                current_grade=current_grade,
+            )
 
-    if request.method == "POST":
-        grade_input = request.form.get("grade")
-
-        if not grade_input or grade_input.strip() == "":
-            return "Nota vacía", 400
-
-        try:
-            grade_value = float(grade_input)
-        except ValueError:
-            return "Nota inválida", 400
-
-        try:
-            save_student_grade(evaluation_instance_id, student_id, grade_value)
-            return redirect(url_for("evaluation_instance.show", id=evaluation_instance_id))
-        except Exception as e:
-            kanvas_db.session.rollback()
-            print(f"Error al guardar la nota: {e}")
-            return "Error al guardar la nota", 500
-
-    return render_template(
-        "evaluation_instances/grade_user.html",
-        evaluation_instance=evaluation_instance,
-        student=student,
-        current_grade=current_grade,
-    )
+    return response
 
 
 @grade_bp.route("/<int:evaluation_instance_id>/delete/<int:student_id>", methods=["POST"])
@@ -74,7 +73,7 @@ def delete_grade(evaluation_instance_id, student_id):
         kanvas_db.session.delete(grade_instance)
         kanvas_db.session.commit()
         return redirect(url_for("evaluation_instance.show", id=evaluation_instance_id))
-    except Exception as e:
+    except SQLAlchemyError as e:
         kanvas_db.session.rollback()
         print(f"Error al eliminar la nota: {e}")
         return "Error al eliminar la nota", 500

@@ -1,3 +1,5 @@
+from sqlalchemy.exc import SQLAlchemyError
+
 from app import kanvas_db
 from app.models import Section, Student, StudentSection
 
@@ -21,7 +23,7 @@ def add_student_to_section(student_id, section_id):
         kanvas_db.session.add(new_student_section)
         kanvas_db.session.commit()
         return True
-    except Exception as e:
+    except SQLAlchemyError as e:
         kanvas_db.session.rollback()
         print(f"Error al agregar usuario a la sección: {str(e)}")
         return False
@@ -35,7 +37,7 @@ def remove_student_from_section(section_id, student_id):
         kanvas_db.session.delete(student_section)
         kanvas_db.session.commit()
         return True
-    except Exception as e:
+    except SQLAlchemyError as e:
         kanvas_db.session.rollback()
         print(f"Error al remover usuario de la sección: {e}")
         return False
@@ -60,4 +62,4 @@ def _add_student_to_section(section_id, student_id):
         return 1
     except Exception as e:
         kanvas_db.session.rollback()
-        raise RuntimeError(f"Error al agregar estudiante a la sección: {str(e)}")
+        raise RuntimeError(f"Error al agregar estudiante a la sección: {str(e)}") from e

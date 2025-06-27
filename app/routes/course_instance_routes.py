@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
+from sqlalchemy.exc import SQLAlchemyError
 
 from app import kanvas_db
 from app.forms.course_instance_forms import CourseInstanceForm
@@ -74,7 +75,7 @@ def delete(course_instance_id):
         kanvas_db.session.delete(course_instance)
         kanvas_db.session.commit()
         flash("Instancia del curso eliminada con éxito.", "success")
-    except Exception as e:
+    except SQLAlchemyError as e:
         kanvas_db.session.rollback()
         flash(f"Error deleting course_instance: {e}", "danger")
         return redirect(url_for("course_instance.show", id=course_instance_id))

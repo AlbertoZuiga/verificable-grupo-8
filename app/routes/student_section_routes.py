@@ -1,8 +1,8 @@
 import json
 from json import JSONDecodeError
-from sqlalchemy.exc import SQLAlchemyError
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.models import Section, StudentSection
 from app.services.student_section_service import (

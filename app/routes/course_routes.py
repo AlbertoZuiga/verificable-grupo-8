@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
+from sqlalchemy.exc import SQLAlchemyError
 
 from app import kanvas_db
 from app.forms.course_forms import CourseForm
@@ -81,7 +82,7 @@ def delete(course_id):
     try:
         kanvas_db.session.delete(course)
         kanvas_db.session.commit()
-    except Exception as e:
+    except SQLAlchemyError as e:
         kanvas_db.session.rollback()
         print(f"Error deleting course: {e}")
     return redirect(url_for("course.index"))

@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from sqlalchemy.exc import SQLAlchemyError
 
 from app import kanvas_db
 from app.forms.evaluation_forms import EvaluationForm
@@ -55,7 +56,7 @@ def edit_instance_weights(evaluation_id):
             kanvas_db.session.commit()
             flash("Pesos de instancias actualizados correctamente", "success")
             return redirect(url_for("evaluation.show", id=evaluation.id))
-        except Exception as e:
+        except SQLAlchemyError as e:
             kanvas_db.session.rollback()
             flash(f"Error al guardar cambios: {e}", "danger")
 
@@ -99,7 +100,7 @@ def create():
             kanvas_db.session.add(evaluation)
             kanvas_db.session.commit()
             return redirect(url_for("evaluation.show", id=evaluation.id))
-        except Exception as e:
+        except SQLAlchemyError as e:
             kanvas_db.session.rollback()
             flash(f"Error creando evaluation: {e}", "danger")
 
@@ -140,7 +141,7 @@ def edit(evaluation_id):
         try:
             kanvas_db.session.commit()
             return redirect(url_for("evaluation.show", id=evaluation.id))
-        except Exception as e:
+        except SQLAlchemyError as e:
             kanvas_db.session.rollback()
             flash(f"Error Creating evaluation: {e}", "danger")
 
@@ -154,7 +155,7 @@ def delete(evaluation_id):
     try:
         kanvas_db.session.delete(evaluation)
         kanvas_db.session.commit()
-    except Exception as e:
+    except SQLAlchemyError as e:
         kanvas_db.session.rollback()
         flash(
             "No se puede eliminar porque tiene instancias de evaluación asociadas.",

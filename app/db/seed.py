@@ -7,10 +7,10 @@ from app.models import (
     Requisite,
     Section,
     Semester,
+    Student,
     Teacher,
     User,
     WeighingType,
-    Student,
 )
 
 

@@ -30,6 +30,10 @@ AFTERNOON_END = 18
 BLOCK_DURATION = 60
 
 
+class ScheduleAssignmentError(Exception):
+    pass
+
+
 def delete_assigned_time_blocks():
     """
     Delete all assigned time blocks from the database.
@@ -99,43 +103,46 @@ def generate_schedule():
     for section in sections:
         if assign_section_if_possible(section, classrooms, time_blocks):
             continue
-        raise Exception(f"No se pudo asignar la sección {section.id}")
+        raise ScheduleAssignmentError(f"No se pudo asignar la sección {section.id}")
 
     kanvas_db.session.commit()
 
 
-def assign_section_if_possible(section, classrooms, time_blocks):
-    """
-    Attempt to assign a section to classrooms and time blocks.
-    """
-    required_blocks = section.course_instance.course.credits
-
+def group_blocks_by_day(time_blocks):
     blocks_by_day = defaultdict(list)
     for tb in time_blocks:
         blocks_by_day[tb.weekday].append(tb)
+    for _, blocks in blocks_by_day.items():
+        blocks.sort(key=lambda b: b.start_time)
+    return blocks_by_day
+
+
+def get_contiguous_sequences(blocks):
+    sequences = []
+    if not blocks:
+        return sequences
+    current_sequence = [blocks[0]]
+    for block in blocks[1:]:
+        prev_end = current_sequence[-1].stop_time
+        current_start = block.start_time
+        if current_start == prev_end:
+            current_sequence.append(block)
+        else:
+            sequences.append(current_sequence)
+            current_sequence = [block]
+    if current_sequence:
+        sequences.append(current_sequence)
+    return sequences
+
+
+def assign_section_if_possible(section, classrooms, time_blocks):
+    required_blocks = section.course_instance.course.credits
+
+    blocks_by_day = group_blocks_by_day(time_blocks)
 
     for day, blocks in blocks_by_day.items():
-        # Ordenar bloques por hora de inicio
-        blocks.sort(key=lambda b: b.start_time)
+        sequences = get_contiguous_sequences(blocks)
 
-        # Agrupar en secuencias contiguas
-        if not blocks:
-            continue
-
-        sequences = []
-        current_sequence = [blocks[0]]
-        for block in blocks[1:]:
-            prev_end = current_sequence[-1].stop_time
-            current_start = block.start_time
-            if current_start == prev_end:
-                current_sequence.append(block)
-            else:
-                sequences.append(current_sequence)
-                current_sequence = [block]
-        if current_sequence:
-            sequences.append(current_sequence)
-
-        # Verificar cada secuencia contigua
         for sequence in sequences:
             if len(sequence) < required_blocks:
                 continue

@@ -109,9 +109,7 @@ def create():
 
 
 @section_bp.route("/edit/<int:section_id>", methods=["GET", "POST"])
-@require_section_open(
-    lambda section_id: Section.query.get_or_404(section_id)
-)
+@require_section_open(lambda section_id: Section.query.get_or_404(section_id))
 def edit(section_id):
     section = Section.query.get_or_404(section_id)
     form = SectionForm(obj=section)
@@ -144,9 +142,7 @@ def edit(section_id):
 
 
 @section_bp.route("/delete/<int:section_id>", methods=["POST"])
-@require_section_open(
-    lambda section_id: Section.query.get_or_404(section_id)
-)
+@require_section_open(lambda section_id: Section.query.get_or_404(section_id))
 def delete(section_id):
     section = Section.query.get_or_404(section_id)
     try:

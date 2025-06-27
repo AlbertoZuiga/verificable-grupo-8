@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
+from sqlalchemy.exc import SQLAlchemyError
 
 from app import kanvas_db
 from app.forms.evaluation_instance_forms import EvaluationInstanceForm
@@ -68,7 +69,7 @@ def create():
             kanvas_db.session.add(evaluation_instance)
             kanvas_db.session.commit()
             return redirect(url_for("evaluation_instance.show", id=evaluation_instance.id))
-        except Exception as e:
+        except SQLAlchemyError as e:
             kanvas_db.session.rollback()
             flash(f"Error creating evaluation_instance: {e}", "danger")
 
@@ -96,7 +97,10 @@ def edit(evaluation_instance_id):
         existing_evaluation_instance = EvaluationInstance.query.filter_by(
             title=title, evaluation_id=evaluation_id
         ).first()
-        if existing_evaluation_instance and existing_evaluation_instance.id != evaluation_instance_id:
+        if (
+            existing_evaluation_instance
+            and existing_evaluation_instance.id != evaluation_instance_id
+        ):
             flash("Instancia de evaluación con ese nombre ya existe.", "danger")
             return render_template(
                 "evaluation_instances/create.html",
@@ -111,7 +115,7 @@ def edit(evaluation_instance_id):
         try:
             kanvas_db.session.commit()
             return redirect(url_for("evaluation_instance.show", id=evaluation_instance.id))
-        except Exception as e:
+        except SQLAlchemyError as e:
             kanvas_db.session.rollback()
             flash(f"Error updating evaluation_instance: {e}", "danger")
 
@@ -129,11 +133,11 @@ def edit(evaluation_instance_id):
     ).evaluation.section
 )
 def delete(evaluation_instance_id):
-    evaluation_instance = EvaluationInstance.query.get_or_404(id)
+    evaluation_instance = EvaluationInstance.query.get_or_404(evaluation_instance_id)
     try:
         kanvas_db.session.delete(evaluation_instance)
         kanvas_db.session.commit()
-    except Exception as e:
+    except SQLAlchemyError as e:
         kanvas_db.session.rollback()
         print(f"Error deleting evaluation_instance: {e}")
     return redirect(url_for("evaluation_instance.index"))

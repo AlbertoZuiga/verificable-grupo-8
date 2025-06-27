@@ -59,7 +59,7 @@ def generate():
         delete_assigned_time_blocks()
         generate_schedule()
         flash("Horario generado exitosamente!.", "success")
-    except Exception as e:
+    except RuntimeError as e:
         flash(f"Error generando horario: {str(e)}", "danger")
     return redirect(url_for("schedule.index"))
 
@@ -81,6 +81,6 @@ def download():
             as_attachment=True,
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
-    except Exception as e:
+    except (IOError, ValueError, KeyError) as e:
         flash(f"Error descargando horario: {str(e)}", "danger")
         return redirect(url_for("schedule.index"))
