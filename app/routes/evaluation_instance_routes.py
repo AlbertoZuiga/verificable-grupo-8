@@ -23,10 +23,10 @@ def index():
     )
 
 
-@evaluation_instance_bp.route("/<int:id>")
-def show(id):
+@evaluation_instance_bp.route("/<int:evaluation_instance_id>")
+def show(evaluation_instance_id):
     evaluation_instance, students, student_grades = (
-        get_evaluation_instance_with_students_and_grades(id)
+        get_evaluation_instance_with_students_and_grades(evaluation_instance_id)
     )
     return render_template(
         "evaluation_instances/show.html",
@@ -75,10 +75,14 @@ def create():
     return render_template("evaluation_instances/create.html", form=form)
 
 
-@evaluation_instance_bp.route("/edit/<int:id>", methods=["GET", "POST"])
-@require_section_open(lambda id: EvaluationInstance.query.get_or_404(id).evaluation.section)
-def edit(id):
-    evaluation_instance = EvaluationInstance.query.get_or_404(id)
+@evaluation_instance_bp.route("/edit/<int:evaluation_instance_id>", methods=["GET", "POST"])
+@require_section_open(
+    lambda evaluation_instance_id: EvaluationInstance.query.get_or_404(
+        evaluation_instance_id
+    ).evaluation.section
+)
+def edit(evaluation_instance_id):
+    evaluation_instance = EvaluationInstance.query.get_or_404(evaluation_instance_id)
     form = EvaluationInstanceForm(obj=evaluation_instance)
 
     if form.validate_on_submit():
@@ -92,7 +96,7 @@ def edit(id):
         existing_evaluation_instance = EvaluationInstance.query.filter_by(
             title=title, evaluation_id=evaluation_id
         ).first()
-        if existing_evaluation_instance and existing_evaluation_instance.id != id:
+        if existing_evaluation_instance and existing_evaluation_instance.id != evaluation_instance_id:
             flash("Instancia de evaluación con ese nombre ya existe.", "danger")
             return render_template(
                 "evaluation_instances/create.html",
@@ -118,9 +122,13 @@ def edit(id):
     )
 
 
-@evaluation_instance_bp.route("/delete/<int:id>")
-@require_section_open(lambda id: EvaluationInstance.query.get_or_404(id).evaluation.section)
-def delete(id):
+@evaluation_instance_bp.route("/delete/<int:evaluation_instance_id>")
+@require_section_open(
+    lambda evaluation_instance_id: EvaluationInstance.query.get_or_404(
+        evaluation_instance_id
+    ).evaluation.section
+)
+def delete(evaluation_instance_id):
     evaluation_instance = EvaluationInstance.query.get_or_404(id)
     try:
         kanvas_db.session.delete(evaluation_instance)

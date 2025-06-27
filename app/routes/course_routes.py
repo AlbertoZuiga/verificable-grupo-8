@@ -14,9 +14,9 @@ def index():
     return render_template("courses/index.html", courses=courses)
 
 
-@course_bp.route("/<int:id>")
-def show(id):
-    course, courses = get_course_and_other_courses(id)
+@course_bp.route("/<int:course_id>")
+def show(course_id):
+    course, courses = get_course_and_other_courses(course_id)
     return render_template("courses/show.html", course=course, courses=courses)
 
 
@@ -26,7 +26,7 @@ def create():
     if form.validate_on_submit():
         title = form.title.data
         code = form.code.data
-        credits = form.credits.data
+        course_credits = form.credits.data
 
         if Course.query.filter_by(title=title).first():
             flash("Ya existe un curso con ese título.", "danger")
@@ -36,7 +36,7 @@ def create():
             flash("Ya existe un curso con ese codigo.", "danger")
             return render_template("courses/create.html", form=form)
 
-        new_course = Course(title=title, code=code, credits=credits)
+        new_course = Course(title=title, code=code, credits=course_credits)
         kanvas_db.session.add(new_course)
         kanvas_db.session.commit()
         flash("Instancia del curso creada exitosamente.", "success")
@@ -45,28 +45,28 @@ def create():
     return render_template("courses/create.html", form=form)
 
 
-@course_bp.route("/edit/<int:id>", methods=["GET", "POST"])
-def edit(id):
-    course = Course.query.get_or_404(id)
+@course_bp.route("/edit/<int:course_id>", methods=["GET", "POST"])
+def edit(course_id):
+    course = Course.query.get_or_404(course_id)
     form = CourseForm(obj=course)
     if form.validate_on_submit():
         title = form.title.data
         code = form.code.data
-        credits = form.credits.data
+        course_credits = form.credits.data
 
         existing_course = Course.query.filter_by(title=title)
-        if existing_course and existing_course.id != id:
+        if existing_course and existing_course.id != course_id:
             flash("Ya existe un curso con ese título.", "danger")
             return render_template("courses/create.html", form=form, course=course)
 
         existing_course = Course.query.filter_by(code=code)
-        if existing_course and existing_course.id != id:
+        if existing_course and existing_course.id != course_id:
             flash("Ya existe un curso con ese codigo.", "danger")
             return render_template("courses/create.html", form=form, course=course)
 
         course.title = title
         course.code = code
-        course.credits = credits
+        course.credits = course_credits
 
         kanvas_db.session.commit()
         flash("Instancia del curso actualizada exitosamente.", "success")
@@ -75,9 +75,9 @@ def edit(id):
     return render_template("courses/edit.html", form=form, course=course)
 
 
-@course_bp.route("/delete/<int:id>")
-def delete(id):
-    course = Course.query.get_or_404(id)
+@course_bp.route("/delete/<int:course_id>")
+def delete(course_id):
+    course = Course.query.get_or_404(course_id)
     try:
         kanvas_db.session.delete(course)
         kanvas_db.session.commit()

@@ -14,9 +14,9 @@ def index():
     return render_template("course_instances/index.html", course_instances=course_instances)
 
 
-@course_instance_bp.route("/<int:id>")
-def show(id):
-    course_instance = CourseInstance.query.get_or_404(id)
+@course_instance_bp.route("/<int:course_instance_id>")
+def show(course_instance_id):
+    course_instance = CourseInstance.query.get_or_404(course_instance_id)
     return render_template("course_instances/show.html", course_instance=course_instance)
 
 
@@ -48,9 +48,9 @@ def create():
     return render_template("course_instances/create.html", form=form, courses=courses)
 
 
-@course_instance_bp.route("/edit/<int:id>", methods=["GET", "POST"])
-def edit(id):
-    course_instance = CourseInstance.query.get_or_404(id)
+@course_instance_bp.route("/edit/<int:course_instance_id>", methods=["GET", "POST"])
+def edit(course_instance_id):
+    course_instance = CourseInstance.query.get_or_404(course_instance_id)
     courses = Course.query.all()
     form = CourseInstanceForm(obj=course_instance)
     form.course_id.choices = [(course.id, course.title) for course in courses]
@@ -67,9 +67,9 @@ def edit(id):
     return render_template("course_instances/create.html", form=form, courses=courses)
 
 
-@course_instance_bp.route("/delete/<int:id>", methods=["POST"])
-def delete(id):
-    course_instance = CourseInstance.query.get_or_404(id)
+@course_instance_bp.route("/delete/<int:course_instance_id>", methods=["POST"])
+def delete(course_instance_id):
+    course_instance = CourseInstance.query.get_or_404(course_instance_id)
     try:
         kanvas_db.session.delete(course_instance)
         kanvas_db.session.commit()
@@ -77,6 +77,6 @@ def delete(id):
     except Exception as e:
         kanvas_db.session.rollback()
         flash(f"Error deleting course_instance: {e}", "danger")
-        return redirect(url_for("course_instance.show", id=id))
+        return redirect(url_for("course_instance.show", id=course_instance_id))
 
     return redirect(url_for("course_instance.index"))

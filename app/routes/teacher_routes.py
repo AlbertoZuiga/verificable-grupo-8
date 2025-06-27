@@ -13,9 +13,9 @@ def index():
     return render_template("teachers/index.html", teachers=teachers)
 
 
-@teacher_bp.route("/<int:id>")
-def show(id):
-    teacher = Teacher.query.get_or_404(id)
+@teacher_bp.route("/<int:teacher_id>")
+def show(teacher_id):
+    teacher = Teacher.query.get_or_404(teacher_id)
     return render_template("teachers/show.html", teacher=teacher)
 
 
@@ -39,9 +39,9 @@ def create():
     return render_template("teachers/create.html", form=form)
 
 
-@teacher_bp.route("/edit/<int:id>", methods=["GET", "POST"])
-def edit(id):
-    teacher = Teacher.query.get_or_404(id)
+@teacher_bp.route("/edit/<int:teacher_id>", methods=["GET", "POST"])
+def edit(teacher_id):
+    teacher = Teacher.query.get_or_404(teacher_id)
     user = teacher.user
     form = TeacherEditForm(original_email=user.email, obj=user)
     if form.validate_on_submit():
@@ -53,9 +53,9 @@ def edit(id):
     return render_template("teachers/edit.html", form=form, teacher=teacher)
 
 
-@teacher_bp.route("/delete/<int:id>")
-def delete(id):
-    teacher = Teacher.query.get_or_404(id)
+@teacher_bp.route("/delete/<int:teacher_id>")
+def delete(teacher_id):
+    teacher = Teacher.query.get_or_404(teacher_id)
 
     kanvas_db.session.delete(teacher)
     kanvas_db.session.commit()

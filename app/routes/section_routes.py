@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from sqlalchemy.exc import SQLAlchemyError
 
 from app import kanvas_db
 from app.forms.section_forms import SectionForm
@@ -24,15 +25,15 @@ def index():
     return render_template("sections/index.html", sections=sections)
 
 
-@section_bp.route("/<int:id>")
-def show(id):
-    section = Section.query.get_or_404(id)
+@section_bp.route("/<int:section_id>")
+def show(section_id):
+    section = Section.query.get_or_404(section_id)
     return render_template("sections/show.html", section=section, WeighingType=WeighingType)
 
 
-@section_bp.route("/<int:id>/edit_evaluation_weights", methods=["GET", "POST"])
-def edit_evaluation_weights(id):
-    section = Section.query.get_or_404(id)
+@section_bp.route("/<int:section_id>/edit_evaluation_weights", methods=["GET", "POST"])
+def edit_evaluation_weights(section_id):
+    section = Section.query.get_or_404(section_id)
 
     if request.method == "POST":
         weights = {}
@@ -63,9 +64,9 @@ def edit_evaluation_weights(id):
             kanvas_db.session.commit()
             flash("Pesos de evaluaciones actualizados correctamente", "success")
             return redirect(url_for("section.show", id=section.id))
-        except Exception as e:
-            kanvas_db.session.rollback()
-            flash(f"Error al guardar cambios: {e}", "danger")
+        except (ValueError, KeyError) as e:
+            flash(f"Entrada inválida para los pesos: {e}", "danger")
+            return redirect(url_for("section.edit_evaluation_weights", id=section.id))
 
     return render_template(
         "sections/edit_evaluation_weights.html",
@@ -100,17 +101,19 @@ def create():
             return redirect(url_for("section.index"))
         except ValueError as ve:
             flash(str(ve), "warning")
-        except Exception as e:
+        except SQLAlchemyError as e:
             flash("Error al crear la sección", "danger")
             print(f"Error al crear la sección: {str(e)}")
 
     return render_template("sections/create.html", form=form)
 
 
-@section_bp.route("/edit/<int:id>", methods=["GET", "POST"])
-@require_section_open(Section.query.get_or_404(id))
-def edit(id):
-    section = Section.query.get_or_404(id)
+@section_bp.route("/edit/<int:section_id>", methods=["GET", "POST"])
+@require_section_open(
+    lambda section_id: Section.query.get_or_404(section_id)
+)
+def edit(section_id):
+    section = Section.query.get_or_404(section_id)
     form = SectionForm(obj=section)
 
     form.course_instance_id.choices = [
@@ -133,22 +136,24 @@ def edit(id):
             kanvas_db.session.commit()
             print("Sección actualizada exitosamente.")
             return redirect(url_for("section.index"))
-        except Exception as e:
+        except SQLAlchemyError as e:
             kanvas_db.session.rollback()
             print(f"Error al editar la sección: {str(e)}")
 
     return render_template("sections/edit.html", section=section, form=form)
 
 
-@section_bp.route("/delete/<int:id>", methods=["POST"])
-@require_section_open(Section.query.get_or_404(id))
-def delete(id):
-    section = Section.query.get_or_404(id)
+@section_bp.route("/delete/<int:section_id>", methods=["POST"])
+@require_section_open(
+    lambda section_id: Section.query.get_or_404(section_id)
+)
+def delete(section_id):
+    section = Section.query.get_or_404(section_id)
     try:
         kanvas_db.session.delete(section)
         kanvas_db.session.commit()
         flash("Sección eliminada con éxito.", "success")
-    except Exception as e:
+    except SQLAlchemyError as e:
         kanvas_db.session.rollback()
         flash(
             "No se puede eliminar esta sección porque tiene elementos asociados.\

@@ -45,9 +45,9 @@ def create():
     return redirect(url_for("course.show", id=course_id))
 
 
-@requisite_bp.route("/delete/<int:id>")
-def delete(id):
-    requisite = Requisite.query.get_or_404(id)
+@requisite_bp.route("/delete/<int:requisite_id>")
+def delete(requisite_id):
+    requisite = Requisite.query.get_or_404(requisite_id)
     course_id = requisite.course_id
 
     try:

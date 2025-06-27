@@ -13,9 +13,9 @@ def index():
     return render_template("classrooms/index.html", classrooms=classrooms)
 
 
-@classroom_bp.route("/<int:id>", methods=["GET"])
-def show(id):
-    classroom = Classroom.query.get_or_404(id)
+@classroom_bp.route("/<int:classroom_id>", methods=["GET"])
+def show(classroom_id):
+    classroom = Classroom.query.get_or_404(classroom_id)
     return render_template("classrooms/show.html", classroom=classroom)
 
 
@@ -40,9 +40,9 @@ def create():
     return render_template("classrooms/create.html", form=form)
 
 
-@classroom_bp.route("/<int:id>/edit", methods=["GET", "POST"])
-def edit(id):
-    classroom = Classroom.query.get_or_404(id)
+@classroom_bp.route("/<int:classroom_id>/edit", methods=["GET", "POST"])
+def edit(classroom_id):
+    classroom = Classroom.query.get_or_404(classroom_id)
     form = ClassroomForm(obj=classroom)
 
     if form.validate_on_submit():
@@ -56,9 +56,9 @@ def edit(id):
     return render_template("classrooms/create.html", form=form)
 
 
-@classroom_bp.route("/<int:id>/delete", methods=["POST"])
-def delete(id):
-    classroom = Classroom.query.get_or_404(id)
+@classroom_bp.route("/<int:classroom_id>/delete", methods=["POST"])
+def delete(classroom_id):
+    classroom = Classroom.query.get_or_404(classroom_id)
     kanvas_db.session.delete(classroom)
     kanvas_db.session.commit()
     flash("Sala eliminada exitosamente", "success")

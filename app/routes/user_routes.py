@@ -13,9 +13,9 @@ def index():
     return render_template("users/index.html", users=users)
 
 
-@user_bp.route("/<int:id>")
-def show(id):
-    user = User.query.get_or_404(id)
+@user_bp.route("/<int:user_id>")
+def show(user_id):
+    user = User.query.get_or_404(user_id)
     return render_template("users/show.html", user=user)
 
 
@@ -37,15 +37,15 @@ def create():
     return render_template("users/create.html", form=form)
 
 
-@user_bp.route("/edit/<int:id>", methods=["GET", "POST"])
-def edit(id):
-    user = User.query.get_or_404(id)
+@user_bp.route("/edit/<int:user_id>", methods=["GET", "POST"])
+def edit(user_id):
+    user = User.query.get_or_404(user_id)
     form = EditUserForm(obj=user)
 
     if form.validate_on_submit():
         email = form.email.data
         existing_user = User.query.filter_by(email=email).first()
-        if existing_user and existing_user.id != id:
+        if existing_user and existing_user.id != user_id:
             flash("Ya existe un usuario con ese correo.", "danger")
             return render_template("users/edit.html", form=form, user=user)
 
@@ -56,9 +56,9 @@ def edit(id):
     return render_template("users/edit.html", form=form, user=user)
 
 
-@user_bp.route("/delete/<int:id>")
-def delete(id):
-    user = User.query.get_or_404(id)
+@user_bp.route("/delete/<int:user_id>")
+def delete(user_id):
+    user = User.query.get_or_404(user_id)
     kanvas_db.session.delete(user)
     kanvas_db.session.commit()
     return redirect(url_for("user.index"))

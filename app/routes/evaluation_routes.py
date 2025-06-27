@@ -16,17 +16,17 @@ def index():
     return render_template("evaluations/index.html", evaluations=evaluations)
 
 
-@evaluation_bp.route("/<int:id>")
-def show(id):
-    evaluation = Evaluation.query.get_or_404(id)
+@evaluation_bp.route("/<int:evaluation_id>")
+def show(evaluation_id):
+    evaluation = Evaluation.query.get_or_404(evaluation_id)
     return render_template(
         "evaluations/show.html", evaluation=evaluation, WeighingType=WeighingType
     )
 
 
-@evaluation_bp.route("/<int:id>/edit_instance_weights", methods=["GET", "POST"])
-def edit_instance_weights(id):
-    evaluation = Evaluation.query.get_or_404(id)
+@evaluation_bp.route("/<int:evaluation_id>/edit_instance_weights", methods=["GET", "POST"])
+def edit_instance_weights(evaluation_id):
+    evaluation = Evaluation.query.get_or_404(evaluation_id)
 
     if request.method == "POST":
         weights = {}
@@ -106,10 +106,10 @@ def create():
     return render_template("evaluations/create.html", form=form)
 
 
-@evaluation_bp.route("/edit/<int:id>", methods=["GET", "POST"])
-@require_section_open(lambda id: Evaluation.query.get_or_404(id).section)
-def edit(id):
-    evaluation = Evaluation.query.get_or_404(id)
+@evaluation_bp.route("/edit/<int:evaluation_id>", methods=["GET", "POST"])
+@require_section_open(lambda evaluation_id: Evaluation.query.get_or_404(evaluation_id).section)
+def edit(evaluation_id):
+    evaluation = Evaluation.query.get_or_404(evaluation_id)
     form = EvaluationForm(obj=evaluation)
     print(evaluation)
 
@@ -128,7 +128,7 @@ def edit(id):
             return validation_error
 
         existing_evaluation = Evaluation.query.filter_by(title=title, section_id=section_id).first()
-        if existing_evaluation and existing_evaluation.id != id:
+        if existing_evaluation and existing_evaluation.id != evaluation_id:
             flash("Ya existe una evaluación con ese título para la seccion.", "danger")
             return render_template("evaluations/edit.html", form=form, evaluation=evaluation)
 
@@ -147,10 +147,10 @@ def edit(id):
     return render_template("evaluations/edit.html", form=form, evaluation=evaluation)
 
 
-@evaluation_bp.route("/delete/<int:id>")
-@require_section_open(lambda id: Evaluation.query.get_or_404(id).section)
-def delete(id):
-    evaluation = Evaluation.query.get_or_404(id)
+@evaluation_bp.route("/delete/<int:evaluation_id>")
+@require_section_open(lambda evaluation_id: Evaluation.query.get_or_404(evaluation_id).section)
+def delete(evaluation_id):
+    evaluation = Evaluation.query.get_or_404(evaluation_id)
     try:
         kanvas_db.session.delete(evaluation)
         kanvas_db.session.commit()
