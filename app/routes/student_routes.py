@@ -2,7 +2,8 @@ from flask import Blueprint, redirect, render_template, url_for
 
 from app import kanvas_db
 from app.forms.student_forms import StudentCreateForm, StudentEditForm
-from app.models import Student, User
+from app.models import Student
+from app.services.user_service import create_user_from_form
 
 student_bp = Blueprint("student", __name__, url_prefix="/students")
 
@@ -23,14 +24,7 @@ def show(student_id):
 def create():
     form = StudentCreateForm()
     if form.validate_on_submit():
-        new_user = User(
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
-            email=form.email.data,
-        )
-        new_user.set_password(form.password.data)
-        kanvas_db.session.add(new_user)
-        kanvas_db.session.flush()
+        new_user = create_user_from_form(form=form)
 
         new_student = Student(
             user_id=new_user.id, university_entry_year=form.university_entry_year.data

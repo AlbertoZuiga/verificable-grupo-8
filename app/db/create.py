@@ -1,5 +1,6 @@
 import pymysql
 
+from app.db.utils import database_exists
 from config import Config
 
 
@@ -8,14 +9,8 @@ def create_database():
     cursor = conn.cursor()
     print("Creando base de datos...")
 
-    cursor.execute(
-        f"""
-        SELECT SCHEMA_NAME
-        FROM INFORMATION_SCHEMA.SCHEMATA
-        WHERE SCHEMA_NAME = '{Config.DB_NAME}';
-        """
-    )
-    result = cursor.fetchone()
+    result = database_exists(cursor)
+
     if result:
         print(f"Base de datos '{Config.DB_NAME}' ya existe.\n")
     else:
