@@ -2,16 +2,14 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 
 from app import kanvas_db
-from app.models import (
-    AssignedTimeBlock,
-    Classroom,
-    Course,
-    CourseInstance,
-    Section,
-    Student,
-    StudentSection,
-    TimeBlock,
-)
+from app.models.assigned_time_block import AssignedTimeBlock
+from app.models.classroom import Classroom
+from app.models.course import Course
+from app.models.course_instance import CourseInstance
+from app.models.section import Section
+from app.models.student import Student
+from app.models.student_section import StudentSection
+from app.models.time_block import TimeBlock
 
 DAYS = {
     1: "Lunes",

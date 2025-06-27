@@ -3,8 +3,9 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app import kanvas_db
 from app.forms.evaluation_instance_forms import EvaluationInstanceForm
-from app.models import Evaluation, EvaluationInstance
-from app.services.decorators import require_section_open
+from app.models.evaluation import Evaluation
+from app.models.evaluation_instance import EvaluationInstance
+from app.utils.decorators import require_section_open
 from app.services.evaluation_instance_service import (
     get_evaluation_instance_with_students_and_grades,
     get_section_id,

@@ -2,7 +2,7 @@ from flask import Blueprint, redirect, render_template, url_for
 
 from app import kanvas_db
 from app.forms.teacher_forms import TeacherCreateForm, TeacherEditForm
-from app.models import Teacher
+from app.models.teacher import Teacher
 from app.services.user_service import create_user_from_form
 
 teacher_bp = Blueprint("teacher", __name__, url_prefix="/teachers")

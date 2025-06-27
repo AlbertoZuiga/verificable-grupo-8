@@ -1,5 +1,5 @@
 from app import kanvas_db
-from app.models import Section
+from app.models.section import Section
 
 
 def create_section(course_instance_id, teacher_id, code, weighing_type):

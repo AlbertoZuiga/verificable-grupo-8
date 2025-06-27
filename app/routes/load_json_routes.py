@@ -3,17 +3,15 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app import kanvas_db
 from app.forms.load_json import UploadJSONForm
-from app.models import (
-    Classroom,
-    Course,
-    CourseInstance,
-    Requisite,
-    Section,
-    Student,
-    StudentSection,
-    Teacher,
-    User,
-)
+from app.models.classroom import Classroom
+from app.models.course import Course
+from app.models.course_instance import CourseInstance
+from app.models.requisite import Requisite
+from app.models.section import Section
+from app.models.student import Student
+from app.models.student_section import StudentSection
+from app.models.teacher import Teacher
+from app.models.user import User
 from app.services.create_object_instances import (
     add_objects_to_session,
     build_requisite_objects_from_codes,

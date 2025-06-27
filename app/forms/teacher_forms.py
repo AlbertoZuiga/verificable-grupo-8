@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, ValidationError
 
-from app.models import User
+from app.models.user import User
 
 
 class TeacherCreateForm(FlaskForm):

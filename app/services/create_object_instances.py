@@ -1,5 +1,6 @@
 from app import kanvas_db
-from app.models import Course, Requisite
+from app.models.course import Course
+from app.models.requisite import Requisite
 
 
 # Necessary becuase the json only provides course code. Need ids to create the requisite

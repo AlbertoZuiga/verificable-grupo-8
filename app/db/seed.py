@@ -1,17 +1,13 @@
 import random
 
 from app import kanvas_app, kanvas_db
-from app.models import (
-    Course,
-    CourseInstance,
-    Requisite,
-    Section,
-    Semester,
-    Student,
-    Teacher,
-    User,
-    WeighingType,
-)
+from app.models.course import Course
+from app.models.course_instance import CourseInstance, Semester
+from app.models.requisite import Requisite
+from app.models.section import Section, WeighingType
+from app.models.student import Student
+from app.models.teacher import Teacher
+from app.models.user import User
 
 
 def seed_users(db):

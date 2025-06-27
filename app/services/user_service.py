@@ -1,5 +1,5 @@
 from app import kanvas_db
-from app.models import User
+from app.models.user import User
 
 
 def create_user_from_form(form):

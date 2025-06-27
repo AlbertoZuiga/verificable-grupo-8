@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField, SelectField, StringField, SubmitField
 from wtforms.validators import DataRequired, Length
 
-from app.models import Evaluation
+from app.models.evaluation import Evaluation
 
 
 class EvaluationInstanceForm(FlaskForm):

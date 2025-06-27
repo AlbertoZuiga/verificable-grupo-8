@@ -5,7 +5,7 @@ from app import kanvas_db
 from app.forms.evaluation_forms import EvaluationForm
 from app.models.evaluation import Evaluation
 from app.models.section import Section, WeighingType
-from app.services.decorators import require_section_open
+from app.utils.decorators import require_section_open
 from app.services.validations import validate_section_for_evaluation
 
 evaluation_bp = Blueprint("evaluation", __name__, url_prefix="/evaluations")

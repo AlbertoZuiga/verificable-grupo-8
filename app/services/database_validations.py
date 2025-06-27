@@ -1,4 +1,5 @@
-from app.models import EvaluationInstance, StudentEvaluationInstance
+from app.models.evaluation_instance import EvaluationInstance
+from app.models.student_evaluation_instance import StudentEvaluationInstance
 
 
 def exists_by_field(model, field_name: str, value) -> bool:

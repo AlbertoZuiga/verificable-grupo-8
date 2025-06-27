@@ -4,8 +4,9 @@ import pandas as pd
 from flask import Blueprint, flash, redirect, render_template, send_file, url_for
 
 from app import kanvas_db
-from app.models import AssignedTimeBlock, TimeBlock
-from app.services import delete_assigned_time_blocks, generate_schedule
+from app.models.assigned_time_block import AssignedTimeBlock
+from app.models.time_block import TimeBlock
+from app.services.generate_schedule import delete_assigned_time_blocks, generate_schedule
 
 schedule_bp = Blueprint("schedule", __name__, url_prefix="/schedule")
 

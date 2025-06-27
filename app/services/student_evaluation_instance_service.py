@@ -1,4 +1,5 @@
-from app.models import Evaluation, EvaluationInstance
+from app.models.evaluation import Evaluation
+from app.models.evaluation_instance import EvaluationInstance
 
 
 def get_section_id_from_evaluation_instance(evaluation_instance_id):
