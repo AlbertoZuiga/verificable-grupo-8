@@ -20,12 +20,14 @@ from app.services.database_validations import (filter_existing_by_field,
 from app.utils import json_constants as JC
 from app.utils.flash_messages import (flash_invalid_grades, flash_invalid_load,
                                       flash_successful_load)
-from app.utils.parse_json import (parse_classroom_json,
-                                  parse_course_instances_json,
-                                  parse_courses_json, parse_grades_json,
-                                  parse_sections_json,
-                                  parse_student_sections_json,
-                                  parse_students_json, parse_teachers_json)
+from app.utils.parsing.parse_classroom_json import parse_classroom_json
+from app.utils.parsing.parse_course_instance_json import parse_course_instances_json
+from app.utils.parsing.parse_course_json import parse_courses_json
+from app.utils.parsing.parse_grades_json import parse_grades_json
+from app.utils.parsing.parse_section_json import parse_sections_json
+from app.utils.parsing.parse_student_sections_json import parse_student_sections_json
+from app.utils.parsing.parse_student_json import parse_students_json
+from app.utils.parsing.parse_teacher_json import parse_teachers_json
 
 load_json_bp = Blueprint("load_json", __name__, url_prefix="/load_json")
 
