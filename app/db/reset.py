@@ -1,4 +1,5 @@
-from app import kanvas_app, kanvas_db
+from app import kanvas_app
+from app.extensions import kanvas_db
 
 
 def reset_database():

@@ -1,6 +1,7 @@
 import random
 
-from app import kanvas_app, kanvas_db
+from app import kanvas_app
+from app.extensions import kanvas_db
 from app.models.course import Course
 from app.models.course_instance import CourseInstance, Semester
 from app.models.requisite import Requisite

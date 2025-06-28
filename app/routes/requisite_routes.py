@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, redirect, request, url_for
 from sqlalchemy.exc import SQLAlchemyError
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.models.course import Course
 from app.models.requisite import Requisite
 

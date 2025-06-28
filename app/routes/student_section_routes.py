@@ -6,11 +6,9 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.models.section import Section
 from app.models.student_section import StudentSection
-from app.services.student_section_service import (
-    add_student_to_section,
-    get_students_not_in_section,
-    remove_student_from_section,
-)
+from app.services.student_section_service import (add_student_to_section,
+                                                  get_students_not_in_section,
+                                                  remove_student_from_section)
 
 student_section_bp = Blueprint(
     "student_section", __name__, url_prefix="/sections/<int:section_id>/students/"

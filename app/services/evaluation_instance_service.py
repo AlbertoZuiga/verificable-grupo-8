@@ -1,4 +1,4 @@
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.models.evaluation import Evaluation
 from app.models.evaluation_instance import EvaluationInstance
 from app.models.student_evaluation_instance import StudentEvaluationInstance

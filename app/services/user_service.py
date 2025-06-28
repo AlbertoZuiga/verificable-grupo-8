@@ -1,4 +1,4 @@
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.models.user import User
 
 

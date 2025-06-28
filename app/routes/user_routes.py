@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.forms.user_forms import EditUserForm, UserForm
 from app.models.user import User
 

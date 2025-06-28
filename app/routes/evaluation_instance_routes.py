@@ -1,16 +1,14 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
 from sqlalchemy.exc import SQLAlchemyError
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.forms.evaluation_instance_forms import EvaluationInstanceForm
 from app.models.evaluation import Evaluation
 from app.models.evaluation_instance import EvaluationInstance
-from app.utils.decorators import require_section_open
 from app.services.evaluation_instance_service import (
-    get_evaluation_instance_with_students_and_grades,
-    get_section_id,
-)
+    get_evaluation_instance_with_students_and_grades, get_section_id)
 from app.services.validations import validate_section_for_evaluation
+from app.utils.decorators import require_section_open
 
 evaluation_instance_bp = Blueprint(
     "evaluation_instance", __name__, url_prefix="/evaluation_instances"

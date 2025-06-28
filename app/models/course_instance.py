@@ -1,6 +1,6 @@
 from enum import Enum
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 
 
 class Semester(Enum):

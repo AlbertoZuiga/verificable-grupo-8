@@ -1,6 +1,6 @@
 from sqlalchemy.exc import SQLAlchemyError
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.models.section import Section
 from app.models.student import Student
 from app.models.student_section import StudentSection

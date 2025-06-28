@@ -62,7 +62,7 @@ def parse_classroom_json(json_data):
             raise ValueError("La capacidad debe ser mayor o igual a 0 y menor o igual que 1000.")
 
         if item[JC.ID] in ids_seen:
-            raise ValueError(f"ID duplicado '{item[JC.ID]}' encontrado en " f"'{JC.CLASSROOMS}'.")
+            raise ValueError(f"ID duplicado '{item[JC.ID]}' encontrado en '{JC.CLASSROOMS}'.")
         ids_seen.add(item[JC.ID])
 
         classroom = Classroom(
@@ -703,7 +703,7 @@ def parse_student_sections_json(json_data):
         link = (section_id, student_id)
         if link in visited_links:
             raise ValueError(
-                f"Relación entre estudiante '{student_id}' y sección " f"'{section_id}' repetida."
+                f"Relación entre estudiante '{student_id}' y sección '{section_id}' repetida."
             )
         visited_links.add(link)
 

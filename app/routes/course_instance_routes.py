@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
 from sqlalchemy.exc import SQLAlchemyError
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.forms.course_instance_forms import CourseInstanceForm
 from app.models.course import Course
 from app.models.course_instance import CourseInstance, Semester

@@ -1,7 +1,7 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.models.assigned_time_block import AssignedTimeBlock
 from app.models.classroom import Classroom
 from app.models.course import Course

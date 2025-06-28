@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
 from sqlalchemy.exc import SQLAlchemyError
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.forms.course_forms import CourseForm
 from app.models.course import Course
 from app.services.course_service import get_course_and_other_courses
@@ -41,7 +41,7 @@ def create():
         kanvas_db.session.add(new_course)
         kanvas_db.session.commit()
         flash("Instancia del curso creada exitosamente.", "success")
-        return redirect(url_for("course.show", id=new_course.id))
+        return redirect(url_for("course.show", course_id=new_course.id))
 
     return render_template("courses/create.html", form=form)
 
@@ -71,7 +71,7 @@ def edit(course_id):
 
         kanvas_db.session.commit()
         flash("Instancia del curso actualizada exitosamente.", "success")
-        return redirect(url_for("course.show", id=course.id))
+        return redirect(url_for("course.show", course_id=course.id))
 
     return render_template("courses/edit.html", form=form, course=course)
 

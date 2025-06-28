@@ -1,12 +1,12 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from sqlalchemy.exc import SQLAlchemyError
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.forms.evaluation_forms import EvaluationForm
 from app.models.evaluation import Evaluation
 from app.models.section import Section, WeighingType
-from app.utils.decorators import require_section_open
 from app.services.validations import validate_section_for_evaluation
+from app.utils.decorators import require_section_open
 
 evaluation_bp = Blueprint("evaluation", __name__, url_prefix="/evaluations")
 

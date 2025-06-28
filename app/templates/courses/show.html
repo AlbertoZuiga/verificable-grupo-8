@@ -20,8 +20,8 @@
         </p>
         <div class="mt-4 d-flex gap-2">
           <a href="{{ url_for('course.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>
-          <a href="{{ url_for('course.edit', id=course.id) }}" class="btn btn-warning">✏ Editar</a>
-          <a href="{{ url_for('course.delete', id=course.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro que deseas eliminar este curso?');"> 🗑 Eliminar </a>
+          <a href="{{ url_for('course.edit', course_id=course.id) }}" class="btn btn-warning">✏ Editar</a>
+          <a href="{{ url_for('course.delete', course_id=course.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro que deseas eliminar este curso?');"> 🗑 Eliminar </a>
         </div>
       </div>
     </div>

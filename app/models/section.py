@@ -1,6 +1,6 @@
 import enum
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 
 
 class WeighingType(enum.Enum):

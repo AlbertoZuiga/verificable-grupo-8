@@ -1,4 +1,4 @@
-from app import kanvas_db
+from app.extensions import kanvas_db
 
 
 class Requisite(kanvas_db.Model):  # type: ignore[name-defined]

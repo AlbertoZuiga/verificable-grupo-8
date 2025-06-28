@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.forms.classroom_forms import ClassroomForm
 from app.models.classroom import Classroom
 

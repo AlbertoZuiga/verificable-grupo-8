@@ -1,15 +1,15 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from sqlalchemy.exc import SQLAlchemyError
 
-from app import kanvas_db
+from app.extensions import kanvas_db
 from app.forms.section_forms import SectionForm
 from app.models.course_instance import CourseInstance
 from app.models.section import Section, WeighingType
 from app.models.section_grade import SectionGrade
 from app.models.student_evaluation_instance import StudentEvaluationInstance
 from app.models.teacher import Teacher
-from app.utils.decorators import require_section_open
 from app.services.section_service import create_section
+from app.utils.decorators import require_section_open
 
 MINIMUM_GRADE = 1.0
 
