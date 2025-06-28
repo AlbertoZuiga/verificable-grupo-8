@@ -4,6 +4,7 @@ from app.models.evaluation_instance import EvaluationInstance
 from app.models.student import Student
 from app.utils import json_constants as JC
 
+
 def parse_grades_json(json_data):
     data = json.loads(json_data)
 
@@ -39,6 +40,7 @@ def parse_grades_json(json_data):
         )
 
     return parsed_grades
+
 
 def _validate_grade_keys(entry):
     for key in (JC.STUDENT_ID, JC.TOPIC_ID, JC.INSTANCE, JC.GRADE):

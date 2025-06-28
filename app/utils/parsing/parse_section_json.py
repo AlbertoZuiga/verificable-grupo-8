@@ -7,7 +7,6 @@ from app.models.teacher import Teacher
 from app.utils import json_constants as JC
 
 
-
 def parse_sections_json(json_data):
     data = json.loads(json_data)
 
@@ -120,7 +119,6 @@ def _parse_evaluation(topic, topic_details, section):
     ]
 
     return evaluation, instances
-
 
 
 def _validate_teacher_exists(teacher_id):

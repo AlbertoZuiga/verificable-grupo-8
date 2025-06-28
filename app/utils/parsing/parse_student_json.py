@@ -1,11 +1,10 @@
 import json
-import re
 from datetime import datetime
 
 from app.models.student import Student
 from app.models.user import User
-
 from app.utils import json_constants as JC
+from app.utils.validation_helpers import validate_id_name_email_types, validate_name_email_format
 
 
 def parse_students_json(json_data):
@@ -31,6 +30,7 @@ def parse_students_json(json_data):
 
     return result
 
+
 def _validate_required_keys(item):
     for key in (JC.NAME, JC.EMAIL, JC.ID, JC.ENTRY_YEAR):
         if key not in item:
@@ -38,12 +38,8 @@ def _validate_required_keys(item):
 
 
 def _validate_field_types(item, current_year):
-    if not isinstance(item[JC.NAME], str):
-        raise ValueError(f"El campo '{JC.NAME}' debe ser una cadena de texto.")
-    if not isinstance(item[JC.EMAIL], str):
-        raise ValueError(f"El campo '{JC.EMAIL}' debe ser una cadena de texto.")
-    if not isinstance(item[JC.ID], int):
-        raise ValueError(f"El campo '{JC.ID}' debe ser un número entero.")
+    validate_id_name_email_types(item, JC)
+
     if not isinstance(item[JC.ENTRY_YEAR], int):
         raise ValueError(f"El campo '{JC.ENTRY_YEAR}' debe ser un número entero.")
 
@@ -53,21 +49,7 @@ def _validate_field_types(item, current_year):
             f"El campo '{JC.ENTRY_YEAR}' debe estar entre {current_year - 20} y {current_year + 5}."
         )
 
-    name = item[JC.NAME]
-    email = item[JC.EMAIL]
-
-    if not 0 < len(name) <= 60:
-        raise ValueError(
-            "El largo del nombre debe ser mayor que 0 y menor o igual que 60 caracteres."
-        )
-    if not 0 < len(email) <= 60:
-        raise ValueError(
-            "El largo del correo debe ser mayor que 0 y menor o igual que 60 caracteres."
-        )
-
-    email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
-    if not re.match(email_regex, email):
-        raise ValueError(f"El correo '{email}' no tiene un formato válido.")
+    validate_name_email_format(item[JC.NAME], item[JC.EMAIL])
 
 
 def _check_uniqueness(item, ids_seen, emails_seen):

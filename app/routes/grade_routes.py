@@ -3,10 +3,11 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.extensions import kanvas_db
 from app.services.evaluation_instance_service import (
-    get_evaluation_instance_and_student, get_student_grade_instance,
-    save_student_grade)
-from app.services.student_evaluation_instance_service import \
-    get_section_id_from_evaluation_instance
+    get_evaluation_instance_and_student,
+    get_student_grade_instance,
+    save_student_grade,
+)
+from app.services.student_evaluation_instance_service import get_section_id_from_evaluation_instance
 from app.services.validations import validate_section_for_evaluation
 
 grade_bp = Blueprint("grades", __name__, url_prefix="/grades")

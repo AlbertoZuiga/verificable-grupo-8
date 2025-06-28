@@ -46,6 +46,7 @@ def validate_course_keys(item):
         if key not in item:
             raise ValueError(f"Falta la clave '{key}' en un elemento de '{JC.COURSES}'.")
 
+
 def validate_course_types(item):
     if not isinstance(item[JC.ID], int):
         raise ValueError(f"'{JC.ID}' debe ser un entero en '{JC.COURSES}'.")

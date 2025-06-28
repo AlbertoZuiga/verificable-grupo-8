@@ -69,7 +69,6 @@ def extract_and_validate_semester(data):
         ) from error
 
 
-
 def extract_and_validate_instances_list(data):
     if JC.COURSE_INSTANCES not in data:
         raise ValueError(f"Falta la clave '{JC.COURSE_INSTANCES}' en el JSON.")
