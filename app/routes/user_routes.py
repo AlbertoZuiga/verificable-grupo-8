@@ -6,6 +6,8 @@ from app.models.user import User
 
 user_bp = Blueprint("user", __name__, url_prefix="/users")
 
+INDEX_ROUTE = "user.index"
+
 
 @user_bp.route("/")
 def index():
@@ -33,7 +35,7 @@ def create():
         new_user.set_password(form.password.data)
         kanvas_db.session.add(new_user)
         kanvas_db.session.commit()
-        return redirect(url_for("user.index"))
+        return redirect(url_for(INDEX_ROUTE))
     return render_template("users/create.html", form=form)
 
 
@@ -51,7 +53,7 @@ def edit(user_id):
 
         form.populate_obj(user)
         kanvas_db.session.commit()
-        return redirect(url_for("user.index"))
+        return redirect(url_for(INDEX_ROUTE))
 
     return render_template("users/edit.html", form=form, user=user)
 
@@ -61,4 +63,4 @@ def delete(user_id):
     user = User.query.get_or_404(user_id)
     kanvas_db.session.delete(user)
     kanvas_db.session.commit()
-    return redirect(url_for("user.index"))
+    return redirect(url_for(INDEX_ROUTE))

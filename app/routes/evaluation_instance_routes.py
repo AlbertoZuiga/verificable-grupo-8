@@ -16,6 +16,8 @@ evaluation_instance_bp = Blueprint(
     "evaluation_instance", __name__, url_prefix="/evaluation_instances"
 )
 
+CREATE_HTML = "evaluation_instances/create.html"
+
 
 @evaluation_instance_bp.route("/")
 def index():
@@ -56,7 +58,7 @@ def create():
 
         if EvaluationInstance.query.filter_by(title=title, evaluation_id=evaluation_id).first():
             flash("Instancia de evaluación ya existe.", "danger")
-            return render_template("evaluation_instances/create.html", form=form)
+            return render_template(CREATE_HTML, form=form)
 
         evaluation_instance = EvaluationInstance(
             title=title,
@@ -74,7 +76,7 @@ def create():
             kanvas_db.session.rollback()
             flash(f"Error creating evaluation_instance: {e}", "danger")
 
-    return render_template("evaluation_instances/create.html", form=form)
+    return render_template(CREATE_HTML, form=form)
 
 
 @evaluation_instance_bp.route("/edit/<int:evaluation_instance_id>", methods=["GET", "POST"])
@@ -104,7 +106,7 @@ def edit(evaluation_instance_id):
         ):
             flash("Instancia de evaluación con ese nombre ya existe.", "danger")
             return render_template(
-                "evaluation_instances/create.html",
+                CREATE_HTML,
                 form=form,
                 evaluation_instance=evaluation_instance,
             )

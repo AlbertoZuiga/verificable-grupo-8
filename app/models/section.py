@@ -2,6 +2,8 @@ import enum
 
 from app.extensions import kanvas_db
 
+DELETION_MODE = "all, delete-orphan"
+
 
 class WeighingType(enum.Enum):
     PERCENTAGE = "Porcentaje"
@@ -45,15 +47,15 @@ class Section(kanvas_db.Model):  # type: ignore[name-defined]
     student_associations = kanvas_db.relationship(
         "StudentSection",
         back_populates="section",
-        cascade="all, delete-orphan",
+        cascade=DELETION_MODE,
         passive_deletes=False,
     )
 
     assigned_time_blocks = kanvas_db.relationship(
-        "AssignedTimeBlock", back_populates="section", cascade="all, delete-orphan"
+        "AssignedTimeBlock", back_populates="section", cascade=DELETION_MODE
     )
     evaluations = kanvas_db.relationship(
-        "Evaluation", back_populates="section", cascade="all, delete-orphan"
+        "Evaluation", back_populates="section", cascade=DELETION_MODE
     )
     closed = kanvas_db.Column(kanvas_db.Boolean, default=False)
 

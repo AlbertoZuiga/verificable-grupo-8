@@ -15,6 +15,9 @@ MINIMUM_GRADE = 1.0
 
 section_bp = Blueprint("section", __name__, url_prefix="/sections")
 
+INDEX_ROUTE = "section.index"
+EDIT_EVALUATION_WEIGHTS_ROUTE = "section.edit_evaluation_weights"
+
 
 @section_bp.route("/")
 def index():
@@ -40,18 +43,18 @@ def edit_evaluation_weights(section_id):
                 weights[evaluation.id] = float(request.form[key])
         except (ValueError, KeyError) as e:
             flash(f"Entrada inválida para los pesos: {e}", "danger")
-            return redirect(url_for("section.edit_evaluation_weights", id=section.id))
+            return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, id=section.id))
 
         # Validación para evaluaciones con porcentajes
         if section.weighing_type == WeighingType.PERCENTAGE:
             total = sum(weights.values())
-            if round(total, 2) != 100.0:
+            if abs(round(total, 2) - 100.0) > 0.01:
                 flash(
                     "La suma de los pesos de las evaluaciones\
                     debe ser 100 para las evaluaciones ponderadas.",
                     "danger",
                 )
-                return redirect(url_for("section.edit_evaluation_weights", id=section.id))
+                return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, id=section.id))
 
         # Asignar pesos nuevos
         for evaluation in section.evaluations:
@@ -63,7 +66,7 @@ def edit_evaluation_weights(section_id):
             return redirect(url_for("section.show", id=section.id))
         except (ValueError, KeyError) as e:
             flash(f"Entrada inválida para los pesos: {e}", "danger")
-            return redirect(url_for("section.edit_evaluation_weights", id=section.id))
+            return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, id=section.id))
 
     return render_template(
         "sections/edit_evaluation_weights.html",
@@ -95,7 +98,7 @@ def create():
                 form.weighing_type.data,
             )
             flash("Sección creada exitosamente", "success")
-            return redirect(url_for("section.index"))
+            return redirect(url_for(INDEX_ROUTE))
         except ValueError as ve:
             flash(str(ve), "warning")
         except SQLAlchemyError as e:
@@ -130,7 +133,7 @@ def edit(section_id):
 
             kanvas_db.session.commit()
             print("Sección actualizada exitosamente.")
-            return redirect(url_for("section.index"))
+            return redirect(url_for(INDEX_ROUTE))
         except SQLAlchemyError as e:
             kanvas_db.session.rollback()
             print(f"Error al editar la sección: {str(e)}")
@@ -156,7 +159,7 @@ def delete(section_id):
         print(f"Error deleting section: {e}")
         return redirect(url_for("section.show", id=id))
 
-    return redirect(url_for("section.index"))
+    return redirect(url_for(INDEX_ROUTE))
 
 
 @section_bp.route("/<int:section_id>/close", methods=["POST"])

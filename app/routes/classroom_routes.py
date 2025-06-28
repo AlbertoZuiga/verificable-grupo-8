@@ -6,6 +6,8 @@ from app.models.classroom import Classroom
 
 classroom_bp = Blueprint("classroom", __name__, url_prefix="/classrooms")
 
+CREATE_HTML = "classrooms/create.html"
+
 
 @classroom_bp.route("/", methods=["GET"])
 def index():
@@ -29,7 +31,7 @@ def create():
 
         if Classroom.query.filter_by(name=name).first():
             flash("Ya existe una sala con ese nombre.", "danger")
-            return render_template("classrooms/create.html", form=form)
+            return render_template(CREATE_HTML, form=form)
 
         new_classroom = Classroom(name=name, capacity=capacity)
         kanvas_db.session.add(new_classroom)
@@ -37,7 +39,7 @@ def create():
         flash("Sala creada exitosamente", "success")
         return redirect(url_for("classroom.show", id=new_classroom.id))
 
-    return render_template("classrooms/create.html", form=form)
+    return render_template(CREATE_HTML, form=form)
 
 
 @classroom_bp.route("/<int:classroom_id>/edit", methods=["GET", "POST"])
@@ -53,7 +55,7 @@ def edit(classroom_id):
         flash("Sala actualizada exitosamente", "success")
         return redirect(url_for("classroom.show", id=classroom.id))
 
-    return render_template("classrooms/create.html", form=form)
+    return render_template(CREATE_HTML, form=form)
 
 
 @classroom_bp.route("/<int:classroom_id>/delete", methods=["POST"])

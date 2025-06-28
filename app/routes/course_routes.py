@@ -8,6 +8,8 @@ from app.services.course_service import get_course_and_other_courses
 
 course_bp = Blueprint("course", __name__, url_prefix="/courses")
 
+CREATE_HTML = "courses/create.html"
+
 
 @course_bp.route("/")
 def index():
@@ -31,11 +33,11 @@ def create():
 
         if Course.query.filter_by(title=title).first():
             flash("Ya existe un curso con ese título.", "danger")
-            return render_template("courses/create.html", form=form)
+            return render_template(CREATE_HTML, form=form)
 
         if Course.query.filter_by(code=code).first():
             flash("Ya existe un curso con ese codigo.", "danger")
-            return render_template("courses/create.html", form=form)
+            return render_template(CREATE_HTML, form=form)
 
         new_course = Course(title=title, code=code, credits=course_credits)
         kanvas_db.session.add(new_course)
@@ -43,7 +45,7 @@ def create():
         flash("Instancia del curso creada exitosamente.", "success")
         return redirect(url_for("course.show", course_id=new_course.id))
 
-    return render_template("courses/create.html", form=form)
+    return render_template(CREATE_HTML, form=form)
 
 
 @course_bp.route("/edit/<int:course_id>", methods=["GET", "POST"])
@@ -58,12 +60,12 @@ def edit(course_id):
         existing_course = Course.query.filter_by(title=title)
         if existing_course and existing_course.id != course_id:
             flash("Ya existe un curso con ese título.", "danger")
-            return render_template("courses/create.html", form=form, course=course)
+            return render_template(CREATE_HTML, form=form, course=course)
 
         existing_course = Course.query.filter_by(code=code)
         if existing_course and existing_course.id != course_id:
             flash("Ya existe un curso con ese codigo.", "danger")
-            return render_template("courses/create.html", form=form, course=course)
+            return render_template(CREATE_HTML, form=form, course=course)
 
         course.title = title
         course.code = code

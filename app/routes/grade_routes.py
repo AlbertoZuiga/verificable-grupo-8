@@ -18,42 +18,46 @@ def assign_or_edit_grade(evaluation_instance_id, student_id):
         evaluation_instance_id, student_id
     )
 
-    response = None
-
     if not student:
-        response = ("Estudiante no pertenece a esta sección", 404)
-    else:
-        current_grade_instance = get_student_grade_instance(evaluation_instance_id, student_id)
-        current_grade = current_grade_instance.grade if current_grade_instance else None
+        return "Estudiante no pertenece a esta sección", 404
 
-        section_id = get_section_id_from_evaluation_instance(evaluation_instance_id)
+    section_id = get_section_id_from_evaluation_instance(evaluation_instance_id)
+    validation_error = validate_section_for_evaluation(section_id)
+    if validation_error:
+        return validation_error
 
-        validation_error = validate_section_for_evaluation(section_id)
-        if validation_error:
-            response = validation_error
-        elif request.method == "POST":
-            grade_input = request.form.get("grade")
+    if request.method == "POST":
+        return handle_post_request(evaluation_instance_id, student_id)
 
-            if not grade_input or grade_input.strip() == "":
-                response = ("Nota vacía", 400)
-            else:
-                try:
-                    grade_value = float(grade_input)
-                    save_student_grade(evaluation_instance_id, student_id, grade_value)
-                    return redirect(url_for("evaluation_instance.show", id=evaluation_instance_id))
-                except (ValueError, SQLAlchemyError) as e:
-                    kanvas_db.session.rollback()
-                    print(f"Error al guardar la nota: {e}")
-                    response = ("Error al guardar la nota", 500)
-        else:
-            response = render_template(
-                "evaluation_instances/grade_user.html",
-                evaluation_instance=evaluation_instance,
-                student=student,
-                current_grade=current_grade,
-            )
+    return handle_get_request(evaluation_instance, student, evaluation_instance_id, student_id)
 
-    return response
+
+def handle_post_request(evaluation_instance_id, student_id):
+    grade_input = request.form.get("grade")
+
+    if not grade_input or grade_input.strip() == "":
+        return "Nota vacía", 400
+
+    try:
+        grade_value = float(grade_input)
+        save_student_grade(evaluation_instance_id, student_id, grade_value)
+        return redirect(url_for("evaluation_instance.show", id=evaluation_instance_id))
+    except (ValueError, SQLAlchemyError) as e:
+        kanvas_db.session.rollback()
+        print(f"Error al guardar la nota: {e}")
+        return "Error al guardar la nota", 500
+
+
+def handle_get_request(evaluation_instance, student, evaluation_instance_id, student_id):
+    current_grade_instance = get_student_grade_instance(evaluation_instance_id, student_id)
+    current_grade = current_grade_instance.grade if current_grade_instance else None
+
+    return render_template(
+        "evaluation_instances/grade_user.html",
+        evaluation_instance=evaluation_instance,
+        student=student,
+        current_grade=current_grade,
+    )
 
 
 @grade_bp.route("/<int:evaluation_instance_id>/delete/<int:student_id>", methods=["POST"])

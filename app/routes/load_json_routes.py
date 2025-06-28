@@ -71,7 +71,7 @@ def load_students_from_json():
     if form.validate_on_submit():
         try:
             process_students_json(form.file.data)
-            return redirect(url_for("INDEX_ROUTE"))
+            return redirect(url_for(INDEX_ROUTE))
         except (ValueError, SQLAlchemyError) as e:
             kanvas_db.session.rollback()
             flash_invalid_load(JC.STUDENTS_LABEL, e)
@@ -112,7 +112,7 @@ def load_teachers_from_json():
     if form.validate_on_submit():
         try:
             process_teachers_json(form.file.data)
-            return redirect(url_for("INDEX_ROUTE"))
+            return redirect(url_for(INDEX_ROUTE))
         except (ValueError, SQLAlchemyError) as e:
             kanvas_db.session.rollback()
             flash_invalid_load(JC.TEACHERS_LABEL, e)
@@ -138,7 +138,7 @@ def load_classrooms_from_json():
             kanvas_db.session.commit()
 
             flash_successful_load(created_classrooms_count, JC.CLASSROOMS_LABEL)
-            return redirect(url_for("INDEX_ROUTE"))
+            return redirect(url_for(INDEX_ROUTE))
 
         except (ValueError, SQLAlchemyError) as e:
             kanvas_db.session.rollback()
@@ -172,7 +172,7 @@ def load_courses_from_json():
             kanvas_db.session.commit()
             flash_successful_load(created_courses_count, JC.COURSES_LABEL)
             flash_successful_load(created_requisites_count, JC.REQUISITES_LABEL)
-            return redirect(url_for("INDEX_ROUTE"))
+            return redirect(url_for(INDEX_ROUTE))
 
         except (ValueError, SQLAlchemyError) as e:
             kanvas_db.session.rollback()
@@ -201,7 +201,7 @@ def load_course_instances_from_json():
 
             kanvas_db.session.commit()
             flash_successful_load(created_courses_count, JC.COURSE_INSTANCES_LABEL)
-            return redirect(url_for("INDEX_ROUTE"))
+            return redirect(url_for(INDEX_ROUTE))
 
         except (ValueError, SQLAlchemyError) as e:
             kanvas_db.session.rollback()
@@ -238,7 +238,7 @@ def load_sections_from_json():
             flash_successful_load(created_evaluations_count, JC.EVALUATIONS_LABEL)
             flash_successful_load(created_evaluation_instances_count, JC.EVALUATION_INSTANCES_LABEL)
 
-            return redirect(url_for("INDEX_ROUTE"))
+            return redirect(url_for(INDEX_ROUTE))
 
         except (ValueError, SQLAlchemyError) as e:
             kanvas_db.session.rollback()
@@ -270,7 +270,7 @@ def load_student_sections_from_json():
 
             kanvas_db.session.commit()
             flash_successful_load(created_student_sections_count, JC.STUDENT_SECTIONS_LABEL)
-            return redirect(url_for("INDEX_ROUTE"))
+            return redirect(url_for(INDEX_ROUTE))
 
         except (ValueError, SQLAlchemyError) as e:
             kanvas_db.session.rollback()
@@ -298,7 +298,7 @@ def load_grades_from_json():
 
             kanvas_db.session.commit()
             flash_successful_load(created_grades_count, JC.GRADES_LABEL)
-            return redirect(url_for("INDEX_ROUTE"))
+            return redirect(url_for(INDEX_ROUTE))
 
         except (ValueError, SQLAlchemyError) as e:
             kanvas_db.session.rollback()

@@ -110,7 +110,7 @@ def group_blocks_by_day(time_blocks):
     blocks_by_day = defaultdict(list)
     for tb in time_blocks:
         blocks_by_day[tb.weekday].append(tb)
-    for _, blocks in blocks_by_day.items():
+    for blocks in blocks_by_day.values():
         blocks.sort(key=lambda b: b.start_time)
     return blocks_by_day
 
@@ -135,27 +135,39 @@ def get_contiguous_sequences(blocks):
 
 def assign_section_if_possible(section, classrooms, time_blocks):
     required_blocks = section.course_instance.course.credits
-
     blocks_by_day = group_blocks_by_day(time_blocks)
 
     for day, blocks in blocks_by_day.items():
         sequences = get_contiguous_sequences(blocks)
+        if try_assign_from_sequences(section, classrooms, sequences, required_blocks, day):
+            return True
 
-        for sequence in sequences:
-            if len(sequence) < required_blocks:
-                continue
+    return False
 
-            for i in range(len(sequence) - required_blocks + 1):
-                candidate_time_blocks = sequence[i : i + required_blocks]
 
-                for classroom in classrooms:
-                    if is_valid_assignment(section, classroom.id, candidate_time_blocks):
-                        assign_blocks(section.id, classroom.id, candidate_time_blocks)
-                        print(
-                            f"Sección {section.id} asignada en sala {classroom.name}, "
-                            f"{day}, bloques {[tb.id for tb in candidate_time_blocks]}"
-                        )
-                        return True
+def try_assign_from_sequences(section, classrooms, sequences, required_blocks, day):
+    for sequence in sequences:
+        if len(sequence) < required_blocks:
+            continue
+
+        if try_assign_from_sequence(section, classrooms, sequence, required_blocks, day):
+            return True
+
+    return False
+
+
+def try_assign_from_sequence(section, classrooms, sequence, required_blocks, day):
+    for i in range(len(sequence) - required_blocks + 1):
+        candidate_time_blocks = sequence[i : i + required_blocks]
+
+        for classroom in classrooms:
+            if is_valid_assignment(section, classroom.id, candidate_time_blocks):
+                assign_blocks(section.id, classroom.id, candidate_time_blocks)
+                print(
+                    f"Sección {section.id} asignada en sala {classroom.name}, "
+                    f"{day}, bloques {[tb.id for tb in candidate_time_blocks]}"
+                )
+                return True
     return False
 
 

@@ -7,6 +7,8 @@ from app.services.user_service import create_user_from_form
 
 teacher_bp = Blueprint("teacher", __name__, url_prefix="/teachers")
 
+INDEX_ROUTE = "teacher.index"
+
 
 @teacher_bp.route("/")
 def index():
@@ -29,7 +31,7 @@ def create():
         new_teacher = Teacher(user_id=new_user.id)
         kanvas_db.session.add(new_teacher)
         kanvas_db.session.commit()
-        return redirect(url_for("teacher.index"))
+        return redirect(url_for(INDEX_ROUTE))
     return render_template("teachers/create.html", form=form)
 
 
@@ -43,7 +45,7 @@ def edit(teacher_id):
         user.last_name = form.last_name.data
         user.email = form.email.data
         kanvas_db.session.commit()
-        return redirect(url_for("teacher.index"))
+        return redirect(url_for(INDEX_ROUTE))
     return render_template("teachers/edit.html", form=form, teacher=teacher)
 
 
@@ -53,4 +55,4 @@ def delete(teacher_id):
 
     kanvas_db.session.delete(teacher)
     kanvas_db.session.commit()
-    return redirect(url_for("teacher.index"))
+    return redirect(url_for(INDEX_ROUTE))
