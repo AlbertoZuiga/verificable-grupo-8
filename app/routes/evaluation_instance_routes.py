@@ -6,9 +6,7 @@ from app.forms.evaluation_instance_forms import EvaluationInstanceForm
 from app.models.evaluation import Evaluation
 from app.models.evaluation_instance import EvaluationInstance
 from app.services.evaluation_instance_service import (
-    get_evaluation_instance_with_students_and_grades,
-    get_section_id,
-)
+    get_evaluation_instance_with_students_and_grades, get_section_id)
 from app.services.validations import validate_section_for_evaluation
 from app.utils.decorators import require_section_open
 

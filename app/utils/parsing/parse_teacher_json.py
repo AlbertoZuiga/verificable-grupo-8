@@ -3,7 +3,8 @@ import json
 from app.models.teacher import Teacher
 from app.models.user import User
 from app.utils import json_constants as JC
-from app.utils.validation_helpers import validate_id_name_email_types, validate_name_email_format
+from app.utils.validation_helpers import (validate_id_name_email_types,
+                                          validate_name_email_format)
 
 
 def parse_teachers_json(json_data):

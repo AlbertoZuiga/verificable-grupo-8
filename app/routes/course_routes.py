@@ -57,12 +57,12 @@ def edit(course_id):
         code = form.code.data
         course_credits = form.credits.data
 
-        existing_course = Course.query.filter_by(title=title)
+        existing_course = Course.query.filter_by(title=title).first()
         if existing_course and existing_course.id != course_id:
             flash("Ya existe un curso con ese título.", "danger")
             return render_template(CREATE_HTML, form=form, course=course)
 
-        existing_course = Course.query.filter_by(code=code)
+        existing_course = Course.query.filter_by(code=code).first()
         if existing_course and existing_course.id != course_id:
             flash("Ya existe un curso con ese codigo.", "danger")
             return render_template(CREATE_HTML, form=form, course=course)

@@ -15,7 +15,7 @@ def create_app(testing=False):
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
         app.config["TESTING"] = True
         app.config["WTF_CSRF_ENABLED"] = False
-        app.config["SECRET_KEY"] = "test-secret-key"
+        app.config["SECRET_KEY"] = Config.SECRET_KEY
     else:
         app.config.from_object(Config)
     kanvas_db.init_app(app)
