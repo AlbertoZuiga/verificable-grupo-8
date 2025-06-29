@@ -15,9 +15,9 @@
           <strong class="text-dark">{{ evaluation.weigh }}</strong>
           <strong class="text-dark">{{ evaluation.weighing_system }}</strong>
           <div>
-            <a href="{{ url_for('evaluation.show', id=evaluation.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver evaluación {{ evaluation.title }}"> Ver </a>
-            <a href="{{ url_for('evaluation.edit', id=evaluation.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar evaluación {{ evaluation.title }}"> Editar </a>
-            <a href="{{ url_for('evaluation.delete', id=evaluation.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar evaluación {{ evaluation.title }}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta evaluación?')"> Eliminar </a>
+            <a href="{{ url_for('evaluation.show', evaluation_id=evaluation.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver evaluación {{ evaluation.title }}"> Ver </a>
+            <a href="{{ url_for('evaluation.edit', evaluation_id=evaluation.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar evaluación {{ evaluation.title }}"> Editar </a>
+            <a href="{{ url_for('evaluation.delete', evaluation_id=evaluation.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar evaluación {{ evaluation.title }}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta evaluación?')"> Eliminar </a>
           </div>
         </li>
       {% endfor %}

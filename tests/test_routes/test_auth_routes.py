@@ -5,13 +5,13 @@ from flask import url_for
 
 
 def test_successful_login(client, test_user):
-    data = {"email": test_user.email, "password": "testpassword"}
+    data = {"email": test_user.email, "password": "password"}
     response = client.post(url_for("auth.login"), data=data, follow_redirects=True)
     assert response.status_code == 200
 
     assert b"Sesi\xc3\xb3n iniciada" in response.data
 
-    data = {"email": "wrong@example.com", "password": "testpassword"}
+    data = {"email": "wrong@example.com", "password": "password"}
     response = client.post(url_for("auth.login"), data=data)
     assert response.status_code == 200
     assert b"Usuario o contrase" in response.data
@@ -20,7 +20,7 @@ def test_successful_login(client, test_user):
 @pytest.mark.parametrize(
     "data,expected_errors",
     [
-        ({"email": "", "password": "testpassword"}, ["This field is required."]),
+        ({"email": "", "password": "password"}, ["This field is required."]),
         ({"email": "test@example.com", "password": ""}, ["This field is required."]),
         ({}, ["This field is required.", "This field is required."]),
     ],
@@ -36,7 +36,7 @@ def test_login_missing_fields(client, data, expected_errors):
 def test_logout(client, test_user):
     client.post(
         url_for("auth.login"),
-        data={"email": test_user.email, "password": "testpassword"},
+        data={"email": test_user.email, "password": "password"},
     )
     response = client.get(url_for("auth.logout"), follow_redirects=True)
     assert response.status_code == 200

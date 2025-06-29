@@ -2,6 +2,7 @@ import math
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from sqlalchemy.exc import SQLAlchemyError
+from wtforms.validators import AnyOf
 
 from app.extensions import kanvas_db
 from app.forms.evaluation_forms import EvaluationForm
@@ -13,6 +14,7 @@ from app.utils.decorators import require_section_open
 evaluation_bp = Blueprint("evaluation", __name__, url_prefix="/evaluations")
 
 SHOW_ROUTE = "evaluation.show"
+EDIT_INSTANCE_WEIGHTS_ROUTE = "evaluation.edit_instance_weights"
 
 
 @evaluation_bp.route("/")
@@ -41,17 +43,17 @@ def edit_instance_weights(evaluation_id):
                 weights[instance.id] = float(request.form[key])
         except (ValueError, KeyError) as e:
             flash(f"Entrada inválida para los pesos: {e}", "danger")
-            return redirect(url_for("evaluation.edit_instance_weights", id=evaluation.id))
+            return redirect(url_for(EDIT_INSTANCE_WEIGHTS_ROUTE, evaluation_id=evaluation.id))
 
         if evaluation.weighing_system == WeighingType.PERCENTAGE:
             total = sum(weights.values())
             if not math.isclose(total, 100.0, rel_tol=1e-9, abs_tol=0.01):
                 flash(
-                    "La suma de los pesos de las instancias debe ser\
-                    100 para las evaluaciones ponderadas.",
+                    "La suma de los pesos de las instancias debe ser"
+                    " 100 para las evaluaciones ponderadas.",
                     "danger",
                 )
-                return redirect(url_for("evaluation.edit_instance_weights", id=evaluation.id))
+                return redirect(url_for(EDIT_INSTANCE_WEIGHTS_ROUTE, evaluation_id=evaluation.id))
 
         for instance in evaluation.instances:
             instance.instance_weighing = weights[instance.id]
@@ -59,10 +61,11 @@ def edit_instance_weights(evaluation_id):
         try:
             kanvas_db.session.commit()
             flash("Pesos de instancias actualizados correctamente", "success")
-            return redirect(url_for(SHOW_ROUTE, id=evaluation.id))
+            return redirect(url_for(SHOW_ROUTE, evaluation_id=evaluation.id))
         except SQLAlchemyError as e:
-            kanvas_db.session.rollback()
             flash(f"Error al guardar cambios: {e}", "danger")
+            kanvas_db.session.rollback()
+            return redirect(url_for(EDIT_INSTANCE_WEIGHTS_ROUTE, evaluation_id=evaluation.id))
 
     return render_template(
         "evaluations/edit_instance_weights.html",
@@ -75,10 +78,16 @@ def edit_instance_weights(evaluation_id):
 def create():
     form = EvaluationForm()
 
-    form.section_id.choices = [
+    choices = [
         (section.id, f"{section.code} - {section.course_instance.course.title}")
         for section in Section.query.all()
     ]
+    valid_ids = [section[0] for section in choices]
+
+    form.section_id.choices = choices
+    for validator in form.section_id.validators:
+        if isinstance(validator, AnyOf):
+            validator.values = valid_ids
 
     if form.validate_on_submit():
         title = form.title.data
@@ -87,10 +96,10 @@ def create():
 
         validation_error = validate_section_for_evaluation(section_id)
         if validation_error:
-            return validation_error
+            return redirect(url_for("evaluation.create"))
 
         if Evaluation.query.filter_by(title=title, section_id=section_id).first():
-            flash("Ya existe una evaluación con ese título para la seccion.", "danger")
+            flash("Ya existe una evaluación con ese título para la sección.", "danger")
             return render_template("evaluations/create.html", form=form)
 
         evaluation = Evaluation(
@@ -103,7 +112,7 @@ def create():
         try:
             kanvas_db.session.add(evaluation)
             kanvas_db.session.commit()
-            return redirect(url_for(SHOW_ROUTE, id=evaluation.id))
+            return redirect(url_for(SHOW_ROUTE, evaluation_id=evaluation.id))
         except SQLAlchemyError as e:
             kanvas_db.session.rollback()
             flash(f"Error creando evaluation: {e}", "danger")
@@ -144,7 +153,7 @@ def edit(evaluation_id):
 
         try:
             kanvas_db.session.commit()
-            return redirect(url_for(SHOW_ROUTE, id=evaluation.id))
+            return redirect(url_for(SHOW_ROUTE, evaluation_id=evaluation.id))
         except SQLAlchemyError as e:
             kanvas_db.session.rollback()
             flash(f"Error Creating evaluation: {e}", "danger")
@@ -159,13 +168,12 @@ def delete(evaluation_id):
     try:
         kanvas_db.session.delete(evaluation)
         kanvas_db.session.commit()
-    except SQLAlchemyError as e:
+    except SQLAlchemyError:
         kanvas_db.session.rollback()
         flash(
-            "No se puede eliminar porque tiene instancias de evaluación asociadas.",
+            "No se puede eliminar.",
             "error",
         )
-        print(f"Error deleting evaluation: {e}")
-        return redirect(url_for(SHOW_ROUTE, id=id))
+        return redirect(url_for(SHOW_ROUTE, evaluation_id=id))
 
     return redirect(url_for("evaluation.index"))

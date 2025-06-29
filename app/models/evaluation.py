@@ -16,7 +16,7 @@ class Evaluation(kanvas_db.Model):  # type: ignore[name-defined]
     section = kanvas_db.relationship("Section", back_populates="evaluations")
 
     title = kanvas_db.Column(kanvas_db.String(100), nullable=False)
-    weighing = kanvas_db.Column(kanvas_db.Float, nullable=False)
+    weighing = kanvas_db.Column(kanvas_db.Float, nullable=False, default=0.0)
     weighing_system = kanvas_db.Column(kanvas_db.Enum(WeighingType), nullable=False)
 
     instances = kanvas_db.relationship(

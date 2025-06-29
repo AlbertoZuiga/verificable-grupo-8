@@ -58,7 +58,7 @@
             <span class="badge bg-primary ms-2">{{ evaluation.weighing }}%</span>
           {% endif %}
         </div>
-        <a href="{{ url_for('evaluation.show', id=evaluation.id) }}" class="btn btn-sm btn-outline-secondary">Ver</a>
+        <a href="{{ url_for('evaluation.show', evaluation_id=evaluation.id) }}" class="btn btn-sm btn-outline-secondary">Ver</a>
       </div>    
     {% else %}
       <p class="text-muted">No hay evaluaciones para esta sección.</p>
