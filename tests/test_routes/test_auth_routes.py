@@ -1,6 +1,8 @@
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs, urlparse
+
 import pytest
 from flask import url_for
+
 
 def test_successful_login(client, test_user):
     data = {"email": test_user.email, "password": "testpassword"}
@@ -9,11 +11,11 @@ def test_successful_login(client, test_user):
 
     assert b"Sesi\xc3\xb3n iniciada" in response.data
 
-def test_login_invalid_email(client, db): # pylint: disable=unused-argument
     data = {"email": "wrong@example.com", "password": "testpassword"}
     response = client.post(url_for("auth.login"), data=data)
     assert response.status_code == 200
     assert b"Usuario o contrase" in response.data
+
 
 @pytest.mark.parametrize(
     "data,expected_errors",
@@ -25,10 +27,11 @@ def test_login_invalid_email(client, db): # pylint: disable=unused-argument
 )
 def test_login_missing_fields(client, data, expected_errors):
     response = client.post(url_for("auth.login"), data=data)
-    print("Response:\n",response.data.decode())
+    print("Response:\n", response.data.decode())
     assert response.status_code == 200
     for error in expected_errors:
         assert error.encode() in response.data
+
 
 def test_logout(client, test_user):
     client.post(
@@ -39,6 +42,7 @@ def test_logout(client, test_user):
     assert response.status_code == 200
 
     assert b"Sesi\xc3\xb3n cerrada" in response.data
+
 
 def test_protected_route_redirect(client):
     response = client.get(url_for("auth.logout"))

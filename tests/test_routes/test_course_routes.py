@@ -6,16 +6,16 @@ from app.models.course import Course
 
 
 @pytest.fixture(autouse=True)
-def setup_db(db):
+def setup_db(_db):
     course1 = Course(title="Matemáticas", code="MAT101", credits=4)
     course2 = Course(title="Física", code="FIS102", credits=3)
-    db.session.add(course1)
-    db.session.add(course2)
-    db.session.commit()
+    _db.session.add(course1)
+    _db.session.add(course2)
+    _db.session.commit()
     yield
 
-    db.session.query(Course).delete()
-    db.session.commit()
+    _db.session.query(Course).delete()
+    _db.session.commit()
 
 
 def test_index_route(client):
@@ -121,11 +121,11 @@ def test_delete_non_existing_course(client):
     assert response.status_code == 404
 
 
-def test_delete_with_db_error(monkeypatch, client, db):
+def test_delete_with_db_error(monkeypatch, client, _db):
     def mock_commit():
         raise SQLAlchemyError("Error simulado")
 
-    monkeypatch.setattr(db.session, "commit", mock_commit)
+    monkeypatch.setattr(_db.session, "commit", mock_commit)
 
     course = Course.query.first()
     response = client.get(url_for("course.delete", course_id=course.id), follow_redirects=True)

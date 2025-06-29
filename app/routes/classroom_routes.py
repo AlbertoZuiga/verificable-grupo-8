@@ -7,6 +7,7 @@ from app.models.classroom import Classroom
 classroom_bp = Blueprint("classroom", __name__, url_prefix="/classrooms")
 
 CREATE_HTML = "classrooms/create.html"
+EDIT_HTML = "classrooms/edit.html"
 
 
 @classroom_bp.route("/", methods=["GET"])
@@ -24,9 +25,8 @@ def show(classroom_id):
 @classroom_bp.route("/create", methods=["GET", "POST"])
 def create():
     form = ClassroomForm()
-
     if form.validate_on_submit():
-        name = (form.name.data,)
+        name = form.name.data
         capacity = form.capacity.data
 
         if Classroom.query.filter_by(name=name).first():
@@ -37,7 +37,7 @@ def create():
         kanvas_db.session.add(new_classroom)
         kanvas_db.session.commit()
         flash("Sala creada exitosamente", "success")
-        return redirect(url_for("classroom.show", id=new_classroom.id))
+        return redirect(url_for("classroom.show", classroom_id=new_classroom.id))
 
     return render_template(CREATE_HTML, form=form)
 
@@ -46,16 +46,23 @@ def create():
 def edit(classroom_id):
     classroom = Classroom.query.get_or_404(classroom_id)
     form = ClassroomForm(obj=classroom)
-
     if form.validate_on_submit():
-        classroom.name = (form.name.data,)
-        classroom.capacity = form.capacity.data
+        name = form.name.data
+        capacity = form.capacity.data
+
+        existing_classroom = Classroom.query.filter_by(name=name).first()
+        if existing_classroom and existing_classroom.id != classroom_id:
+            flash("Ya existe una sala con ese nombre.", "danger")
+            return render_template(EDIT_HTML, form=form, classroom=classroom)
+
+        classroom.name = name
+        classroom.capacity = capacity
 
         kanvas_db.session.commit()
         flash("Sala actualizada exitosamente", "success")
-        return redirect(url_for("classroom.show", id=classroom.id))
+        return redirect(url_for("classroom.show", classroom_id=classroom.id))
 
-    return render_template(CREATE_HTML, form=form)
+    return render_template(EDIT_HTML, form=form)
 
 
 @classroom_bp.route("/<int:classroom_id>/delete", methods=["POST"])
