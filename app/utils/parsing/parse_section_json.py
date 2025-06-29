@@ -49,7 +49,8 @@ def _parse_section_header(section_data):
     evaluation_data = section_data[JC.EVALUATION]
     _require_keys(evaluation_data, [JC.EVALUATION_TYPE, JC.TOPIC_COMBINATIONS, JC.TOPICS])
     _validate_types(
-        evaluation_data, {JC.EVALUATION_TYPE: str, JC.TOPIC_COMBINATIONS: list, JC.TOPICS: dict}
+        evaluation_data,
+        {JC.EVALUATION_TYPE: str, JC.TOPIC_COMBINATIONS: list, JC.TOPICS: dict},
     )
 
     weighing_type = _parse_weighing_type(evaluation_data[JC.EVALUATION_TYPE])
@@ -81,7 +82,8 @@ def _parse_evaluation(topic, topic_details, section):
 
     topic_def = topic_details[str(topic_id)]
     _require_keys(
-        topic_def, [JC.EVALUATION_TYPE, JC.TOPIC_VALUES, JC.TOPIC_COUNT, JC.TOPIC_MANDATORY]
+        topic_def,
+        [JC.EVALUATION_TYPE, JC.TOPIC_VALUES, JC.TOPIC_COUNT, JC.TOPIC_MANDATORY],
     )
     _validate_types(
         topic_def,

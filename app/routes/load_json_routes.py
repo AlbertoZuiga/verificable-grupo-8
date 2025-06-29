@@ -13,22 +13,23 @@ from app.models.student_section import StudentSection
 from app.models.teacher import Teacher
 from app.models.user import User
 from app.services.create_object_instances import (
-    add_objects_to_session, build_requisite_objects_from_codes)
-from app.services.database_validations import (filter_existing_by_field,
-                                               filter_existing_by_two_fields,
-                                               filter_grades)
+    add_objects_to_session,
+    build_requisite_objects_from_codes,
+)
+from app.services.database_validations import (
+    filter_existing_by_field,
+    filter_existing_by_two_fields,
+    filter_grades,
+)
 from app.utils import json_constants as JC
-from app.utils.flash_messages import (flash_invalid_grades, flash_invalid_load,
-                                      flash_successful_load)
+from app.utils.flash_messages import flash_invalid_grades, flash_invalid_load, flash_successful_load
 from app.utils.parsing.parse_classroom_json import parse_classroom_json
-from app.utils.parsing.parse_course_instance_json import \
-    parse_course_instances_json
+from app.utils.parsing.parse_course_instance_json import parse_course_instances_json
 from app.utils.parsing.parse_course_json import parse_courses_json
 from app.utils.parsing.parse_grades_json import parse_grades_json
 from app.utils.parsing.parse_section_json import parse_sections_json
 from app.utils.parsing.parse_student_json import parse_students_json
-from app.utils.parsing.parse_student_sections_json import \
-    parse_student_sections_json
+from app.utils.parsing.parse_student_sections_json import parse_student_sections_json
 from app.utils.parsing.parse_teacher_json import parse_teachers_json
 
 load_json_bp = Blueprint("load_json", __name__, url_prefix="/load_json")

@@ -4,8 +4,7 @@ from datetime import datetime
 from app.models.student import Student
 from app.models.user import User
 from app.utils import json_constants as JC
-from app.utils.validation_helpers import (validate_id_name_email_types,
-                                          validate_name_email_format)
+from app.utils.validation_helpers import validate_id_name_email_types, validate_name_email_format
 
 
 def parse_students_json(json_data):
