@@ -37,7 +37,7 @@ def add_user(section_id):
 
     if section.closed:
         flash("Esta sección está cerrada y no puede ser modificada.", "warning")
-        return redirect(url_for("section.show", id=section.id))
+        return redirect(url_for("section.show", section_id=section.id))
 
     if request.method == "POST":
         return handle_add_user_post(section_id)
@@ -75,7 +75,7 @@ def remove_user(section_id, student_id):
 
     if section.closed:
         flash("Esta sección está cerrada y no puede ser modificada.", "warning")
-        return redirect(url_for("section.show", id=section.id))
+        return redirect(url_for("section.show", section_id=section.id))
     if remove_student_from_section(section_id, student_id):
         flash("Usuario removido de la sección.", "success")
     else:

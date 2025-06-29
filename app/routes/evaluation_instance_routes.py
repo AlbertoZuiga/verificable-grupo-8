@@ -71,7 +71,9 @@ def create():
         try:
             kanvas_db.session.add(evaluation_instance)
             kanvas_db.session.commit()
-            return redirect(url_for("evaluation_instance.show", id=evaluation_instance.id))
+            return redirect(
+                url_for("evaluation_instance.show", evaluation_instance_id=evaluation_instance.id)
+            )
         except SQLAlchemyError as e:
             kanvas_db.session.rollback()
             flash(f"Error creating evaluation_instance: {e}", "danger")
@@ -117,7 +119,9 @@ def edit(evaluation_instance_id):
 
         try:
             kanvas_db.session.commit()
-            return redirect(url_for("evaluation_instance.show", id=evaluation_instance.id))
+            return redirect(
+                url_for("evaluation_instance.show", evaluation_instance_id=evaluation_instance.id)
+            )
         except SQLAlchemyError as e:
             kanvas_db.session.rollback()
             flash(f"Error updating evaluation_instance: {e}", "danger")

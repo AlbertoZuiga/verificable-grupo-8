@@ -63,7 +63,7 @@ def edit_evaluation_weights(section_id):
         try:
             kanvas_db.session.commit()
             flash("Pesos de evaluaciones actualizados correctamente", "success")
-            return redirect(url_for("section.show", id=section.id))
+            return redirect(url_for("section.show", section_id=section.id))
         except (ValueError, KeyError) as e:
             flash(f"Entrada inválida para los pesos: {e}", "danger")
             return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, id=section.id))
@@ -157,7 +157,7 @@ def delete(section_id):
             "danger",
         )
         print(f"Error deleting section: {e}")
-        return redirect(url_for("section.show", id=id))
+        return redirect(url_for("section.show", section_id=id))
 
     return redirect(url_for(INDEX_ROUTE))
 

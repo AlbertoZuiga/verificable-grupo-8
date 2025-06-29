@@ -5,7 +5,7 @@ from flask import flash, redirect, url_for
 
 def handle_closed_section(section):
     flash("Esta sección está cerrada y no puede ser modificada.", "warning")
-    return redirect(url_for("section.show", id=section.id))
+    return redirect(url_for("section.show", section_id=section.id))
 
 
 def require_section_open(get_section_func):
