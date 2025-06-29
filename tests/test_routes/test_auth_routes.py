@@ -4,8 +4,8 @@ import pytest
 from flask import url_for
 
 
-def test_successful_login(client, test_user):
-    data = {"email": test_user.email, "password": "password"}
+def test_successful_login(client, test_auth_user):
+    data = {"email": test_auth_user.email, "password": "password"}
     response = client.post(url_for("auth.login"), data=data, follow_redirects=True)
     assert response.status_code == 200
 
@@ -33,10 +33,10 @@ def test_login_missing_fields(client, data, expected_errors):
         assert error.encode() in response.data
 
 
-def test_logout(client, test_user):
+def test_logout(client, test_auth_user):
     client.post(
         url_for("auth.login"),
-        data={"email": test_user.email, "password": "password"},
+        data={"email": test_auth_user.email, "password": "password"},
     )
     response = client.get(url_for("auth.logout"), follow_redirects=True)
     assert response.status_code == 200

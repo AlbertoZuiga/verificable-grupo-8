@@ -79,8 +79,8 @@ def _redirect_to_evaluation(evaluation_instance_id):
 @grade_bp.route("/<int:evaluation_instance_id>/student/<int:student_id>", methods=["GET", "POST"])
 def assign_or_edit_grade(evaluation_instance_id, student_id):
     """Asigna o edita una calificación para un estudiante."""
-    if error := _validate_section(evaluation_instance_id):
-        return error
+    if _validate_section(evaluation_instance_id):
+        return _redirect_to_evaluation(evaluation_instance_id)
 
     instance, student = _get_evaluation_context(evaluation_instance_id, student_id)
 
@@ -102,6 +102,10 @@ def _handle_grade_submission(evaluation_instance_id, student_id):
 
     try:
         grade_value = float(grade_input)
+    except ValueError:
+        return "Nota inválida", 400
+
+    try:
         _save_grade_transaction(evaluation_instance_id, student_id, grade_value)
         return _redirect_to_evaluation(evaluation_instance_id)
     except (ValueError, SQLAlchemyError) as e:
@@ -124,8 +128,8 @@ def _render_grade_form(instance, student, evaluation_instance_id):
 @grade_bp.route("/<int:evaluation_instance_id>/delete/<int:student_id>", methods=["POST"])
 def delete_grade(evaluation_instance_id, student_id):
     """Elimina una calificación existente."""
-    if error := _validate_section(evaluation_instance_id):
-        return error
+    if _validate_section(evaluation_instance_id):
+        return _redirect_to_evaluation(evaluation_instance_id)
 
     grade_instance = _get_student_grade(evaluation_instance_id, student_id)
 

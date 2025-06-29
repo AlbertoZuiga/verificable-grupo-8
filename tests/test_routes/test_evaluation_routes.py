@@ -26,8 +26,7 @@ def test_create_evaluation_duplicate_title(client, _db, test_section):
         response = client.post(url_for("evaluation.create"), data=data)
 
         assert (
-            b"Ya existe una evaluaci\xc3\xb3n"
-            b" con ese t\xc3\xadtulo para la secci\xc3\xb3n."
+            b"Ya existe una evaluaci\xc3\xb3n" b" con ese t\xc3\xadtulo para la secci\xc3\xb3n."
         ) in response.data
         assert Evaluation.query.count() == 1
 
