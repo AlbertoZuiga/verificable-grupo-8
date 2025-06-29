@@ -10,10 +10,14 @@ from app.models.course_instance import CourseInstance, Semester
 from app.models.evaluation import Evaluation
 from app.models.evaluation_instance import EvaluationInstance
 from app.models.section import Section, WeighingType
+from app.models.student import Student
+from app.models.student_evaluation_instance import StudentEvaluationInstance
+from app.models.student_section import StudentSection
 from app.models.teacher import Teacher
 from app.models.user import User
 
 
+# 1. App & DB Setup
 @pytest.fixture(scope="session")
 def app():
     test_app = create_app(testing=True)
@@ -43,9 +47,10 @@ def runner(app):
     return app.test_cli_runner()
 
 
+# 2. Users & Roles
 @pytest.fixture
-def test_user(_db):
-    email = f"john_doe_{uuid.uuid4().hex}@example.com"
+def test_auth_user(_db):
+    email = f"auth_user_{uuid.uuid4().hex}@example.com"
     user = User(first_name="John", last_name="Doe", email=email)
     user.set_password("password")
     _db.session.add(user)
@@ -54,13 +59,42 @@ def test_user(_db):
 
 
 @pytest.fixture
-def test_teacher(_db, test_user):
-    teacher = Teacher(user_id=test_user.id)
+def test_teacher_user(_db):
+    email = f"teacher_user_{uuid.uuid4().hex}@example.com"
+    user = User(first_name="John", last_name="Doe", email=email)
+    user.set_password("password")
+    _db.session.add(user)
+    _db.session.commit()
+    return user
+
+
+@pytest.fixture
+def test_teacher(_db, test_teacher_user):
+    teacher = Teacher(user_id=test_teacher_user.id)
     _db.session.add(teacher)
     _db.session.commit()
     return teacher
 
 
+@pytest.fixture
+def test_student_user(_db):
+    email = f"student_user_{uuid.uuid4().hex}@example.com"
+    user = User(first_name="John", last_name="Doe", email=email)
+    user.set_password("password")
+    _db.session.add(user)
+    _db.session.commit()
+    return user
+
+
+@pytest.fixture
+def test_student(_db, test_student_user):
+    student = Student(user_id=test_student_user.id, university_entry_year=2025)
+    _db.session.add(student)
+    _db.session.commit()
+    return student
+
+
+# 3. Courses & Sections
 @pytest.fixture
 def test_course(_db):
     course = Course(title="Course Title", code="CODE", credits=3)
@@ -110,6 +144,7 @@ def test_section(test_open_section):
     return test_open_section
 
 
+# 4. Evaluations
 @pytest.fixture
 def test_evaluation(_db, test_open_section):
     evaluation = Evaluation(
@@ -134,3 +169,79 @@ def test_evaluation_instance(_db, test_evaluation):
     _db.session.add(evaluation_instance)
     _db.session.commit()
     return evaluation_instance
+
+
+@pytest.fixture
+def test_evaluation_closed_section(_db, test_closed_section):
+    evaluation = Evaluation(
+        title="Closed Evaluation",
+        section_id=test_closed_section.id,
+        weighing=1,
+        weighing_system=WeighingType.WEIGHT,
+    )
+    _db.session.add(evaluation)
+    _db.session.commit()
+    return evaluation
+
+
+@pytest.fixture
+def test_evaluation_instance_closed_section(_db, test_evaluation_closed_section):
+    instance = EvaluationInstance(
+        title="Closed Instance",
+        evaluation_id=test_evaluation_closed_section.id,
+        index_in_evaluation=1,
+        instance_weighing=1,
+    )
+    _db.session.add(instance)
+    _db.session.commit()
+    return instance
+
+
+# 5. Student <-> Section relations
+@pytest.fixture
+def test_student_in_section(_db, test_open_section, test_student):
+    association = StudentSection(
+        student_id=test_student.id,
+        section_id=test_open_section.id,
+    )
+    _db.session.add(association)
+    _db.session.commit()
+    _db.session.expire_all()
+    return type("Obj", (), {"student": test_student, "teacher": test_open_section.teacher})()
+
+
+@pytest.fixture
+def test_student_in_closed_section(_db, test_closed_section, test_student):
+    association = StudentSection(
+        student_id=test_student.id,
+        section_id=test_closed_section.id,
+    )
+    _db.session.add(association)
+    _db.session.commit()
+    _db.session.expire_all()
+    return type("Obj", (), {"student": test_student, "teacher": test_closed_section.teacher})()
+
+
+@pytest.fixture
+def test_student_not_in_section(_db):
+    email = f"no_section_{uuid.uuid4().hex}@example.com"
+    user = User(first_name="No", last_name="Section", email=email)
+    user.set_password("password")
+    _db.session.add(user)
+    _db.session.commit()
+
+    student = Student(user_id=user.id, university_entry_year=2025)
+    _db.session.add(student)
+    _db.session.commit()
+    return student
+
+
+# 6. Grades
+@pytest.fixture
+def test_grade(_db, test_evaluation_instance, test_student):
+    grade = StudentEvaluationInstance(
+        student_id=test_student.id, evaluation_instance_id=test_evaluation_instance.id, grade=7.0
+    )
+    _db.session.add(grade)
+    _db.session.commit()
+    return grade
