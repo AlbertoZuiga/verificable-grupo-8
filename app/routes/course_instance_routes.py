@@ -9,6 +9,7 @@ from app.models.course_instance import CourseInstance, Semester
 course_instance_bp = Blueprint("course_instance", __name__, url_prefix="/course_instances")
 
 CREATE_HTML = "course_instances/create.html"
+EDIT_HTML = "course_instances/edit.html"
 SHOW_HTML = "course_instances/show.html"
 SHOW_ROUTE = "course_instance.show"
 
@@ -48,7 +49,7 @@ def create():
         kanvas_db.session.add(new_course_instance)
         kanvas_db.session.commit()
         flash("Instancia del curso creada exitosamente.", "success")
-        return redirect(url_for(SHOW_ROUTE, id=new_course_instance.id))
+        return redirect(url_for(SHOW_ROUTE, course_instance_id=new_course_instance.id))
 
     return render_template(CREATE_HTML, form=form, courses=courses)
 
@@ -61,15 +62,26 @@ def edit(course_instance_id):
     form.course_id.choices = [(course.id, course.title) for course in courses]
 
     if form.validate_on_submit():
-        course_instance.course_id = form.course_id.data
-        course_instance.year = form.year.data
-        course_instance.semester = Semester[form.semester.data]
+        course_id = form.course_id.data
+        year = form.year.data
+        semester = Semester[form.semester.data]
+
+        existing_course_instance = CourseInstance.query.filter_by(
+            course_id=course_id, year=year, semester=semester
+        ).first()
+        if existing_course_instance and existing_course_instance.id != course_instance_id:
+            flash("Ya existe la instancia de curso.", "danger")
+            return render_template(EDIT_HTML, form=form, course_instance=course_instance)
+
+        course_instance.course_id = course_id
+        course_instance.year = year
+        course_instance.semester = semester
 
         kanvas_db.session.commit()
         flash("Instancia del curso actualizada exitosamente.", "success")
-        return redirect(url_for(SHOW_ROUTE, id=course_instance.id))
+        return redirect(url_for(SHOW_ROUTE, course_instance_id=course_instance.id))
 
-    return render_template(CREATE_HTML, form=form, courses=courses)
+    return render_template(EDIT_HTML, form=form, course_instance=course_instance)
 
 
 @course_instance_bp.route("/delete/<int:course_instance_id>", methods=["POST"])
@@ -79,9 +91,9 @@ def delete(course_instance_id):
         kanvas_db.session.delete(course_instance)
         kanvas_db.session.commit()
         flash("Instancia del curso eliminada con éxito.", "success")
-    except SQLAlchemyError as e:
+    except SQLAlchemyError:
         kanvas_db.session.rollback()
-        flash(f"Error deleting course_instance: {e}", "danger")
-        return redirect(url_for(SHOW_ROUTE, id=course_instance_id))
+        flash("Error al eliminar instancia de curso", "danger")
+        return redirect(url_for(SHOW_ROUTE, course_instance_id=course_instance_id))
 
     return redirect(url_for("course_instance.index"))

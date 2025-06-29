@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask_wtf import FlaskForm
 from wtforms import IntegerField, SelectField
-from wtforms.validators import DataRequired, NumberRange
+from wtforms.validators import AnyOf, DataRequired, NumberRange
 
 from app.models.course_instance import Semester
 
@@ -29,5 +29,11 @@ class CourseInstanceForm(FlaskForm):
     semester = SelectField(
         "Semestre",
         choices=[(member.name, member.name.capitalize()) for member in Semester],
-        validators=[DataRequired(message="El semestre es obligatorio.")],
+        validators=[
+            DataRequired(message="El semestre es obligatorio."),
+            AnyOf(
+                [member.name for member in Semester],
+                message="El semestre seleccionado no es válido.",
+            ),
+        ],
     )

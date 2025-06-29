@@ -10,6 +10,7 @@ def test_index_empty(client, _db):
     assert response.status_code == 200
     assert b"No hay salas registradas." in response.data
 
+
 def test_index_with_data(client, _db):
     """Test listar salas con registros existentes"""
     classroom1 = Classroom(name="Sala A", capacity=20)
@@ -23,6 +24,7 @@ def test_index_with_data(client, _db):
     assert b"20" in response.data
     assert b"Sala B" in response.data
 
+
 def test_show_valid_classroom(client, _db):
     """Test mostrar sala existente"""
     classroom = Classroom(name="Sala de Prueba", capacity=25)
@@ -34,23 +36,21 @@ def test_show_valid_classroom(client, _db):
     assert b"Sala de Prueba" in response.data
     assert b"25" in response.data
 
+
 def test_show_not_found(client, _db):
     """Test sala no existente"""
     response = client.get(url_for("classroom.show", classroom_id=999))
     assert response.status_code == 404
+
 
 def test_create_classroom_success(client, _db):
     """Test creación exitosa de sala"""
     with client:
         form_data = {"name": "Nueva Sala", "capacity": "40"}
 
-        response = client.post(
-            url_for("classroom.create"), data=form_data, follow_redirects=True
-        )
+        response = client.post(url_for("classroom.create"), data=form_data, follow_redirects=True)
 
-        assert response.request.path == url_for(
-            "classroom.show", classroom_id=1, _external=False
-        )
+        assert response.request.path == url_for("classroom.show", classroom_id=1, _external=False)
 
         messages = get_flashed_messages()
         assert "Sala creada exitosamente" in messages
@@ -58,6 +58,7 @@ def test_create_classroom_success(client, _db):
         classroom = Classroom.query.first()
         assert classroom.name == "Nueva Sala"
         assert classroom.capacity == 40
+
 
 def test_create_duplicate_name(client, _db):
     """Test crear sala con nombre duplicado"""
@@ -73,6 +74,7 @@ def test_create_duplicate_name(client, _db):
 
     classrooms = Classroom.query.all()
     assert len(classrooms) == 1
+
 
 def test_edit_classroom_success(client, _db):
     """Test edición exitosa de sala"""
@@ -103,12 +105,14 @@ def test_edit_classroom_success(client, _db):
         assert updated_classroom.name == "Sala Modificada"
         assert updated_classroom.capacity == 30
 
+
 def test_edit_non_existent(client, _db):
     """Test editar sala inexistente"""
     response = client.post(
         url_for("classroom.edit", classroom_id=999), data={"name": "Invalid", "capacity": 10}
     )
     assert response.status_code == 404
+
 
 def test_delete_classroom(client, _db):
     """Test eliminación de sala"""
@@ -129,10 +133,12 @@ def test_delete_classroom(client, _db):
 
         assert Classroom.query.get(classroom_id) is None
 
+
 def test_delete_non_existent(client, _db):
     """Test eliminar sala inexistente"""
     response = client.post(url_for("classroom.delete", classroom_id=999))
     assert response.status_code == 404
+
 
 @pytest.mark.parametrize(
     "form_data, expected_error",
