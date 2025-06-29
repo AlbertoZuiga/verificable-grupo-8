@@ -32,8 +32,8 @@
   <div class="list-group mt-3 shadow-sm rounded-3">
     {% for requisite in course.prerequisites %}
       <div class="list-group-item d-flex justify-content-between align-items-center">
-        <a href="{{ url_for('course.show', id=requisite.course_requisite.id) }}" class="text-decoration-none fw-bold text-dark"> {{ requisite.course_requisite.title }} </a>
-        <a href="{{ url_for('requisite.delete', id=requisite.id) }}" class="btn btn-sm btn-outline-danger">❌ Eliminar</a>
+        <a href="{{ url_for('course.show', course_id=requisite.course_requisite.id) }}" class="text-decoration-none fw-bold text-dark"> {{ requisite.course_requisite.title }} </a>
+        <a href="{{ url_for('requisite.delete', requisite_id=requisite.id) }}" class="btn btn-sm btn-outline-danger">❌ Eliminar</a>
       </div>
     {% else %}
       <p class="text-muted">El curso no tiene requisitos.</p>
@@ -62,7 +62,7 @@
     {% for instance in course.instances %}
       <div class="list-group-item d-flex justify-content-between align-items-center">
         <span><strong>{{ instance.year }}</strong> - {{ instance.semester }}</span>
-        <a href="{{ url_for('course_instance.show', id=instance.id) }}" class="btn btn-sm btn-primary">Ver</a>
+        <a href="{{ url_for('course_instance.show', course_instance_id=instance.id) }}" class="btn btn-sm btn-primary">Ver</a>
       </div>
     {% else %}
       <p class="text-muted">No hay instancias disponibles.</p>

@@ -13,6 +13,7 @@ from app.services.validations import validate_section_for_evaluation
 grade_bp = Blueprint("grades", __name__, url_prefix="/grades")
 
 
+@grade_bp.route("/<int:evaluation_instance_id>/student/<int:student_id>", methods=["GET", "POST"])
 def assign_or_edit_grade(evaluation_instance_id, student_id):
     evaluation_instance, student = get_evaluation_instance_and_student(
         evaluation_instance_id, student_id
@@ -41,7 +42,7 @@ def handle_post_request(evaluation_instance_id, student_id):
     try:
         grade_value = float(grade_input)
         save_student_grade(evaluation_instance_id, student_id, grade_value)
-        return redirect(url_for("evaluation_instance.show", id=evaluation_instance_id))
+        return redirect(url_for("evaluation_instance.show", evaluation_instance_id=evaluation_instance_id))
     except (ValueError, SQLAlchemyError) as e:
         kanvas_db.session.rollback()
         print(f"Error al guardar la nota: {e}")
@@ -76,7 +77,7 @@ def delete_grade(evaluation_instance_id, student_id):
     try:
         kanvas_db.session.delete(grade_instance)
         kanvas_db.session.commit()
-        return redirect(url_for("evaluation_instance.show", id=evaluation_instance_id))
+        return redirect(url_for("evaluation_instance.show", evaluation_instance_id=evaluation_instance_id))
     except SQLAlchemyError as e:
         kanvas_db.session.rollback()
         print(f"Error al eliminar la nota: {e}")

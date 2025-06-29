@@ -10,7 +10,7 @@ from app.utils import json_constants as JC
 MAX_FILE_SIZE = 2 * 1024 * 1024
 
 
-def validate_file_size(_):
+def validate_file_size(_form, _field):
     if request.content_length > MAX_FILE_SIZE:
         raise ValidationError("El archivo excede el tamaño máximo permitido (2MB).")
 

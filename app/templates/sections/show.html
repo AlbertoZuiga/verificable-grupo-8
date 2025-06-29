@@ -23,9 +23,9 @@
 
       <div class="btn-group" role="group">
         {% if not section.closed %}
-          <a href="{{ url_for('section.edit', id=section.id) }}" class="btn btn-outline-warning">✏ Editar</a>
+          <a href="{{ url_for('section.edit', section_id=section.id) }}" class="btn btn-outline-warning">✏ Editar</a>
           
-          <form action="{{ url_for('section.delete', id=section.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta sección?');">
+          <form action="{{ url_for('section.delete', section_id=section.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta sección?');">
             <button type="submit" class="btn btn-outline-danger">🗑 Eliminar</button>
           </form>
         {% endif %}
@@ -45,7 +45,7 @@
 
   <h3 class="mt-5 text-primary">Evaluaciones</h3>
 
-  <a href="{{ url_for('section.edit_evaluation_weights', id=section.id) }}" class="btn btn-sm btn-outline-success"> Editar pesos de evaluaciones</a>
+  <a href="{{ url_for('section.edit_evaluation_weights', section_id=section.id) }}" class="btn btn-sm btn-outline-success"> Editar pesos de evaluaciones</a>
   
   <div class="list-group mt-3 shadow-sm rounded-3">
     {% for evaluation in section.evaluations %}

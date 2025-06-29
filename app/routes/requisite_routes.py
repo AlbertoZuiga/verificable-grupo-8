@@ -18,14 +18,14 @@ def create():
 
     if not course_id or not requisite_id:
         flash("Debe seleccionar un curso y su requisito.", "danger")
-        return redirect(url_for(SHOW_ROUTE, id=course_id))
+        return redirect(url_for(SHOW_ROUTE, course_id=course_id))
 
     if Requisite.query.filter_by(course_id=requisite_id, course_requisite_id=course_id).first():
         flash(
             "No se puede asignar como requisito un curso que depende del curso actual.",
             "danger",
         )
-        return redirect(url_for(SHOW_ROUTE, id=course_id))
+        return redirect(url_for(SHOW_ROUTE, course_id=course_id))
 
     course = Course.query.get_or_404(course_id)
     new_requisite = Course.query.get_or_404(requisite_id)
@@ -35,7 +35,7 @@ def create():
             "No se puede asignar como requisito un curso que depende del curso actual.",
             "danger",
         )
-        return redirect(url_for(SHOW_ROUTE, id=course_id))
+        return redirect(url_for(SHOW_ROUTE, course_id=course_id))
 
     new_requisite = Requisite(course_id=course_id, course_requisite_id=requisite_id)
 
@@ -47,7 +47,7 @@ def create():
         kanvas_db.session.rollback()
         print(f"Error al crear el requisito: {e}")
 
-    return redirect(url_for(SHOW_ROUTE, id=course_id))
+    return redirect(url_for(SHOW_ROUTE, course_id=course_id))
 
 
 @requisite_bp.route("/delete/<int:requisite_id>")
@@ -63,4 +63,4 @@ def delete(requisite_id):
         kanvas_db.session.rollback()
         print(f"Error al eliminar el requisito: {e}")
 
-    return redirect(url_for(SHOW_ROUTE, id=course_id))
+    return redirect(url_for(SHOW_ROUTE, course_id=course_id))

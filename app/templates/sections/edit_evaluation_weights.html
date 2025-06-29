@@ -24,7 +24,7 @@
             </div>
         {% endfor %}
         <div class="d-flex gap-2 mt-4">
-            <a href="{{ url_for('section.show', id=section.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver evaluación {{ section.title }}"> Cancelar </a>
+            <a href="{{ url_for('section.show', section_id=section.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver evaluación {{ section.title }}"> Cancelar </a>
             <button type="submit" class="btn btn-primary">Guardar cambios</button>
         </div>
     </form>

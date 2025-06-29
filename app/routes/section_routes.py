@@ -43,7 +43,7 @@ def edit_evaluation_weights(section_id):
                 weights[evaluation.id] = float(request.form[key])
         except (ValueError, KeyError) as e:
             flash(f"Entrada inválida para los pesos: {e}", "danger")
-            return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, id=section.id))
+            return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, section_id=section.id))
 
         # Validación para evaluaciones con porcentajes
         if section.weighing_type == WeighingType.PERCENTAGE:
@@ -54,7 +54,7 @@ def edit_evaluation_weights(section_id):
                     debe ser 100 para las evaluaciones ponderadas.",
                     "danger",
                 )
-                return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, id=section.id))
+                return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, section_id=section.id))
 
         # Asignar pesos nuevos
         for evaluation in section.evaluations:
@@ -66,7 +66,7 @@ def edit_evaluation_weights(section_id):
             return redirect(url_for("section.show", section_id=section.id))
         except (ValueError, KeyError) as e:
             flash(f"Entrada inválida para los pesos: {e}", "danger")
-            return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, id=section.id))
+            return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, section_id=section.id))
 
     return render_template(
         "sections/edit_evaluation_weights.html",

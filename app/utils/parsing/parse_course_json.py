@@ -105,7 +105,7 @@ def detect_cycle(graph):
     def dfs(node):
         visited.add(node)
         recursion_stack.add(node)
-        for neighbor in graph[node]:
+        for neighbor in graph.get(node, []):
             if neighbor not in visited:
                 if dfs(neighbor):
                     return True
