@@ -196,8 +196,8 @@ def test_delete_closed_section(client, test_closed_section):
 # ---------------------------
 # Pruebas para edit_evaluation_weights()
 # ---------------------------
-def test_edit_weights_success(client, test_open_section, test_evaluation):
-    data = {f"evaluation_{test_evaluation.id}": 50.0}
+def test_edit_weights_success(client, test_open_section, _test_evaluation):
+    data = {f"evaluation_{_test_evaluation.id}": 50.0}
 
     response = client.post(
         url_for("section.edit_evaluation_weights", section_id=test_open_section.id),
@@ -208,7 +208,7 @@ def test_edit_weights_success(client, test_open_section, test_evaluation):
     assert b"Pesos de evaluaciones actualizados correctamente" in response.data
 
     # Verificar cambio en la base de datos
-    updated_evaluation = Evaluation.query.get(test_evaluation.id)
+    updated_evaluation = Evaluation.query.get(_test_evaluation.id)
     assert abs(updated_evaluation.weighing - 50.0) < 1e-6
 
 
@@ -224,12 +224,12 @@ def test_edit_weights_invalid_input(client, test_open_section):
     assert "Entrada inválida para los pesos".encode("utf-8") in response.data
 
 
-def test_edit_weights_percentage_invalid(client, test_open_section, test_evaluation):
+def test_edit_weights_percentage_invalid(client, test_open_section, _test_evaluation):
     # Cambiar a tipo porcentaje
     test_open_section.weighing_type = WeighingType.PERCENTAGE
     kanvas_db.session.commit()
 
-    data = {f"evaluation_{test_evaluation.id}": 50.0}  # Suma != 100
+    data = {f"evaluation_{_test_evaluation.id}": 50.0}  # Suma != 100
 
     response = client.post(
         url_for("section.edit_evaluation_weights", section_id=test_open_section.id),
@@ -245,14 +245,14 @@ def test_edit_weights_percentage_invalid(client, test_open_section, test_evaluat
 def test_close_section_success(
     client,
     test_open_section,
-    test_evaluation,
+    _test_evaluation,
     test_evaluation_instance,
-    test_student_in_section,
+    _test_student_in_section,
 ):
     with client:
         # Crear calificación para el estudiante
         grade = StudentEvaluationInstance(
-            student_id=test_student_in_section.student.id,
+            student_id=_test_student_in_section.student.id,
             evaluation_instance_id=test_evaluation_instance.id,
             grade=7.0,
         )
@@ -271,7 +271,7 @@ def test_close_section_success(
 
         # Verificar nota final
         section_grade = SectionGrade.query.filter_by(
-            section_id=section.id, student_id=test_student_in_section.student.id
+            section_id=section.id, student_id=_test_student_in_section.student.id
         ).first()
         assert section_grade is not None
         assert abs(section_grade.grade - 7.0) < 1e-6

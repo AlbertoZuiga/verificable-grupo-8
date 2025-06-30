@@ -6,11 +6,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.models.student_evaluation_instance import StudentEvaluationInstance
 
 
-def test_assign_new_grade_success(client, test_student_in_section, test_evaluation_instance):
+def test_assign_new_grade_success(client, _test_student_in_section, test_evaluation_instance):
     url = url_for(
         "grades.assign_or_edit_grade",
         evaluation_instance_id=test_evaluation_instance.id,
-        student_id=test_student_in_section.student.id,
+        student_id=_test_student_in_section.student.id,
     )
 
     response = client.post(url, data={"grade": "8.5"})
@@ -18,13 +18,13 @@ def test_assign_new_grade_success(client, test_student_in_section, test_evaluati
     assert response.status_code == 302
     grade = StudentEvaluationInstance.query.filter_by(
         evaluation_instance_id=test_evaluation_instance.id,
-        student_id=test_student_in_section.student.id,
+        student_id=_test_student_in_section.student.id,
     ).first()
     assert grade is not None
     assert abs(grade.grade - 8.5) < 1e-6
 
 
-def test_update_existing_grade(client, test_grade, test_student_in_section):
+def test_update_existing_grade(client, test_grade, _test_student_in_section):
     url = url_for(
         "grades.assign_or_edit_grade",
         evaluation_instance_id=test_grade.evaluation_instance_id,
@@ -78,11 +78,11 @@ def test_assign_grade_invalid_student(
     assert "Estudiante no pertenece" in response.data.decode()
 
 
-def test_assign_grade_invalid_input(client, test_student_in_section, test_evaluation_instance):
+def test_assign_grade_invalid_input(client, _test_student_in_section, test_evaluation_instance):
     url = url_for(
         "grades.assign_or_edit_grade",
         evaluation_instance_id=test_evaluation_instance.id,
-        student_id=test_student_in_section.student.id,
+        student_id=_test_student_in_section.student.id,
     )
 
     response_empty = client.post(url, data={"grade": ""})
@@ -94,14 +94,14 @@ def test_assign_grade_invalid_input(client, test_student_in_section, test_evalua
 
 @patch("app.routes.grade_routes._save_grade_transaction")
 def test_grade_transaction_error(
-    mock_save, client, test_student_in_section, test_evaluation_instance
+    mock_save, client, _test_student_in_section, test_evaluation_instance
 ):
     mock_save.side_effect = SQLAlchemyError("DB error")
 
     url = url_for(
         "grades.assign_or_edit_grade",
         evaluation_instance_id=test_evaluation_instance.id,
-        student_id=test_student_in_section.student.id,
+        student_id=_test_student_in_section.student.id,
     )
 
     response = client.post(url, data={"grade": "7.5"})

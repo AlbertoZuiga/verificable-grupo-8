@@ -7,8 +7,8 @@ from app.models.evaluation_instance import EvaluationInstance
 from app.models.section import WeighingType
 
 
-def test_create_success(client, _db, test_evaluation):
-    data = {"title": "Final Exam", "optional": False, "evaluation_id": test_evaluation.id}
+def test_create_success(client, _db, _test_evaluation):
+    data = {"title": "Final Exam", "optional": False, "evaluation_id": _test_evaluation.id}
 
     response = client.post(url_for("evaluation_instance.create"), data=data, follow_redirects=True)
 
@@ -17,12 +17,12 @@ def test_create_success(client, _db, test_evaluation):
     assert EvaluationInstance.query.count() == 1
 
 
-def test_create_duplicate_title(client, _db, test_evaluation, test_evaluation_instance):
+def test_create_duplicate_title(client, _db, _test_evaluation, test_evaluation_instance):
     with client:
         data = {
             "title": test_evaluation_instance.title,
             "optional": True,
-            "evaluation_id": test_evaluation.id,
+            "evaluation_id": _test_evaluation.id,
         }
 
         _response = client.post(url_for("evaluation_instance.create"), data=data)
@@ -32,11 +32,11 @@ def test_create_duplicate_title(client, _db, test_evaluation, test_evaluation_in
         assert EvaluationInstance.query.count() == 1
 
 
-def test_create_db_error(client, _db, test_evaluation, mocker):
+def test_create_db_error(client, _db, _test_evaluation, mocker):
     with client:
         mocker.patch.object(_db.session, "commit", side_effect=SQLAlchemyError("DB error"))
 
-        data = {"title": "Final Exam", "optional": False, "evaluation_id": test_evaluation.id}
+        data = {"title": "Final Exam", "optional": False, "evaluation_id": _test_evaluation.id}
 
         _response = client.post(url_for("evaluation_instance.create"), data=data)
         messages = get_flashed_messages()
@@ -90,17 +90,17 @@ def test_edit_closed_section(client, _db, test_closed_section):
     )
 
 
-def test_edit_duplicate_title(client, _db, test_evaluation):
+def test_edit_duplicate_title(client, _db, _test_evaluation):
     with client:
         instance1 = EvaluationInstance(
             title="Instance 1",
-            evaluation_id=test_evaluation.id,
+            evaluation_id=_test_evaluation.id,
             index_in_evaluation=1,
             instance_weighing=1,
         )
         instance2 = EvaluationInstance(
             title="Instance 2",
-            evaluation_id=test_evaluation.id,
+            evaluation_id=_test_evaluation.id,
             index_in_evaluation=2,
             instance_weighing=1,
         )
@@ -110,7 +110,7 @@ def test_edit_duplicate_title(client, _db, test_evaluation):
         data = {
             "title": instance2.title,
             "optional": True,
-            "evaluation_id": test_evaluation.id,
+            "evaluation_id": _test_evaluation.id,
         }
 
         url = url_for("evaluation_instance.edit", evaluation_instance_id=instance1.id)

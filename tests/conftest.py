@@ -94,6 +94,24 @@ def test_student(_db, test_student_user):
     return student
 
 
+@pytest.fixture(scope="function")
+def test_student_user2(_db):
+    email = f"student_user_2_{uuid.uuid4().hex}@example.com"
+    user = User(first_name="John", last_name="Doe", email=email)
+    user.set_password("password")
+    _db.session.add(user)
+    _db.session.commit()
+    return user
+
+
+@pytest.fixture(scope="function")
+def test_student2(_db, test_student_user2):
+    student = Student(user_id=test_student_user2.id, university_entry_year=2025)
+    _db.session.add(student)
+    _db.session.commit()
+    return student
+
+
 # 3. Courses & Sections
 @pytest.fixture(scope="function")
 def test_course(_db):
@@ -162,7 +180,7 @@ def test_section(test_open_section):
 
 # 4. Evaluations
 @pytest.fixture(scope="function")
-def test_evaluation(_db, test_open_section):
+def _test_evaluation(_db, test_open_section):
     evaluation = Evaluation(
         title="Math Exam",
         section_id=test_open_section.id,
@@ -175,10 +193,10 @@ def test_evaluation(_db, test_open_section):
 
 
 @pytest.fixture(scope="function")
-def test_evaluation_instance(_db, test_evaluation):
+def test_evaluation_instance(_db, _test_evaluation):
     evaluation_instance = EvaluationInstance(
         title="Midterm",
-        evaluation_id=test_evaluation.id,
+        evaluation_id=_test_evaluation.id,
         index_in_evaluation=1,
         instance_weighing=1,
     )
@@ -215,7 +233,7 @@ def test_evaluation_instance_closed_section(_db, test_evaluation_closed_section)
 
 # 5. Student <-> Section relations
 @pytest.fixture(scope="function")
-def test_student_in_section(_db, test_open_section, test_student):
+def _test_student_in_section(_db, test_open_section, test_student):
     association = StudentSection(
         student_id=test_student.id,
         section_id=test_open_section.id,
