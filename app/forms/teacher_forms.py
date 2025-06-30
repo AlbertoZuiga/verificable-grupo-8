@@ -1,33 +1,69 @@
+from datetime import datetime
+
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, ValidationError
+from wtforms.validators import DataRequired, Email, Length, NoneOf
 
-from app.models.user import User
+current_year = datetime.now().year
 
 
 class TeacherCreateForm(FlaskForm):
-    first_name = StringField("Nombre", validators=[DataRequired(), Length(max=60)])
-    last_name = StringField("Apellido", validators=[DataRequired(), Length(max=60)])
-    email = StringField("Correo electrónico", validators=[DataRequired(), Email(), Length(max=60)])
-    password = PasswordField("Contraseña", validators=[DataRequired()])
-    submit = SubmitField("💾 Guardar")
-
-    def validate_email(self, email):
-        if User.query.filter_by(email=email.data).first():
-            raise ValidationError("El correo electrónico ya está registrado.")
+    first_name = StringField(
+        "Nombre",
+        validators=[
+            DataRequired("Nombre debe estar presente"),
+            Length(max=60, message="Nombre debe tener maximo 60 caracteres"),
+        ],
+    )
+    last_name = StringField(
+        "Apellido",
+        validators=[
+            DataRequired("Apellido debe estar presente"),
+            Length(max=60, message="Apellido debe tener maximo 60 caracteres"),
+        ],
+    )
+    email = StringField(
+        "Correo electrónico",
+        validators=[
+            DataRequired("Correo debe estar presente."),
+            Email(),
+            Length(max=60, message="Correo debe tener maximo 60 caracteres"),
+            NoneOf([], message="Correo ya esta registrado por otro usuario."),
+        ],
+    )
+    password = PasswordField(
+        "Contraseña",
+        validators=[DataRequired("Contraseña debe estar presente")],
+    )
+    submit = SubmitField("Guardar")
 
 
 class TeacherEditForm(FlaskForm):
-    first_name = StringField("Nombre", validators=[DataRequired(), Length(max=60)])
-    last_name = StringField("Apellido", validators=[DataRequired(), Length(max=60)])
-    email = StringField("Correo electrónico", validators=[DataRequired(), Email(), Length(max=60)])
-    submit = SubmitField("💾 Guardar")
+    first_name = StringField(
+        "Nombre",
+        validators=[
+            DataRequired("Nombre debe estar presente"),
+            Length(max=60, message="Nombre debe tener maximo 60 caracteres"),
+        ],
+    )
+    last_name = StringField(
+        "Apellido",
+        validators=[
+            DataRequired("Apellido debe estar presente"),
+            Length(max=60, message="Apellido debe tener maximo 60 caracteres"),
+        ],
+    )
+    email = StringField(
+        "Correo electrónico",
+        validators=[
+            DataRequired("Correo debe estar presente."),
+            Email(),
+            Length(max=60, message="Correo debe tener maximo 60 caracteres"),
+            NoneOf([], message="Correo ya esta registrado por otro usuario."),
+        ],
+    )
+    submit = SubmitField("Guardar")
 
     def __init__(self, original_email, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.original_email = original_email
-
-    def validate_email(self, email):
-        if email.data != self.original_email:
-            if User.query.filter_by(email=email.data).first():
-                raise ValidationError("El correo electrónico ya está registrado por otro usuario.")

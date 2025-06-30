@@ -77,6 +77,24 @@ def test_teacher(_db, test_teacher_user):
 
 
 @pytest.fixture(scope="function")
+def test_teacher_user2(_db):
+    email = f"teacher_user_2_{uuid.uuid4().hex}@example.com"
+    user = User(first_name="John", last_name="Doe", email=email)
+    user.set_password("password")
+    _db.session.add(user)
+    _db.session.commit()
+    return user
+
+
+@pytest.fixture(scope="function")
+def test_teacher2(_db, test_teacher_user2):
+    teacher = Teacher(user_id=test_teacher_user2.id)
+    _db.session.add(teacher)
+    _db.session.commit()
+    return teacher
+
+
+@pytest.fixture(scope="function")
 def test_student_user(_db):
     email = f"student_user_{uuid.uuid4().hex}@example.com"
     user = User(first_name="John", last_name="Doe", email=email)
