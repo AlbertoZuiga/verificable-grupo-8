@@ -128,11 +128,7 @@ def test_create_section_success(client, test_course_instance, test_teacher):
     ],
 )
 def test_create_section_invalid_inputs(
-    client,
-    test_course_instance,
-    test_teacher,
-    form_data,
-    expected_error
+    client, test_course_instance, test_teacher, form_data, expected_error
 ):
     form_data["course_instance_id"] = form_data.get("course_instance_id", test_course_instance.id)
     form_data["teacher_id"] = form_data.get("teacher_id", test_teacher.id)

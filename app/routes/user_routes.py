@@ -1,12 +1,21 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
+from wtforms.validators import NoneOf
 
 from app.extensions import kanvas_db
-from app.forms.user_forms import EditUserForm, UserForm
+from app.forms.user_forms import CreateUserForm, EditUserForm
 from app.models.user import User
+from app.services.user_service import create_user_from_form
 
 user_bp = Blueprint("user", __name__, url_prefix="/users")
 
 INDEX_ROUTE = "user.index"
+
+
+def populate_form_choices(form, original_email=None):
+    existing_emails = [user.email for user in User.query.all() if user.email != original_email]
+    for v in form.email.validators:
+        if isinstance(v, NoneOf):
+            v.values = existing_emails
 
 
 @user_bp.route("/")
@@ -23,19 +32,14 @@ def show(user_id):
 
 @user_bp.route("/create", methods=["GET", "POST"])
 def create():
-    form = UserForm()
+    form = CreateUserForm()
+    populate_form_choices(form)
+
     if form.validate_on_submit():
-        email = form.email.data
+        new_user = create_user_from_form(form=form)
 
-        if User.query.filter_by(email=email).first():
-            flash("Ya existe un usuario con ese correo.", "danger")
-            return render_template("users/create.html", form=form)
-
-        new_user = User(first_name=form.first_name.data, last_name=form.last_name.data, email=email)
-        new_user.set_password(form.password.data)
-        kanvas_db.session.add(new_user)
-        kanvas_db.session.commit()
-        return redirect(url_for(INDEX_ROUTE))
+        flash("Usuario creado correctamente.", "success")
+        return redirect(url_for("user.show", user_id=new_user.id))
     return render_template("users/create.html", form=form)
 
 
@@ -43,17 +47,16 @@ def create():
 def edit(user_id):
     user = User.query.get_or_404(user_id)
     form = EditUserForm(obj=user)
+    populate_form_choices(form)
 
     if form.validate_on_submit():
-        email = form.email.data
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user and existing_user.id != user_id:
-            flash("Ya existe un usuario con ese correo.", "danger")
-            return render_template("users/edit.html", form=form, user=user)
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        user.email = form.email.data
 
-        form.populate_obj(user)
         kanvas_db.session.commit()
-        return redirect(url_for(INDEX_ROUTE))
+        flash("Usuario actualizado correctamente.", "success")
+        return redirect(url_for("user.show", user_id=user.id))
 
     return render_template("users/edit.html", form=form, user=user)
 

@@ -2,7 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, url_for
 from wtforms.validators import NoneOf
 
 from app.extensions import kanvas_db
-from app.forms.student_forms import StudentCreateForm, StudentEditForm
+from app.forms.student_forms import CreateStudentForm, EditStudentForm
 from app.models.student import Student
 from app.models.user import User
 from app.services.user_service import create_user_from_form
@@ -33,7 +33,7 @@ def show(student_id):
 
 @student_bp.route("/create", methods=["GET", "POST"])
 def create():
-    form = StudentCreateForm()
+    form = CreateStudentForm()
     populate_form_choices(form)
 
     if form.validate_on_submit():
@@ -44,6 +44,7 @@ def create():
         )
         kanvas_db.session.add(new_student)
         kanvas_db.session.commit()
+        flash("Estudiante creado correctamente", "success")
         return redirect(url_for("student.show", student_id=new_student.id))
     return render_template("students/create.html", form=form)
 
@@ -53,7 +54,7 @@ def edit(student_id):
     student = Student.query.get_or_404(student_id)
     user = student.user
 
-    form = StudentEditForm(
+    form = EditStudentForm(
         original_email=user.email,
         university_entry_year=student.university_entry_year,
         obj=user,
@@ -68,7 +69,7 @@ def edit(student_id):
 
         kanvas_db.session.commit()
         flash("Estudiante actualizado correctamente.")
-        return redirect(url_for(INDEX_ROUTE))
+        return redirect(url_for("student.show", student_id=student_id))
 
     return render_template("students/edit.html", form=form, student=student)
 

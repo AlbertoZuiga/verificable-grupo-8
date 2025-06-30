@@ -9,7 +9,7 @@ from app.forms.shared_fields import SharedUserFields
 current_year = datetime.now().year
 
 
-class TeacherCreateForm(FlaskForm, SharedUserFields):
+class CreateTeacherForm(FlaskForm, SharedUserFields):
     password = PasswordField(
         "Contraseña",
         validators=[DataRequired("Contraseña debe estar presente")],
@@ -17,7 +17,7 @@ class TeacherCreateForm(FlaskForm, SharedUserFields):
     submit = SubmitField("Guardar")
 
 
-class TeacherEditForm(FlaskForm, SharedUserFields):
+class EditTeacherForm(FlaskForm, SharedUserFields):
     submit = SubmitField("Guardar")
 
     def __init__(self, original_email, *args, **kwargs):

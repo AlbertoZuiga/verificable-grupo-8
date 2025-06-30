@@ -9,7 +9,7 @@ from app.forms.shared_fields import SharedUserFields
 current_year = datetime.now().year
 
 
-class StudentCreateForm(FlaskForm, SharedUserFields):
+class CreateStudentForm(FlaskForm, SharedUserFields):
     university_entry_year = IntegerField(
         "Año de ingreso",
         validators=[
@@ -28,7 +28,7 @@ class StudentCreateForm(FlaskForm, SharedUserFields):
     submit = SubmitField("Guardar")
 
 
-class StudentEditForm(FlaskForm, SharedUserFields):
+class EditStudentForm(FlaskForm, SharedUserFields):
     university_entry_year = IntegerField(
         "Año de ingreso",
         validators=[

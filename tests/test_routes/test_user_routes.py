@@ -1,15 +1,12 @@
-import pytest
 from flask import url_for
-from sqlalchemy.exc import IntegrityError
 
 import tests.utils.user_routes_common as common
-from app.models.teacher import Teacher
 from app.models.user import User
 
 # Configuración específica para profesores
-ENDPOINT = "teacher"
-ENTITY_ID_NAME = "teacher_id"
-LIST_EMPTY_MSG = b"No hay profesores disponibles."
+ENDPOINT = "user"
+ENTITY_ID_NAME = "user_id"
+LIST_EMPTY_MSG = b"No hay usuarios disponibles."
 
 
 def extract_form_data(response):
@@ -46,12 +43,6 @@ def test_create_teacher_success(client, _db):
     response = client.post(url_for("teacher.create"), data=data, follow_redirects=True)
     assert response.status_code == 200
     assert "Ana García".encode("utf-8") in response.data
-
-    # Verificar creación en cascada de User
-    teacher = Teacher.query.filter_by(
-        user=User.query.filter_by(email=data["email"]).first()
-    ).first()
-    assert teacher is not None
 
 
 def test_create_duplicate_email(client, test_teacher_user):
@@ -115,19 +106,11 @@ def test_edit_preserve_original_data(client, test_teacher):
 
 # ---- Pruebas para delete() ----
 def test_delete_teacher_success(client, test_teacher):
-    common.common_test_delete_success(client, ENDPOINT, ENTITY_ID_NAME, test_teacher.id, Teacher)
+    common.common_test_delete_success(client, ENDPOINT, ENTITY_ID_NAME, test_teacher.id, User)
 
 
 def test_delete_nonexistent_teacher(client, _db):
     common.common_test_delete_nonexistent(client, ENDPOINT, ENTITY_ID_NAME)
-
-
-# ---- Pruebas de integridad ----
-def test_orphan_user_creation_prevention(_db):
-    with pytest.raises(IntegrityError):
-        teacher = Teacher()
-        _db.session.add(teacher)
-        _db.session.commit()
 
 
 # ---- Pruebas de regresión ----

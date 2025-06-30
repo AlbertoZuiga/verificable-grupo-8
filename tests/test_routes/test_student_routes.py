@@ -101,12 +101,9 @@ def test_edit_student_success(client, test_student):
         "entity_id_value": test_student.id,
         "data": data,
         "entity": test_student,
-        "extra_assertions": extra_assertions
+        "extra_assertions": extra_assertions,
     }
-    common.common_test_edit_success(
-        client,
-        edit_context
-    )
+    common.common_test_edit_success(client, edit_context)
 
 
 def test_edit_duplicate_email(client, test_student, test_student2):
@@ -123,24 +120,20 @@ def test_edit_duplicate_email(client, test_student, test_student2):
         "entity_id_value": test_student.id,
         "data": data,
         "entity": test_student,
-        "other_entity": test_student2
+        "other_entity": test_student2,
     }
-    common.common_test_edit_duplicate_email(
-        client, edit_context
-    )
+    common.common_test_edit_duplicate_email(client, edit_context)
 
 
 def test_edit_preserve_original_data(client, test_student):
-    edit_context={
+    edit_context = {
         "endpoint": ENDPOINT,
         "entity_id_name": ENTITY_ID_NAME,
         "entity_id_value": test_student.id,
         "entity": test_student,
-        "extract_form_data": extract_form_data
+        "extract_form_data": extract_form_data,
     }
-    common.common_test_edit_preserve_original_data(
-        client, edit_context
-    )
+    common.common_test_edit_preserve_original_data(client, edit_context)
 
 
 # ---- Pruebas para delete() ----
@@ -174,8 +167,6 @@ def test_edit_without_email_change(client, test_student):
         "entity_id_name": ENTITY_ID_NAME,
         "entity_id_value": test_student.id,
         "entity": test_student,
-        "data": data
+        "data": data,
     }
-    common.common_test_edit_without_email_change(
-        client, edit_context
-    )
+    common.common_test_edit_without_email_change(client, edit_context)
