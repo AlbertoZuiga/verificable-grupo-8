@@ -1,5 +1,6 @@
 from wtforms import StringField
-from wtforms.validators import DataRequired, Length, Email, NoneOf
+from wtforms.validators import DataRequired, Email, Length, NoneOf
+
 
 class SharedUserFields:
     first_name = StringField(

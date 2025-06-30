@@ -21,7 +21,8 @@ def _get_evaluation_context(evaluation_instance_id, student_id=None):
 
     if student_id:
         student = next(
-            (s for s in instance.evaluation.section.students if s.id == student_id), None
+            (s for s in instance.evaluation.section.students if s.id == student_id),
+            None,
         )
         return instance, student
 

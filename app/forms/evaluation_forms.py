@@ -27,7 +27,10 @@ class EvaluationForm(FlaskForm):
         choices=[(type.name, type.value) for type in WeighingType],
         validators=[
             DataRequired(message="Debes seleccionar un sistema de ponderación."),
-            AnyOf([type.name for type in WeighingType], message="Sistema de ponderación inválido."),
+            AnyOf(
+                [type.name for type in WeighingType],
+                message="Sistema de ponderación inválido.",
+            ),
         ],
     )
     submit = SubmitField("💾 Guardar Cambios")

@@ -54,7 +54,9 @@ def edit(student_id):
     user = student.user
 
     form = StudentEditForm(
-        original_email=user.email, university_entry_year=student.university_entry_year, obj=user
+        original_email=user.email,
+        university_entry_year=student.university_entry_year,
+        obj=user,
     )
     populate_form_choices(form, original_email=user.email)
 

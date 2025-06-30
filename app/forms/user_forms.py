@@ -8,18 +8,27 @@ class UserForm(FlaskForm):
         "Nombre",
         validators=[
             DataRequired("Nombre debe estar presente"),
-            Length(min=2, max=60, message="Nombre debe tener minimo 2 caracteres y maximo 60"),
+            Length(
+                min=2,
+                max=60,
+                message="Nombre debe tener minimo 2 caracteres y maximo 60",
+            ),
         ],
     )
     last_name = StringField(
         "Apellido",
         validators=[
             DataRequired("Apellido debe estar presente"),
-            Length(min=2, max=60, message="Apellido debe tener minimo 2 caracteres y maximo 60"),
+            Length(
+                min=2,
+                max=60,
+                message="Apellido debe tener minimo 2 caracteres y maximo 60",
+            ),
         ],
     )
     email = StringField(
-        "Correo electrónico", validators=[DataRequired("Email debe estar presente."), Email()]
+        "Correo electrónico",
+        validators=[DataRequired("Email debe estar presente."), Email()],
     )
     password = PasswordField("Contraseña", validators=[Length(min=6, max=60)])
     submit = SubmitField("💾 Guardar")
@@ -30,17 +39,26 @@ class EditUserForm(FlaskForm):
         "Nombre",
         validators=[
             DataRequired("Nombre debe estar presente"),
-            Length(min=2, max=60, message="Nombre debe tener minimo 2 caracteres y maximo 60"),
+            Length(
+                min=2,
+                max=60,
+                message="Nombre debe tener minimo 2 caracteres y maximo 60",
+            ),
         ],
     )
     last_name = StringField(
         "Apellido",
         validators=[
             DataRequired("Apellido debe estar presente"),
-            Length(min=2, max=60, message="Apellido debe tener minimo 2 caracteres y maximo 60"),
+            Length(
+                min=2,
+                max=60,
+                message="Apellido debe tener minimo 2 caracteres y maximo 60",
+            ),
         ],
     )
     email = StringField(
-        "Correo electrónico", validators=[DataRequired("Email debe estar presente."), Email()]
+        "Correo electrónico",
+        validators=[DataRequired("Email debe estar presente."), Email()],
     )
     submit = SubmitField("💾 Guardar")

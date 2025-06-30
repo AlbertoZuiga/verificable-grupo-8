@@ -72,7 +72,10 @@ def create():
             kanvas_db.session.add(evaluation_instance)
             kanvas_db.session.commit()
             return redirect(
-                url_for("evaluation_instance.show", evaluation_instance_id=evaluation_instance.id)
+                url_for(
+                    "evaluation_instance.show",
+                    evaluation_instance_id=evaluation_instance.id,
+                )
             )
         except SQLAlchemyError as e:
             kanvas_db.session.rollback()
@@ -120,7 +123,10 @@ def edit(evaluation_instance_id):
         try:
             kanvas_db.session.commit()
             return redirect(
-                url_for("evaluation_instance.show", evaluation_instance_id=evaluation_instance.id)
+                url_for(
+                    "evaluation_instance.show",
+                    evaluation_instance_id=evaluation_instance.id,
+                )
             )
         except SQLAlchemyError as e:
             kanvas_db.session.rollback()

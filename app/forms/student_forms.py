@@ -6,7 +6,6 @@ from wtforms.validators import DataRequired, NumberRange
 
 from app.forms.shared_fields import SharedUserFields
 
-
 current_year = datetime.now().year
 
 
