@@ -61,10 +61,7 @@ class Section(kanvas_db.Model):  # type: ignore[name-defined]
 
     __table_args__ = (
         kanvas_db.UniqueConstraint(
-            "course_instance_id", "code", name="unique_course_instance_code"
-        ),
-        kanvas_db.UniqueConstraint(
-            "course_instance_id", "teacher_id", name="unique_teacher_in_course_instance"
+            "course_instance_id", "teacher_id", "code", name="unique_course_instance_teacher_code"
         ),
     )
 

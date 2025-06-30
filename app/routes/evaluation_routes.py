@@ -125,12 +125,17 @@ def create():
 def edit(evaluation_id):
     evaluation = Evaluation.query.get_or_404(evaluation_id)
     form = EvaluationForm(obj=evaluation)
-    print(evaluation)
 
-    form.section_id.choices = [
+    choices = [
         (section.id, f"{section.code} - {section.course_instance.course.title}")
         for section in Section.query.all()
     ]
+    valid_ids = [section[0] for section in choices]
+
+    form.section_id.choices = choices
+    for validator in form.section_id.validators:
+        if isinstance(validator, AnyOf):
+            validator.values = valid_ids
 
     if form.validate_on_submit():
         title = form.title.data

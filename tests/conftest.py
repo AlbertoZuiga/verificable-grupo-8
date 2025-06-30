@@ -28,7 +28,7 @@ def app():
         yield test_app
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def _db(app):
     with app.app_context():
         kanvas_db.create_all()
@@ -37,18 +37,18 @@ def _db(app):
         kanvas_db.drop_all()
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def client(app):
     return app.test_client()
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def runner(app):
     return app.test_cli_runner()
 
 
 # 2. Users & Roles
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_auth_user(_db):
     email = f"auth_user_{uuid.uuid4().hex}@example.com"
     user = User(first_name="John", last_name="Doe", email=email)
@@ -58,7 +58,7 @@ def test_auth_user(_db):
     return user
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_teacher_user(_db):
     email = f"teacher_user_{uuid.uuid4().hex}@example.com"
     user = User(first_name="John", last_name="Doe", email=email)
@@ -68,7 +68,7 @@ def test_teacher_user(_db):
     return user
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_teacher(_db, test_teacher_user):
     teacher = Teacher(user_id=test_teacher_user.id)
     _db.session.add(teacher)
@@ -76,7 +76,7 @@ def test_teacher(_db, test_teacher_user):
     return teacher
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_student_user(_db):
     email = f"student_user_{uuid.uuid4().hex}@example.com"
     user = User(first_name="John", last_name="Doe", email=email)
@@ -86,7 +86,7 @@ def test_student_user(_db):
     return user
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_student(_db, test_student_user):
     student = Student(user_id=test_student_user.id, university_entry_year=2025)
     _db.session.add(student)
@@ -95,7 +95,7 @@ def test_student(_db, test_student_user):
 
 
 # 3. Courses & Sections
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_course(_db):
     course = Course(title="Course Title", code="CODE", credits=3)
     _db.session.add(course)
@@ -103,7 +103,7 @@ def test_course(_db):
     return course
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_course3(_db):
     course = Course(title="Curso 3", code="C003", credits=2)
     _db.session.add(course)
@@ -111,7 +111,7 @@ def test_course3(_db):
     return course
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_course2(_db):
     course = Course(title="Curso 2", code="C002", credits=3)
     _db.session.add(course)
@@ -119,7 +119,7 @@ def test_course2(_db):
     return course
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_course_instance(_db, test_course):
     course_instance = CourseInstance(course_id=test_course.id, year=2025, semester=Semester.FIRST)
     _db.session.add(course_instance)
@@ -127,7 +127,7 @@ def test_course_instance(_db, test_course):
     return course_instance
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_open_section(_db, test_course_instance, test_teacher):
     open_section = Section(
         course_instance_id=test_course_instance.id,
@@ -141,7 +141,7 @@ def test_open_section(_db, test_course_instance, test_teacher):
     return open_section
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_closed_section(_db, test_course_instance, test_teacher):
     closed_section = Section(
         course_instance_id=test_course_instance.id,
@@ -155,13 +155,13 @@ def test_closed_section(_db, test_course_instance, test_teacher):
     return closed_section
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_section(test_open_section):
     return test_open_section
 
 
 # 4. Evaluations
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_evaluation(_db, test_open_section):
     evaluation = Evaluation(
         title="Math Exam",
@@ -174,7 +174,7 @@ def test_evaluation(_db, test_open_section):
     return evaluation
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_evaluation_instance(_db, test_evaluation):
     evaluation_instance = EvaluationInstance(
         title="Midterm",
@@ -187,7 +187,7 @@ def test_evaluation_instance(_db, test_evaluation):
     return evaluation_instance
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_evaluation_closed_section(_db, test_closed_section):
     evaluation = Evaluation(
         title="Closed Evaluation",
@@ -200,7 +200,7 @@ def test_evaluation_closed_section(_db, test_closed_section):
     return evaluation
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_evaluation_instance_closed_section(_db, test_evaluation_closed_section):
     instance = EvaluationInstance(
         title="Closed Instance",
@@ -214,7 +214,7 @@ def test_evaluation_instance_closed_section(_db, test_evaluation_closed_section)
 
 
 # 5. Student <-> Section relations
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_student_in_section(_db, test_open_section, test_student):
     association = StudentSection(
         student_id=test_student.id,
@@ -226,7 +226,7 @@ def test_student_in_section(_db, test_open_section, test_student):
     return type("Obj", (), {"student": test_student, "teacher": test_open_section.teacher})()
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_student_in_closed_section(_db, test_closed_section, test_student):
     association = StudentSection(
         student_id=test_student.id,
@@ -238,7 +238,7 @@ def test_student_in_closed_section(_db, test_closed_section, test_student):
     return type("Obj", (), {"student": test_student, "teacher": test_closed_section.teacher})()
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_student_not_in_section(_db):
     email = f"no_section_{uuid.uuid4().hex}@example.com"
     user = User(first_name="No", last_name="Section", email=email)
@@ -253,7 +253,7 @@ def test_student_not_in_section(_db):
 
 
 # 6. Grades
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_grade(_db, test_evaluation_instance, test_student):
     grade = StudentEvaluationInstance(
         student_id=test_student.id, evaluation_instance_id=test_evaluation_instance.id, grade=7.0

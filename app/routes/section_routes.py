@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from sqlalchemy.exc import SQLAlchemyError
+from wtforms.validators import AnyOf
 
 from app.extensions import kanvas_db
 from app.forms.section_forms import SectionForm
@@ -19,6 +20,40 @@ INDEX_ROUTE = "section.index"
 EDIT_EVALUATION_WEIGHTS_ROUTE = "section.edit_evaluation_weights"
 
 
+def populate_form_choices(form):
+    course_instance_choices = [
+        (ci.id, f"{ci.course.title} - {ci.year} (Semestre {ci.semester})")
+        for ci in CourseInstance.query.all()
+    ]
+    form.course_instance_id.choices = course_instance_choices
+    for v in form.course_instance_id.validators:
+        if isinstance(v, AnyOf):
+            v.values = [id for id, _ in course_instance_choices]
+
+    teacher_choices = [
+        (t.id, f"{t.user.first_name} {t.user.last_name} ({t.user.email})")
+        for t in Teacher.query.all()
+    ]
+    form.teacher_id.choices = teacher_choices
+    for v in form.teacher_id.validators:
+        if isinstance(v, AnyOf):
+            v.values = [id for id, _ in teacher_choices]
+
+
+def parse_weights(form_data, section):
+    weights = {}
+    for key, value in form_data.items():
+        if key.startswith("evaluation_"):
+            evaluation_id = int(key.split("_")[1])
+            if evaluation_id not in [e.id for e in section.evaluations]:
+                raise KeyError(f"Evaluación {evaluation_id} no encontrada en la sección.")
+            try:
+                weights[evaluation_id] = float(value)
+            except ValueError as exc:
+                raise ValueError(f"Valor inválido para evaluación {key}") from exc
+    return weights
+
+
 @section_bp.route("/")
 def index():
     sections = Section.query.all()
@@ -36,27 +71,22 @@ def edit_evaluation_weights(section_id):
     section = Section.query.get_or_404(section_id)
 
     if request.method == "POST":
-        weights = {}
         try:
-            for evaluation in section.evaluations:
-                key = f"evaluation_{evaluation.id}"
-                weights[evaluation.id] = float(request.form[key])
+            weights = parse_weights(request.form, section)
         except (ValueError, KeyError) as e:
             flash(f"Entrada inválida para los pesos: {e}", "danger")
             return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, section_id=section.id))
 
-        # Validación para evaluaciones con porcentajes
         if section.weighing_type == WeighingType.PERCENTAGE:
             total = sum(weights.values())
             if abs(round(total, 2) - 100.0) > 0.01:
                 flash(
-                    "La suma de los pesos de las evaluaciones\
-                    debe ser 100 para las evaluaciones ponderadas.",
+                    "La suma de los pesos de las evaluaciones"
+                    "debe ser 100 para las evaluaciones ponderadas.",
                     "danger",
                 )
                 return redirect(url_for(EDIT_EVALUATION_WEIGHTS_ROUTE, section_id=section.id))
 
-        # Asignar pesos nuevos
         for evaluation in section.evaluations:
             evaluation.weighing = weights[evaluation.id]
 
@@ -79,15 +109,7 @@ def edit_evaluation_weights(section_id):
 def create():
     form = SectionForm()
 
-    form.course_instance_id.choices = [
-        (ci.id, f"{ci.course.title} - {ci.year} (Semestre {ci.semester})")
-        for ci in CourseInstance.query.all()
-    ]
-    form.teacher_id.choices = [
-        (t.id, f"{t.user.first_name} {t.user.last_name} ({t.user.email})")
-        for t in Teacher.query.all()
-    ]
-    form.weighing_type.choices = [(wt.name, wt.value) for wt in WeighingType]
+    populate_form_choices(form)
 
     if form.validate_on_submit():
         try:
@@ -114,15 +136,7 @@ def edit(section_id):
     section = Section.query.get_or_404(section_id)
     form = SectionForm(obj=section)
 
-    form.course_instance_id.choices = [
-        (ci.id, f"{ci.course.title} - {ci.year} (Semestre {ci.semester})")
-        for ci in CourseInstance.query.all()
-    ]
-    form.teacher_id.choices = [
-        (t.id, f"{t.user.first_name} {t.user.last_name} ({t.user.email})")
-        for t in Teacher.query.all()
-    ]
-    form.weighing_type.choices = [(wt.name, wt.value) for wt in WeighingType]
+    populate_form_choices(form)
 
     if form.validate_on_submit():
         try:
@@ -152,8 +166,8 @@ def delete(section_id):
     except SQLAlchemyError as e:
         kanvas_db.session.rollback()
         flash(
-            "No se puede eliminar esta sección porque tiene elementos asociados.\
-            Elimínalos primero.",
+            "No se puede eliminar esta sección porque tiene elementos asociados."
+            "Elimínalos primero.",
             "danger",
         )
         print(f"Error deleting section: {e}")
