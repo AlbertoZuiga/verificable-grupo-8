@@ -1,36 +1,16 @@
 from datetime import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import IntegerField, PasswordField, StringField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, NoneOf, NumberRange
+from wtforms import IntegerField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, NumberRange
+
+from app.forms.shared_fields import SharedUserFields
+
 
 current_year = datetime.now().year
 
 
-class StudentCreateForm(FlaskForm):
-    first_name = StringField(
-        "Nombre",
-        validators=[
-            DataRequired("Nombre debe estar presente"),
-            Length(max=60, message="Nombre debe tener maximo 60 caracteres"),
-        ],
-    )
-    last_name = StringField(
-        "Apellido",
-        validators=[
-            DataRequired("Apellido debe estar presente"),
-            Length(max=60, message="Apellido debe tener maximo 60 caracteres"),
-        ],
-    )
-    email = StringField(
-        "Correo electrónico",
-        validators=[
-            DataRequired("Correo debe estar presente."),
-            Email(),
-            Length(max=60, message="Correo debe tener maximo 60 caracteres"),
-            NoneOf([], message="Correo ya esta registrado por otro usuario."),
-        ],
-    )
+class StudentCreateForm(FlaskForm, SharedUserFields):
     university_entry_year = IntegerField(
         "Año de ingreso",
         validators=[
@@ -49,30 +29,7 @@ class StudentCreateForm(FlaskForm):
     submit = SubmitField("Guardar")
 
 
-class StudentEditForm(FlaskForm):
-    first_name = StringField(
-        "Nombre",
-        validators=[
-            DataRequired("Nombre debe estar presente"),
-            Length(max=60, message="Nombre debe tener maximo 60 caracteres"),
-        ],
-    )
-    last_name = StringField(
-        "Apellido",
-        validators=[
-            DataRequired("Apellido debe estar presente"),
-            Length(max=60, message="Apellido debe tener maximo 60 caracteres"),
-        ],
-    )
-    email = StringField(
-        "Correo electrónico",
-        validators=[
-            DataRequired("Correo debe estar presente."),
-            Email(),
-            Length(max=60, message="Correo debe tener maximo 60 caracteres"),
-            NoneOf([], message="Correo ya esta registrado por otro usuario."),
-        ],
-    )
+class StudentEditForm(FlaskForm, SharedUserFields):
     university_entry_year = IntegerField(
         "Año de ingreso",
         validators=[

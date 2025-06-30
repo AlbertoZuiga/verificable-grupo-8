@@ -5,22 +5,18 @@ from sqlalchemy.exc import IntegrityError
 from app.models.teacher import Teacher
 from app.models.user import User
 
+from tests.utils.form_parsers import extract_common_fields
 
 def extract_form_data(response):
-    return {
-        "first_name": response.data.split(b'name="first_name"')[1]
-        .split(b'value="')[1]
-        .split(b'"')[0]
-        .decode(),
-        "last_name": response.data.split(b'name="last_name"')[1]
-        .split(b'value="')[1]
-        .split(b'"')[0]
-        .decode(),
-        "email": response.data.split(b'name="email"')[1]
-        .split(b'value="')[1]
-        .split(b'"')[0]
-        .decode(),
-    }
+    return extract_common_fields(
+        response,
+        [
+            "first_name",
+            "last_name",
+            "email",
+            "university_entry_year"
+        ]
+    )
 
 
 # ---- Pruebas para index() ----
