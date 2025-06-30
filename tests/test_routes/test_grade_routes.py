@@ -6,10 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.models.student_evaluation_instance import StudentEvaluationInstance
 
 
-
-def test_assign_new_grade_success(
-    client, test_student_in_section, test_evaluation_instance
-):
+def test_assign_new_grade_success(client, test_student_in_section, test_evaluation_instance):
     url = url_for(
         "grades.assign_or_edit_grade",
         evaluation_instance_id=test_evaluation_instance.id,
@@ -26,6 +23,7 @@ def test_assign_new_grade_success(
     assert grade is not None
     assert abs(grade.grade - 8.5) < 1e-6
 
+
 def test_update_existing_grade(client, test_grade, test_student_in_section):
     url = url_for(
         "grades.assign_or_edit_grade",
@@ -41,6 +39,7 @@ def test_update_existing_grade(client, test_grade, test_student_in_section):
         student_id=test_grade.student_id,
     ).first()
     assert abs(updated_grade.grade - 9.0) < 1e-6
+
 
 def test_assign_grade_closed_section(
     client, test_evaluation_instance_closed_section, test_student_in_closed_section
@@ -63,6 +62,7 @@ def test_assign_grade_closed_section(
             )
         )
 
+
 def test_assign_grade_invalid_student(
     client, test_evaluation_instance, test_student_not_in_section
 ):
@@ -77,9 +77,8 @@ def test_assign_grade_invalid_student(
     assert response.status_code == 404
     assert "Estudiante no pertenece" in response.data.decode()
 
-def test_assign_grade_invalid_input(
-    client, test_student_in_section, test_evaluation_instance
-):
+
+def test_assign_grade_invalid_input(client, test_student_in_section, test_evaluation_instance):
     url = url_for(
         "grades.assign_or_edit_grade",
         evaluation_instance_id=test_evaluation_instance.id,
@@ -91,6 +90,7 @@ def test_assign_grade_invalid_input(
 
     response_invalid = client.post(url, data={"grade": "A+"})
     assert response_invalid.status_code == 400
+
 
 @patch("app.routes.grade_routes._save_grade_transaction")
 def test_grade_transaction_error(
@@ -126,6 +126,7 @@ def test_delete_grade_success(client, test_grade):
     ).first()
     assert deleted_grade is None
 
+
 def test_delete_nonexistent_grade(client, test_evaluation_instance, test_student):
     url = url_for(
         "grades.delete_grade",
@@ -137,6 +138,7 @@ def test_delete_nonexistent_grade(client, test_evaluation_instance, test_student
 
     assert response.status_code == 404
     assert "Nota no encontrada" in response.data.decode()
+
 
 @patch("app.routes.grade_routes.kanvas_db.session.commit")
 def test_delete_grade_db_error(mock_commit, client, test_grade):

@@ -104,6 +104,22 @@ def test_course(_db):
 
 
 @pytest.fixture
+def test_course3(_db):
+    course = Course(title="Curso 3", code="C003", credits=2)
+    _db.session.add(course)
+    _db.session.commit()
+    return course
+
+
+@pytest.fixture
+def test_course2(_db):
+    course = Course(title="Curso 2", code="C002", credits=3)
+    _db.session.add(course)
+    _db.session.commit()
+    return course
+
+
+@pytest.fixture
 def test_course_instance(_db, test_course):
     course_instance = CourseInstance(course_id=test_course.id, year=2025, semester=Semester.FIRST)
     _db.session.add(course_instance)

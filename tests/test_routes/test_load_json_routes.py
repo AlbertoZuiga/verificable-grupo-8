@@ -1,4 +1,3 @@
-# tests/test_routes/test_load_json_routes.py
 import io
 import json
 from unittest.mock import MagicMock, patch
@@ -15,6 +14,7 @@ def test_load_json_index(client):
     response = client.get("/load_json/")
     assert response.status_code == 200
     assert b"Cargar JSON" in response.data
+
 
 @pytest.mark.parametrize(
     "route, expected_text",
