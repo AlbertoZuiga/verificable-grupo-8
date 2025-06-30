@@ -3,49 +3,13 @@ import io
 import pandas as pd
 from flask import Blueprint, flash, redirect, render_template, send_file, url_for
 
-from app.extensions import kanvas_db
-from app.models.assigned_time_block import AssignedTimeBlock
-from app.models.time_block import TimeBlock
-from app.services.generate_schedule import delete_assigned_time_blocks, generate_schedule
+from app.services.generate_schedule import (
+    delete_assigned_time_blocks,
+    generate_schedule,
+    get_schedule,
+)
 
 schedule_bp = Blueprint("schedule", __name__, url_prefix="/schedule")
-
-
-def get_schedule():
-    raw_schedule = fetch_assigned_time_blocks()
-    return build_clean_schedule(raw_schedule)
-
-
-def fetch_assigned_time_blocks():
-    return (
-        kanvas_db.session.query(AssignedTimeBlock)
-        .join(TimeBlock, TimeBlock.id == AssignedTimeBlock.time_block_id)
-        .order_by(TimeBlock.start_time)
-        .all()
-    )
-
-
-def build_clean_schedule(schedule):
-    clean_schedule = {}
-    for entry in schedule:
-        section_id = entry.section_id
-        if section_id not in clean_schedule:
-            clean_schedule[section_id] = build_schedule_entry(entry)
-        else:
-            clean_schedule[section_id]["stop_time"] = entry.time_block.stop_time.strftime("%H:%M")
-    return clean_schedule
-
-
-def build_schedule_entry(entry):
-    return {
-        "course_title": entry.section.course_instance.course.title,
-        "course_code": entry.section.course_instance.course.code,
-        "section_code": entry.section.code,
-        "classroom": entry.classroom.name,
-        "weekday": entry.time_block.weekday,
-        "start_time": entry.time_block.start_time.strftime("%H:%M"),
-        "stop_time": entry.time_block.stop_time.strftime("%H:%M"),
-    }
 
 
 @schedule_bp.route("/")
