@@ -32,7 +32,10 @@ def index(section_id):
 
 @student_section_bp.route("/add", methods=["GET", "POST"])
 def add_user(section_id):
-    section = Section.query.get_or_404(section_id)
+    section = Section.query.get(section_id)
+    if section is None:
+        flash("La sección no existe.", "danger")
+        return redirect(url_for("section.index"))
     students = get_students_not_in_section(section_id)
 
     if section.closed:
