@@ -72,8 +72,16 @@ def test_edit_teacher_success(client, test_teacher):
         "last_name": "Name",
         "email": "updated@example.com",
     }
+
+    edit_context = {
+        "endpoint": ENDPOINT,
+        "entity_id_name": ENTITY_ID_NAME,
+        "entity_id_value": test_teacher.id,
+        "data": data,
+        "entity": test_teacher
+    }
     common.common_test_edit_success(
-        client, ENDPOINT, ENTITY_ID_NAME, test_teacher.id, data, test_teacher
+        client, edit_context
     )
 
 
@@ -83,14 +91,31 @@ def test_edit_duplicate_email(client, test_teacher, test_teacher2):
         "last_name": test_teacher.user.last_name,
         "email": test_teacher2.user.email,
     }
+
+    edit_context={
+        "endpoint": ENDPOINT,
+        "entity_id_name": ENTITY_ID_NAME,
+        "entity_id_value": test_teacher.id,
+        "data": data,
+        "entity": test_teacher,
+        "other_entity": test_teacher2
+    }
     common.common_test_edit_duplicate_email(
-        client, ENDPOINT, ENTITY_ID_NAME, test_teacher.id, data, test_teacher, test_teacher2
+        client, edit_context
     )
 
 
 def test_edit_preserve_original_data(client, test_teacher):
+    edit_context={
+        "endpoint": ENDPOINT,
+        "entity_id_name": ENTITY_ID_NAME,
+        "entity_id_value": test_teacher.id,
+        "entity": test_teacher,
+        "extract_form_data": extract_form_data
+    }
+
     common.common_test_edit_preserve_original_data(
-        client, ENDPOINT, ENTITY_ID_NAME, test_teacher.id, test_teacher, extract_form_data
+        client, edit_context
     )
 
 
@@ -118,6 +143,13 @@ def test_edit_without_email_change(client, test_teacher):
         "last_name": "Test",
         "email": test_teacher.user.email,
     }
+    edit_context={
+        "endpoint": ENDPOINT,
+        "entity_id_name": ENTITY_ID_NAME,
+        "entity_id_value": test_teacher.id,
+        "entity": test_teacher,
+        "data": data
+    }
     common.common_test_edit_without_email_change(
-        client, ENDPOINT, ENTITY_ID_NAME, test_teacher.id, test_teacher, data
+        client, edit_context
     )

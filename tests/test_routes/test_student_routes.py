@@ -95,8 +95,17 @@ def test_edit_student_success(client, test_student):
     def extra_assertions(entity, data):
         assert entity.university_entry_year == int(data["university_entry_year"])
 
+    edit_context = {
+        "endpoint": ENDPOINT,
+        "entity_id_name": ENTITY_ID_NAME,
+        "entity_id_value": test_student.id,
+        "data": data,
+        "entity": test_student,
+        "extra_assertions": extra_assertions
+    }
     common.common_test_edit_success(
-        client, ENDPOINT, ENTITY_ID_NAME, test_student.id, data, test_student, extra_assertions
+        client,
+        edit_context
     )
 
 
@@ -107,14 +116,30 @@ def test_edit_duplicate_email(client, test_student, test_student2):
         "email": test_student2.user.email,
         "university_entry_year": test_student.university_entry_year,
     }
+
+    edit_context = {
+        "endpoint": ENDPOINT,
+        "entity_id_name": ENTITY_ID_NAME,
+        "entity_id_value": test_student.id,
+        "data": data,
+        "entity": test_student,
+        "other_entity": test_student2
+    }
     common.common_test_edit_duplicate_email(
-        client, ENDPOINT, ENTITY_ID_NAME, test_student.id, data, test_student, test_student2
+        client, edit_context
     )
 
 
 def test_edit_preserve_original_data(client, test_student):
+    edit_context={
+        "endpoint": ENDPOINT,
+        "entity_id_name": ENTITY_ID_NAME,
+        "entity_id_value": test_student.id,
+        "entity": test_student,
+        "extract_form_data": extract_form_data
+    }
     common.common_test_edit_preserve_original_data(
-        client, ENDPOINT, ENTITY_ID_NAME, test_student.id, test_student, extract_form_data
+        client, edit_context
     )
 
 
@@ -143,6 +168,14 @@ def test_edit_without_email_change(client, test_student):
         "email": test_student.user.email,
         "university_entry_year": "2025",
     }
+
+    edit_context = {
+        "endpoint": ENDPOINT,
+        "entity_id_name": ENTITY_ID_NAME,
+        "entity_id_value": test_student.id,
+        "entity": test_student,
+        "data": data
+    }
     common.common_test_edit_without_email_change(
-        client, ENDPOINT, ENTITY_ID_NAME, test_student.id, test_student, data
+        client, edit_context
     )

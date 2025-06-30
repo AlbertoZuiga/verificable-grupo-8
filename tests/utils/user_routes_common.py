@@ -49,9 +49,14 @@ def common_test_create_duplicate_email(client, endpoint, data, test_user, expect
     assert User.query.filter_by(email=test_user.email).count() == expected_count
 
 
-def common_test_edit_success(
-    client, endpoint, entity_id_name, entity_id_value, data, entity, extra_assertions=None
-):
+def common_test_edit_success(client, edit_context):
+    endpoint = edit_context["endpoint"]
+    entity_id_name = edit_context["entity_id_name"]
+    entity_id_value = edit_context["entity_id_value"]
+    data = edit_context["data"]
+    entity = edit_context["entity"]
+    extra_assertions = edit_context.get("extra_assertions")
+
     url = url_for(f"{endpoint}.edit", **{entity_id_name: entity_id_value})
     response = client.post(url, data=data, follow_redirects=True)
     assert response.status_code == 200
@@ -65,9 +70,14 @@ def common_test_edit_success(
         extra_assertions(entity, data)
 
 
-def common_test_edit_duplicate_email(
-    client, endpoint, entity_id_name, entity_id_value, data, entity, other_entity
-):
+def common_test_edit_duplicate_email(client, edit_context):
+    endpoint = edit_context["endpoint"]
+    entity_id_name = edit_context["entity_id_name"]
+    entity_id_value = edit_context["entity_id_value"]
+    data = edit_context["data"]
+    entity = edit_context["entity"]
+    other_entity = edit_context["other_entity"]
+
     url = url_for(f"{endpoint}.edit", **{entity_id_name: entity_id_value})
     data["email"] = other_entity.user.email
     response = client.post(url, data=data)
@@ -76,9 +86,13 @@ def common_test_edit_duplicate_email(
     assert entity.user.email != other_entity.user.email
 
 
-def common_test_edit_preserve_original_data(
-    client, endpoint, entity_id_name, entity_id_value, entity, extract_form_data
-):
+def common_test_edit_preserve_original_data(client, edit_context):
+    endpoint = edit_context["endpoint"]
+    entity_id_name = edit_context["entity_id_name"]
+    entity_id_value = edit_context["entity_id_value"]
+    entity = edit_context["entity"]
+    extract_form_data = edit_context["extract_form_data"]
+
     response = client.get(url_for(f"{endpoint}.edit", **{entity_id_name: entity_id_value}))
     form_data = extract_form_data(response)
 
@@ -104,9 +118,13 @@ def common_test_delete_nonexistent(client, endpoint, entity_id_name):
     assert response.status_code == 404
 
 
-def common_test_edit_without_email_change(
-    client, endpoint, entity_id_name, entity_id_value, entity, data
-):
+def common_test_edit_without_email_change(client, edit_context):
+    endpoint = edit_context["endpoint"]
+    entity_id_name = edit_context["entity_id_name"]
+    entity_id_value = edit_context["entity_id_value"]
+    entity = edit_context["entity"]
+    data = edit_context["data"]
+
     url = url_for(f"{endpoint}.edit", **{entity_id_name: entity_id_value})
     original_email = entity.user.email
     data["email"] = original_email
