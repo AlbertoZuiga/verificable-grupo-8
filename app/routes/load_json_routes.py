@@ -23,7 +23,7 @@ from app.services.database_validations import (
 )
 from app.utils import json_constants as JC
 from app.utils.flash_messages import flash_invalid_grades, flash_invalid_load, flash_successful_load
-from app.utils.parsing.parse_classroom_json import parse_classroom_json
+from app.utils.parsing.parse_classroom_json import parse_classrooms_json
 from app.utils.parsing.parse_course_instance_json import parse_course_instances_json
 from app.utils.parsing.parse_course_json import parse_courses_json
 from app.utils.parsing.parse_grades_json import parse_grades_json
@@ -129,7 +129,7 @@ def load_classrooms_from_json():
     if form.validate_on_submit():
         try:
             file_content = form.file.data.read().decode("utf-8")
-            classroom_objects = parse_classroom_json(file_content)
+            classroom_objects = parse_classrooms_json(file_content)
             filtered_classrooms = filter_existing_by_field(
                 model=Classroom, field_name="id", objects=classroom_objects
             )

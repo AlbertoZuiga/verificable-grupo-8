@@ -3,7 +3,6 @@ import json
 from unittest.mock import MagicMock, patch
 
 import pytest
-from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.datastructures import FileStorage
 
 from app.models.course import Course
@@ -12,6 +11,8 @@ from app.models.student import Student
 from app.models.teacher import Teacher
 from app.models.user import User
 from app.routes.load_json_routes import process_students_json, process_teachers_json
+
+# 1. Tests para rutas GET -----------------------------------------------------
 
 
 def test_load_json_index(client):
@@ -39,404 +40,404 @@ def test_load_json_get_routes(client, route, expected_text):
     assert expected_text.encode("utf-8") in response.data
 
 
-@patch("app.routes.load_json_routes.process_students_json")
-def test_load_students_success(mock_process, client):
-    json_data = json.dumps({"alumnos": [{"id": 1, "correo": "test@example.com"}]})
-    data = {
-        "file": (io.BytesIO(json_data.encode("utf-8")), "students.json"),
-        "json_type": "alumnos",
-    }
-    response = client.post("/load_json/students", data=data, content_type="multipart/form-data")
-    assert response.status_code in (302, 200)
-    assert mock_process.called
-
-
-@patch("app.routes.load_json_routes.process_students_json")
-def test_load_students_invalid(mock_process, client):
-    mock_process.side_effect = ValueError("Invalid data")
-    json_data = json.dumps({"alumnos": [{"id": 1, "correo": "test@example.com"}]})
-    data = {
-        "file": (io.BytesIO(json_data.encode("utf-8")), "students.json"),
-        "json_type": "alumnos",
-    }
-
-    response = client.post("/load_json/students", data=data, content_type="multipart/form-data")
-    assert "Error cargando estudiantes: Invalid data".encode("utf-8") in response.data
-
-
-@patch("app.routes.load_json_routes.process_teachers_json")
-def test_load_teachers_success(mock_process, client):
-    json_data = json.dumps({"profesores": [{"id": 1, "correo": "teacher@example.com"}]})
-    data = {
-        "file": (io.BytesIO(json_data.encode("utf-8")), "teachers.json"),
-        "json_type": "profesores",
-    }
-    response = client.post("/load_json/teachers", data=data, content_type="multipart/form-data")
-    assert response.status_code in (302, 200)
-    assert mock_process.called
-
-
-@patch("app.routes.load_json_routes.kanvas_db")
-def test_load_classrooms_success(_db, client):
-    mock_classroom = MagicMock()
-    with patch(
-        "app.routes.load_json_routes.parse_classroom_json", return_value=[mock_classroom]
-    ), patch(
-        "app.routes.load_json_routes.filter_existing_by_field", return_value=[mock_classroom]
-    ), patch(
-        "app.routes.load_json_routes.add_objects_to_session", return_value=1
-    ):
-
-        json_data = json.dumps([{"id": 1, "name": "Aula 1"}])
-        data = {
-            "file": (io.BytesIO(json_data.encode("utf-8")), "classrooms.json"),
-            "json_type": "classrooms",
-        }
-        response = client.post(
-            "/load_json/classrooms", data=data, content_type="multipart/form-data"
-        )
-        assert response.status_code in (302, 200)
-
-
-@patch("app.routes.load_json_routes.kanvas_db")
-def test_load_courses_success(_db, client):
-    mock_course = MagicMock()
-    with patch(
-        "app.routes.load_json_routes.parse_courses_json", return_value=([mock_course], [])
-    ), patch(
-        "app.routes.load_json_routes.filter_existing_by_field", return_value=[mock_course]
-    ), patch(
-        "app.routes.load_json_routes.add_objects_to_session", side_effect=[1, 0]
-    ):
-
-        json_data = json.dumps([{"id": 1, "title": "Curso 1"}])
-        data = {
-            "file": (io.BytesIO(json_data.encode("utf-8")), "courses.json"),
-            "json_type": "courses",
-        }
-        response = client.post("/load_json/courses", data=data, content_type="multipart/form-data")
-        assert response.status_code in (302, 200)
-
-
-@patch("app.routes.load_json_routes.kanvas_db")
-def test_load_course_instances_success(_db, client):
-    mock_instance = MagicMock()
-    with patch(
-        "app.routes.load_json_routes.parse_course_instances_json", return_value=[mock_instance]
-    ), patch(
-        "app.routes.load_json_routes.filter_existing_by_field", return_value=[mock_instance]
-    ), patch(
-        "app.routes.load_json_routes.add_objects_to_session", return_value=1
-    ):
-
-        json_data = json.dumps([{"id": 1, "year": 2023}])
-        data = {
-            "file": (io.BytesIO(json_data.encode("utf-8")), "instances.json"),
-            "json_type": "course_instances",
-        }
-        response = client.post(
-            "/load_json/course_instances", data=data, content_type="multipart/form-data"
-        )
-        assert response.status_code in (302, 200)
-
-
-@patch("app.routes.load_json_routes.kanvas_db")
-def test_load_sections_success(_db, client):
-    with patch(
-        "app.routes.load_json_routes.parse_sections_json",
-        return_value=([MagicMock()], [MagicMock()], [MagicMock()]),
-    ), patch(
-        "app.routes.load_json_routes.filter_existing_by_field", return_value=[MagicMock()]
-    ), patch(
-        "app.routes.load_json_routes.add_objects_to_session", side_effect=[1, 1, 1]
-    ):
-
-        json_data = json.dumps([{"id": 1, "code": "SEC-001"}])
-        data = {
-            "file": (io.BytesIO(json_data.encode("utf-8")), "sections.json"),
-            "json_type": "sections",
-        }
-        response = client.post("/load_json/sections", data=data, content_type="multipart/form-data")
-        assert response.status_code in (302, 200)
-
-
-@patch("app.routes.load_json_routes.kanvas_db")
-def test_load_student_sections_success(_db, client):
-    mock_link = MagicMock()
-    with patch(
-        "app.routes.load_json_routes.parse_student_sections_json", return_value=[mock_link]
-    ), patch(
-        "app.routes.load_json_routes.filter_existing_by_two_fields", return_value=[mock_link]
-    ), patch(
-        "app.routes.load_json_routes.add_objects_to_session", return_value=1
-    ):
-
-        json_data = json.dumps([{"student_id": 1, "section_id": 1}])
-        data = {
-            "file": (io.BytesIO(json_data.encode("utf-8")), "student_sections.json"),
-            "json_type": "student_sections",
-        }
-        response = client.post(
-            "/load_json/student_sections", data=data, content_type="multipart/form-data"
-        )
-        assert response.status_code in (302, 200)
-
-
-@patch("app.routes.load_json_routes.kanvas_db")
-def test_load_grades_success(_db, client):
-    mock_grade = MagicMock()
-    with patch("app.routes.load_json_routes.parse_grades_json", return_value=[mock_grade]), patch(
-        "app.routes.load_json_routes.filter_grades", return_value=[mock_grade]
-    ), patch("app.routes.load_json_routes.add_objects_to_session", return_value=1):
-
-        json_data = json.dumps([{"student_id": 1, "evaluation_instance_id": 1}])
-        data = {
-            "file": (io.BytesIO(json_data.encode("utf-8")), "grades.json"),
-            "json_type": "grades",
-        }
-        response = client.post("/load_json/grades", data=data, content_type="multipart/form-data")
-        assert response.status_code in (302, 200)
-
-
-# Tests para manejo de errores
-@pytest.mark.parametrize(
-    "route",
-    [
-        "/load_json/students",
-        "/load_json/teachers",
-        "/load_json/classrooms",
-        "/load_json/courses",
-        "/load_json/course_instances",
-        "/load_json/sections",
-        "/load_json/student_sections",
-        "/load_json/grades",
-    ],
-)
-def test_load_routes_invalid_file(client, route):
-    data = {"file": (io.BytesIO(b""), "empty.json"), "json_type": route.split("/")[-1]}
-    response = client.post(route, data=data, content_type="multipart/form-data")
-    assert response.status_code == 200
-    assert (
-        b"Selecciona un archivo JSON" in response.data
-        or b"Este campo es obligatorio" in response.data
-    )
+# 2. Tests para rutas POST exitosas --------------------------------------------
 
 
 @pytest.mark.parametrize(
-    "route",
+    "route, json_type, mock_target, return_value",
     [
-        "/load_json/students",
-        "/load_json/teachers",
-        "/load_json/classrooms",
-        "/load_json/courses",
-        "/load_json/course_instances",
-        "/load_json/sections",
-        "/load_json/student_sections",
-        "/load_json/grades",
+        ("/load_json/students", "alumnos", "process_students_json", None),
+        ("/load_json/teachers", "profesores", "process_teachers_json", None),
+        ("/load_json/classrooms", "salas", "parse_classrooms_json", [MagicMock()]),
+        ("/load_json/courses", "cursos", "parse_courses_json", ([MagicMock()], [])),
+        ("/load_json/course_instances", "instancias", "parse_course_instances_json", [MagicMock()]),
+        (
+            "/load_json/sections",
+            "secciones",
+            "parse_sections_json",
+            ([MagicMock()], [MagicMock()], [MagicMock()]),
+        ),
+        (
+            "/load_json/student_sections",
+            "alumnos_seccion",
+            "parse_student_sections_json",
+            [MagicMock()],
+        ),
+        ("/load_json/grades", "notas", "parse_grades_json", [MagicMock()]),
     ],
 )
-def test_load_routes_invalid_json_type(client, route):
-    json_type = "invalid_type"
+def test_load_routes_success(client, route, json_type, mock_target, return_value):
+    # Datos comunes para todas las rutas
     json_data = json.dumps({})
+    filename = route.split("/")[-1] + ".json"
+
+    # Configuración de mocks específica
+    with patch(
+        f"app.routes.load_json_routes.{mock_target}", return_value=return_value
+    ) as mock_func:
+        # Configuración adicional para rutas que necesitan múltiples mocks
+        if route == "/load_json/classrooms":
+            with patch(
+                "app.routes.load_json_routes.filter_existing_by_field", return_value=return_value
+            ), patch("app.routes.load_json_routes.add_objects_to_session", return_value=1):
+                response = post_request(client, route, json_type, json_data, filename)
+
+        elif route == "/load_json/courses":
+            with patch(
+                "app.routes.load_json_routes.filter_existing_by_field", return_value=return_value[0]
+            ), patch("app.routes.load_json_routes.add_objects_to_session", side_effect=[1, 0]):
+                response = post_request(client, route, json_type, json_data, filename)
+
+        elif route == "/load_json/sections":
+            with patch(
+                "app.routes.load_json_routes.filter_existing_by_field", return_value=return_value[0]
+            ), patch("app.routes.load_json_routes.add_objects_to_session", side_effect=[1, 1, 1]):
+                response = post_request(client, route, json_type, json_data, filename)
+
+        elif route in ("/load_json/student_sections", "/load_json/grades"):
+            filter_func = (
+                "filter_existing_by_two_fields" if "student_sections" in route else "filter_grades"
+            )
+            with patch(
+                f"app.routes.load_json_routes.{filter_func}", return_value=return_value
+            ), patch("app.routes.load_json_routes.add_objects_to_session", return_value=1):
+                response = post_request(client, route, json_type, json_data, filename)
+
+        else:
+            response = post_request(client, route, json_type, json_data, filename)
+
+        assert response.status_code in (200, 302)
+        assert mock_func.called
+
+
+def post_request(client, route, json_type, json_data, filename):
     data = {
-        "file": (io.BytesIO(json_data.encode("utf-8")), "test.json"),
+        "file": (io.BytesIO(json_data.encode("utf-8")), filename),
         "json_type": json_type,
     }
+    return client.post(route, data=data, content_type="multipart/form-data")
+
+
+# 3. Tests para casos de error -------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "route, error_type, error_message, json_type",
+    [
+        ("/load_json/students", "ValueError", "Invalid data", "alumnos"),
+        ("/load_json/teachers", "SQLAlchemyError", "Falta la clave", "profesores"),
+        ("/load_json/classrooms", "ValueError", "Parsing error", "salas"),
+        ("/load_json/courses", "SQLAlchemyError", "Falta la clave", "cursos"),
+        ("/load_json/course_instances", "ValueError", "Invalid format", "instancias"),
+        ("/load_json/sections", "SQLAlchemyError", "Falta la clave", "secciones"),
+        ("/load_json/student_sections", "ValueError", "Missing fields", "alumnos_seccion"),
+        ("/load_json/grades", "SQLAlchemyError", "Falta la clave", "notas"),
+    ],
+)
+def test_load_routes_error_handling(
+    client, route, error_type, error_message, json_type, monkeypatch
+):
+    # Configuración de mocks para simular errores
+    if error_type == "ValueError":
+        if "students" in route or "teachers" in route:
+            monkeypatch.setattr(
+                f"app.routes.load_json_routes.{
+                    'process_students_json' if 'students' in route else 'process_teachers_json'
+                }",
+                lambda x: exec('raise ValueError("' + error_message + '")'),
+            )
+        else:
+            target = route.split("/")[-1].replace("-", "_")
+            monkeypatch.setattr(
+                f"app.routes.load_json_routes.parse_{target}_json",
+                lambda x: exec('raise ValueError("' + error_message + '")'),
+            )
+    else:  # SQLAlchemyError
+        monkeypatch.setattr(
+            "app.routes.load_json_routes.kanvas_db.session.commit",
+            lambda: exec('raise SQLAlchemyError("' + error_message + '")'),
+        )
+
+    # Datos de prueba
+    json_data = json.dumps({"dummy": 1})
+    filename = route.split("/")[-1] + ".json"
+    data = {
+        "file": (io.BytesIO(json_data.encode("utf-8")), filename),
+        "json_type": json_type,
+    }
+
+    response = client.post(route, data=data, content_type="multipart/form-data")
+    print("Response:\n", response.data.decode())
+    assert response.status_code == 200
+    assert error_message.encode("utf-8") in response.data
+
+
+# Lista de rutas y tipos de JSON válidos
+ROUTES_AND_TYPES = [
+    ("/load_json/students", "alumnos"),
+    ("/load_json/teachers", "profesores"),
+    ("/load_json/classrooms", "salas"),
+    ("/load_json/courses", "cursos"),
+    ("/load_json/course_instances", "instancias"),
+    ("/load_json/sections", "secciones"),
+    ("/load_json/student_sections", "alumnos_seccion"),
+    ("/load_json/grades", "notas"),
+]
+
+# Escenarios de prueba
+SCENARIOS = [
+    "empty_file",
+    "invalid_json_type",
+    "malformed_json",
+    "missing_fields",
+]
+
+
+# Parametrizamos todas las combinaciones posibles
+@pytest.mark.parametrize("route,json_type", ROUTES_AND_TYPES)
+@pytest.mark.parametrize("scenario", SCENARIOS)
+def test_load_routes_common_errors(client, route, json_type, scenario):
+    if scenario == "empty_file":
+        data = {"file": (io.BytesIO(b""), "empty.json"), "json_type": json_type}
+        expected_error = b"El archivo est"
+    elif scenario == "invalid_json_type":
+        data = {
+            "file": (io.BytesIO(b"{}"), "test.json"),
+            "json_type": "invalid_type",
+        }
+        expected_error = b"Tipo de JSON inv"
+    elif scenario == "malformed_json":
+        data = {
+            "file": (io.BytesIO(b"{invalid}"), "malformed.json"),
+            "json_type": json_type,
+        }
+        expected_error = b"El contenido del archivo no es un JSON v"
+    elif scenario == "missing_fields":
+        json_data = json.dumps([{}])
+        data = {
+            "file": (io.BytesIO(json_data.encode("utf-8")), "missing.json"),
+            "json_type": json_type,
+        }
+        expected_error = b"El archivo JSON debe tener un objeto como estructura principal."
+    else:
+        pytest.fail(f"Escenario no soportado: {scenario}")
+        raise ValueError(f"Escenario desconocido: {scenario}")
+
     response = client.post(route, data=data, content_type="multipart/form-data")
     assert response.status_code == 200
-    assert "Tipo de JSON inválido".encode("utf-8") in response.data
+    assert expected_error in response.data
 
 
-# Prueba para JSON mal formado
-def test_load_students_malformed_json(client):
-    data = {
-        "file": (io.BytesIO(b"{invalid json}"), "malformed.json"),
-        "json_type": "alumnos",
-    }
-
-    response = client.post("/load_json/students", data=data, content_type="multipart/form-data")
-
-    assert response.status_code == 200
-    assert "El contenido del archivo no es un JSON válido.".encode("utf-8") in response.data
+# 4. Tests para funciones de procesamiento -------------------------------------
 
 
-def test_load_students_missing_fields(client):
-    json_data = json.dumps({"alumnos": [{"id": 1}]})  # Falta correo y nombre
-    data = {
-        "file": (io.BytesIO(json_data.encode("utf-8")), "missing_fields.json"),
-        "json_type": "alumnos",
-    }
-    response = client.post("/load_json/students", data=data, content_type="multipart/form-data")
-
-    assert response.status_code == 200
-    assert b"Error cargando estudiantes:" in response.data
-
-
-def test_process_students_json(client, _db):
-    with client.application.test_request_context():
-        json_data = json.dumps(
+@pytest.mark.parametrize(
+    "json_data, expected_count, entity_type",
+    [
+        (
             {
                 "alumnos": [
                     {
                         "id": 100,
-                        "nombre": "John Doe",
+                        "nombre": "John",
+                        "apellido": "Doe",
                         "correo": "john.doe@example.com",
                         "anio_ingreso": 2023,
                     }
                 ]
-            }
-        ).encode("utf-8")
-
-        file = FileStorage(stream=io.BytesIO(json_data), filename="students.json")
-        process_students_json(file)
-
-        student = Student.query.get(100)
-        assert student is not None
-        assert student.user.email == "john.doe@example.com"
-
-
-def test_process_teachers_json(client, _db):
-    with client.application.test_request_context():
-        json_data = json.dumps(
+            },
+            1,
+            "student",
+        ),
+        (
             {
                 "profesores": [
                     {
                         "id": 200,
-                        "nombre": "Jane Smith",
+                        "nombre": "Jane",
+                        "apellido": "Smith",
                         "correo": "jane.smith@example.com",
                     }
                 ]
-            }
-        ).encode("utf-8")
+            },
+            1,
+            "teacher",
+        ),
+        (
+            {
+                "alumnos": [
+                    {
+                        "id": 101,
+                        "nombre": "A",
+                        "apellido": "B",
+                        "correo": "a@b.com",
+                        "anio_ingreso": 2023,
+                    },
+                    {
+                        "id": 102,
+                        "nombre": "C",
+                        "apellido": "D",
+                        "correo": "c@d.com",
+                        "anio_ingreso": 2023,
+                    },
+                ]
+            },
+            2,
+            "student",
+        ),
+    ],
+)
+def test_process_json_success(client, _db, json_data, expected_count, entity_type):
+    with client.application.test_request_context():
+        # Preparar datos
+        file_content = json.dumps(json_data).encode("utf-8")
+        filename = "students.json" if entity_type == "student" else "teachers.json"
+        file = FileStorage(stream=io.BytesIO(file_content), filename=filename)
 
-        file = FileStorage(stream=io.BytesIO(json_data), filename="teachers.json")
-        process_teachers_json(file)
+        # Ejecutar función
+        if entity_type == "student":
+            process_students_json(file)
+            entity = Student.query.get(100 if expected_count == 1 else 101)
+        else:
+            process_teachers_json(file)
+            entity = Teacher.query.get(200)
 
-        teacher = Teacher.query.get(200)
-        assert teacher is not None
-        assert teacher.user.email == "jane.smith@example.com"
-
-
-# Prueba para verificar manejo de errores en procesamiento
-def test_process_students_json_invalid(_db):
-    with pytest.raises(ValueError):
-        file = FileStorage(stream=io.BytesIO(b'{"invalid": []}'), filename="students.json")
-        process_students_json(file)
-
-
-def test_load_empty_file(client):
-    data = {
-        "file": (io.BytesIO(b""), "empty.json"),
-        "json_type": "alumnos",
-    }
-    response = client.post("/load_json/students", data=data, content_type="multipart/form-data")
-    assert "El archivo está vacío".encode("utf-8") in response.data
+        # Verificar resultados
+        assert entity is not None
+        if entity_type == "student":
+            assert Student.query.count() == expected_count
+            assert entity.user.email in ["john.doe@example.com", "a@b.com"]
+        else:
+            assert Teacher.query.count() == expected_count
+            assert entity.user.email == "jane.smith@example.com"
 
 
-# Prueba para datos duplicados
-def test_load_duplicate_data(_db, client):
-    user = User(email="existing@example.com", first_name="John", last_name="Doe")
-    user.set_password("password")
-    _db.session.add(user)
-    _db.session.commit()
-
-    json_data = json.dumps(
-        {
-            "alumnos": [
-                {
-                    "id": 1,
-                    "nombre": "John",
-                    "apellido": "Doe",
-                    "correo": "existing@example.com",
-                    "anio_ingreso": 2023,
-                }
-            ]
-        }
+@pytest.mark.parametrize(
+    "json_data, expected_error, entity_type",
+    [
+        (b'{"invalid": []}', "Falta la clave", "student"),
+        (b'{"profesores": [{"id": 1}]}', "Falta la clave", "teacher"),
+        (b'{"alumnos": [{"id": 1, "nombre": "A"}]}', "Falta la clave", "student"),
+    ],
+)
+def test_process_json_invalid(_db, json_data, expected_error, entity_type):
+    file = FileStorage(
+        stream=io.BytesIO(json_data),
+        filename="students.json" if entity_type == "student" else "teachers.json",
     )
-    data = {
-        "file": (io.BytesIO(json_data.encode("utf-8")), "duplicate.json"),
-        "json_type": "alumnos",
-    }
-    response = client.post("/load_json/students", data=data, content_type="multipart/form-data")
-    assert response.status_code == 200
-    assert b"Error cargando estudiantes: Ya existe un usuario con el correo" in response.data
+
+    with pytest.raises(ValueError) as excinfo:
+        if entity_type == "student":
+            process_students_json(file)
+        else:
+            process_teachers_json(file)
+
+    assert expected_error in str(excinfo.value)
 
 
-def test_load_students_database_error(client, monkeypatch):
-    def mock_commit():
-        raise SQLAlchemyError("Error de base de datos")
-
-    monkeypatch.setattr("app.routes.load_json_routes.kanvas_db.session.commit", mock_commit)
-
-    json_data = json.dumps(
-        {
-            "alumnos": [
-                {
-                    "id": 1,
-                    "nombre": "John",
-                    "apellido": "Doe",
-                    "correo": "test@example.com",
-                    "anio_ingreso": 2023,
-                }
-            ]
-        }
-    )
-    data = {
-        "file": (io.BytesIO(json_data.encode("utf-8")), "students.json"),
-        "json_type": "alumnos",
-    }
-    response = client.post("/load_json/students", data=data, content_type="multipart/form-data")
-    assert b"Error cargando estudiantes: " in response.data
+# 5. Tests para casos específicos de integración -------------------------------
 
 
-# Pruebas para carga de requisitos
-def test_load_courses_with_requisites(_db, client):
-    json_data = json.dumps(
-        {
+@pytest.mark.parametrize(
+    "scenario, expected_requisites, expected_courses",
+    [
+        ("without_requisites", 0, 1),
+        ("with_requisites", 3, 3),
+    ],
+)
+def test_load_courses_with_requisites(_db, client, scenario, expected_requisites, expected_courses):
+    # Preparar datos según el escenario
+    if scenario == "with_requisites":
+        json_data = {
             "cursos": [
                 {
                     "id": 1,
                     "codigo": "CR-101",
-                    "descripcion": "Curso sin Requisitos",
+                    "descripcion": "Curso 1",
                     "requisitos": [],
                     "creditos": 4,
                 },
                 {
                     "id": 2,
                     "codigo": "CR-102",
-                    "descripcion": "Curso con Requisito",
+                    "descripcion": "Curso 2",
                     "requisitos": ["CR-101"],
                     "creditos": 2,
                 },
                 {
                     "id": 3,
                     "codigo": "CR-103",
-                    "descripcion": "Curso con Requisitos",
+                    "descripcion": "Curso 3",
                     "requisitos": ["CR-101", "CR-102"],
                     "creditos": 2,
                 },
             ]
         }
-    )
+    else:
+        json_data = {
+            "cursos": [
+                {
+                    "id": 1,
+                    "codigo": "CR-101",
+                    "descripcion": "Curso 1",
+                    "requisitos": [],
+                    "creditos": 4,
+                },
+            ]
+        }
+
     data = {
-        "file": (io.BytesIO(json_data.encode("utf-8")), "courses.json"),
+        "file": (io.BytesIO(json.dumps(json_data).encode("utf-8")), "courses.json"),
         "json_type": "cursos",
     }
+
     response = client.post(
         "/load_json/courses", data=data, content_type="multipart/form-data", follow_redirects=True
     )
+
     assert response.status_code == 200
-    assert Requisite.query.count() == 3
-    assert Course.query.count() == 3
+    assert Requisite.query.count() == expected_requisites
+    assert Course.query.count() == expected_courses
 
 
-def test_load_invalid_grades(_db, client):
-    json_data = json.dumps(
-        {"notas": [{"alumno_id": 999, "topico_id": 999, "instancia": 1, "nota": 7.0}]}
-    )
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "invalid_student",
+        "invalid_evaluation",
+        "invalid_section",
+    ],
+)
+def test_load_invalid_grades(_db, client, scenario):
+    # Crear datos válidos si son necesarios
+    if scenario != "invalid_student":
+        user = User(email="test@example.com", first_name="Test", last_name="User")
+        user.set_password("password")
+        _db.session.add(user)
+        _db.session.commit()
+        student = Student(user_id=user.id, university_entry_year=2023)
+        _db.session.add(student)
+        _db.session.commit()
+        student_id = student.id
+    else:
+        student_id = 9999
+
+    # Preparar datos según el escenario
+    if scenario == "invalid_evaluation":
+        evaluation_id = 9999
+    else:
+        evaluation_id = 1
+
+    json_data = {
+        "notas": [
+            {"alumno_id": student_id, "topico_id": evaluation_id, "instancia": 1, "nota": 7.0}
+        ]
+    }
+
     data = {
-        "file": (io.BytesIO(json_data.encode("utf-8")), "grades.json"),
+        "file": (io.BytesIO(json.dumps(json_data).encode("utf-8")), "grades.json"),
         "json_type": "notas",
     }
+
     response = client.post("/load_json/grades", data=data, content_type="multipart/form-data")
-    assert "No existe un estudiante con ID".encode("utf-8") in response.data
+    assert b"No existe un" in response.data

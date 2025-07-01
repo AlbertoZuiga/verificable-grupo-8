@@ -47,7 +47,7 @@ def validate_business_rules(item, ids_seen):
     ids_seen.add(item[JC.ID])
 
 
-def parse_classroom_json(json_data):
+def parse_classrooms_json(json_data):
     classrooms = []
     data = json.loads(json_data)
 
