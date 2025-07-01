@@ -107,7 +107,6 @@ def process_teachers_json(json_file):
 @load_json_bp.route("/teachers", methods=["GET", "POST"])
 def load_teachers_from_json():
     form = UploadJSONForm()
-    form.json_type.data = JC.TEACHERS
 
     if form.validate_on_submit():
         try:
@@ -119,13 +118,13 @@ def load_teachers_from_json():
             print(f"Error: {str(e)}", 400)
             return render_template("load_json/teachers.html", form=form)
 
+    form.json_type.data = JC.TEACHERS
     return render_template("load_json/teachers.html", form=form)
 
 
 @load_json_bp.route("/classrooms", methods=["GET", "POST"])
 def load_classrooms_from_json():
     form = UploadJSONForm()
-    form.json_type.data = JC.CLASSROOMS
 
     if form.validate_on_submit():
         try:
@@ -146,13 +145,13 @@ def load_classrooms_from_json():
             print(f"Error: {str(e)}", 400)
             return render_template("load_json/classrooms.html", form=form)
 
+    form.json_type.data = JC.CLASSROOMS
     return render_template("load_json/classrooms.html", form=form)
 
 
 @load_json_bp.route("/courses", methods=["GET", "POST"])
 def load_courses_from_json():
     form = UploadJSONForm()
-    form.json_type.data = JC.COURSES
 
     if form.validate_on_submit():
         try:
@@ -180,13 +179,13 @@ def load_courses_from_json():
             print(f"Error: {str(e)}", 400)
             return render_template("load_json/courses.html", form=form)
 
+    form.json_type.data = JC.COURSES
     return render_template("load_json/courses.html", form=form)
 
 
 @load_json_bp.route("/course_instances", methods=["GET", "POST"])
 def load_course_instances_from_json():
     form = UploadJSONForm()
-    form.json_type.data = JC.COURSE_INSTANCES
 
     if form.validate_on_submit():
         try:
@@ -209,13 +208,13 @@ def load_course_instances_from_json():
             print(f"Error: {str(e)}", 400)
             return render_template("load_json/course_instances.html", form=form)
 
+    form.json_type.data = JC.COURSE_INSTANCES
     return render_template("load_json/course_instances.html", form=form)
 
 
 @load_json_bp.route("/sections", methods=["GET", "POST"])
 def load_sections_from_json():
     form = UploadJSONForm()
-    form.json_type.data = JC.SECTIONS
 
     if form.validate_on_submit():
         try:
@@ -246,13 +245,13 @@ def load_sections_from_json():
             print(f"Error: {str(e)}", 400)
             return render_template("load_json/sections.html", form=form)
 
+    form.json_type.data = JC.SECTIONS
     return render_template("load_json/sections.html", form=form)
 
 
 @load_json_bp.route("/student_sections", methods=["GET", "POST"])
 def load_student_sections_from_json():
     form = UploadJSONForm()
-    form.json_type.data = JC.STUDENT_SECTIONS
 
     if form.validate_on_submit():
         try:
@@ -278,13 +277,13 @@ def load_student_sections_from_json():
             print(f"Error: {str(e)}", 400)
             return render_template("load_json/student_sections.html", form=form)
 
+    form.json_type.data = JC.STUDENT_SECTIONS
     return render_template("load_json/student_sections.html", form=form)
 
 
 @load_json_bp.route("/grades", methods=["GET", "POST"])
 def load_grades_from_json():
     form = UploadJSONForm()
-    form.json_type.data = JC.GRADES
 
     if form.validate_on_submit():
         try:
@@ -306,4 +305,5 @@ def load_grades_from_json():
             print(f"Error: {str(e)}", 400)
             return render_template("load_json/grades.html", form=form)
 
+    form.json_type.data = JC.GRADES
     return render_template("load_json/grades.html", form=form)

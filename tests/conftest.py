@@ -302,12 +302,7 @@ def test_grade(_db, test_evaluation_instance, test_student):
 # 7. Schedule testing fixtures
 @pytest.fixture(scope="function")
 def sample_sections_no_conflict(
-    _db,
-    test_course,
-    test_teacher,
-    test_teacher2,
-    test_student,
-    test_student2
+    _db, test_course, test_teacher, test_teacher2, test_student, test_student2
 ):
     ci1 = CourseInstance(course_id=test_course.id, year=2025, semester=Semester.FIRST)
     _db.session.add(ci1)

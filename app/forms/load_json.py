@@ -21,6 +21,8 @@ def validate_file(form, field):
         file_bytes = file_data.read()
         file_data.seek(0)
 
+        if len(file_bytes.strip()) == 0:
+            raise ValidationError("El archivo está vacío.")
         try:
             file_contents = file_bytes.decode("utf-8")
         except UnicodeDecodeError as exc:
