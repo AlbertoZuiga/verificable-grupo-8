@@ -46,6 +46,6 @@ def download():
             as_attachment=True,
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
-    except (IOError, ValueError, KeyError) as e:
+    except (IOError, ValueError, KeyError, TypeError) as e:
         flash(f"Error descargando horario: {str(e)}", "danger")
         return redirect(url_for("schedule.index"))

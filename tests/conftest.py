@@ -297,3 +297,119 @@ def test_grade(_db, test_evaluation_instance, test_student):
     _db.session.add(grade)
     _db.session.commit()
     return grade
+
+
+# 7. Schedule testing fixtures
+@pytest.fixture(scope="function")
+def sample_sections_no_conflict(
+    _db,
+    test_course,
+    test_teacher,
+    test_teacher2,
+    test_student,
+    test_student2
+):
+    ci1 = CourseInstance(course_id=test_course.id, year=2025, semester=Semester.FIRST)
+    _db.session.add(ci1)
+    _db.session.commit()
+
+    sec1 = Section(
+        course_instance_id=ci1.id,
+        teacher_id=test_teacher.id,
+        code=1001,
+        closed=False,
+        weighing_type=WeighingType.WEIGHT,
+    )
+    sec2 = Section(
+        course_instance_id=ci1.id,
+        teacher_id=test_teacher2.id,
+        code=1002,
+        closed=False,
+        weighing_type=WeighingType.WEIGHT,
+    )
+    _db.session.add_all([sec1, sec2])
+    _db.session.commit()
+
+    _db.session.add_all(
+        [
+            StudentSection(student_id=test_student.id, section_id=sec1.id),
+            StudentSection(student_id=test_student2.id, section_id=sec2.id),
+        ]
+    )
+    _db.session.commit()
+
+
+@pytest.fixture(scope="function")
+def sample_sections_teacher_conflict(_db, test_course, test_teacher):
+    ci1 = CourseInstance(course_id=test_course.id, year=2025, semester=Semester.FIRST)
+    _db.session.add(ci1)
+    _db.session.commit()
+
+    # Mismo profesor, secciones potencialmente con conflicto
+    sec1 = Section(
+        course_instance_id=ci1.id,
+        teacher_id=test_teacher.id,
+        code=2001,
+        closed=False,
+        weighing_type=WeighingType.WEIGHT,
+    )
+    sec2 = Section(
+        course_instance_id=ci1.id,
+        teacher_id=test_teacher.id,
+        code=2002,
+        closed=False,
+        weighing_type=WeighingType.WEIGHT,
+    )
+    _db.session.add_all([sec1, sec2])
+    _db.session.commit()
+
+
+@pytest.fixture(scope="function")
+def sample_sections_student_conflict(_db, test_course, test_teacher, test_teacher2, test_student):
+    ci1 = CourseInstance(course_id=test_course.id, year=2025, semester=Semester.FIRST)
+    _db.session.add(ci1)
+    _db.session.commit()
+
+    sec1 = Section(
+        course_instance_id=ci1.id,
+        teacher_id=test_teacher.id,
+        code=3001,
+        closed=False,
+        weighing_type=WeighingType.WEIGHT,
+    )
+    sec2 = Section(
+        course_instance_id=ci1.id,
+        teacher_id=test_teacher2.id,
+        code=3002,
+        closed=False,
+        weighing_type=WeighingType.WEIGHT,
+    )
+    _db.session.add_all([sec1, sec2])
+    _db.session.commit()
+
+    # Estudiante inscrito en ambas secciones (conflicto potencial)
+    _db.session.add_all(
+        [
+            StudentSection(student_id=test_student.id, section_id=sec1.id),
+            StudentSection(student_id=test_student.id, section_id=sec2.id),
+        ]
+    )
+    _db.session.commit()
+
+
+@pytest.fixture(scope="function")
+def prepopulated_schedule(_db, test_open_section):
+    evaluation = Evaluation(
+        title="Eval",
+        section_id=test_open_section.id,
+        weighing=1,
+        weighing_system=WeighingType.WEIGHT,
+    )
+    _db.session.add(evaluation)
+    _db.session.commit()
+
+    instance = EvaluationInstance(
+        title="Instancia", evaluation_id=evaluation.id, index_in_evaluation=1, instance_weighing=1
+    )
+    _db.session.add(instance)
+    _db.session.commit()
