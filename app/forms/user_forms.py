@@ -1,16 +1,21 @@
+from datetime import datetime
+
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms import PasswordField, SubmitField
+from wtforms.validators import DataRequired
 
-class UserForm(FlaskForm):
-    first_name = StringField('Nombre', validators=[DataRequired(), Length(min=2, max=60)])
-    last_name = StringField('Apellido', validators=[DataRequired(), Length(min=2, max=60)])
-    email = StringField('Correo electrónico', validators=[DataRequired(), Email()])
-    password = PasswordField('Contraseña', validators=[Length(min=6, max=60)])
-    submit = SubmitField('💾 Guardar')
+from app.forms.shared_fields import SharedUserFields
 
-class EditUserForm(FlaskForm):
-    first_name = StringField('Nombre', validators=[DataRequired(), Length(min=2, max=60)])
-    last_name = StringField('Apellido', validators=[DataRequired(), Length(min=2, max=60)])
-    email = StringField('Correo electrónico', validators=[DataRequired(), Email()])
-    submit = SubmitField('💾 Guardar')
+current_year = datetime.now().year
+
+
+class CreateUserForm(FlaskForm, SharedUserFields):
+    password = PasswordField(
+        "Contraseña",
+        validators=[DataRequired("Contraseña debe estar presente")],
+    )
+    submit = SubmitField("Guardar")
+
+
+class EditUserForm(FlaskForm, SharedUserFields):
+    submit = SubmitField("Guardar")

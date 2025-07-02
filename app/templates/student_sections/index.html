@@ -28,7 +28,7 @@
   {% endif %}
 
   <div class="mt-4 d-flex gap-2">
-    <a href="{{ url_for('section.show', id=section.id) }}" class="btn btn-secondary">← Volver</a>
+    <a href="{{ url_for('section.show', section_id=section.id) }}" class="btn btn-secondary">← Volver</a>
     
     {% if not section.closed %}
       <a href="{{ url_for('student_section.add_user', section_id=section.id) }}" class="btn btn-success">➕ Agregar Usuario</a>

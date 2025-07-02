@@ -15,9 +15,9 @@
           <strong class="text-dark">{{ teacher.user.last_name }}</strong>
           <strong class="text-dark">{{ teacher.user.email }}</strong>
           <div>
-            <a href="{{ url_for('teacher.show', id=teacher.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver profesor {{ teacher.user.email }}"> Ver </a>
-            <a href="{{ url_for('teacher.edit', id=teacher.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar profesor {{ teacher.user.email }}"> Editar </a>
-            <a href="{{ url_for('teacher.delete', id=teacher.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar profesor {{ teacher.user.email }}" onclick="return confirm('¿Estás seguro de que deseas eliminar este profesor?');"> Eliminar </a>
+            <a href="{{ url_for('teacher.show', teacher_id=teacher.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver profesor {{ teacher.user.email }}"> Ver </a>
+            <a href="{{ url_for('teacher.edit', teacher_id=teacher.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar profesor {{ teacher.user.email }}"> Editar </a>
+            <a href="{{ url_for('teacher.delete', teacher_id=teacher.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar profesor {{ teacher.user.email }}" onclick="return confirm('¿Estás seguro de que deseas eliminar este profesor?');"> Eliminar </a>
           </div>
         </li>
       {% endfor %}

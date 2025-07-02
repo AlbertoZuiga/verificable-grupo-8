@@ -16,9 +16,9 @@
           <strong class="text-dark">{{ section.course_instance.semester }}</strong>
           <strong class="text-dark">{{ section.code }}</strong>
           <div>
-            <a href="{{ url_for('section.show', id=section.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver curso {{ section.title }}"> Ver </a>
-            <a href="{{ url_for('section.edit', id=section.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar curso {{ section.title }}"> Editar </a>
-            <form action="{{ url_for('section.delete', id=section.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta sección?');">
+            <a href="{{ url_for('section.show', section_id=section.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver curso {{ section.title }}"> Ver </a>
+            <a href="{{ url_for('section.edit', section_id=section.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar curso {{ section.title }}"> Editar </a>
+            <form action="{{ url_for('section.delete', section_id=section.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta sección?');">
               <button type="submit" class="btn btn-sm btn-danger" aria-label="Eliminar sección {{ section.title }}"> Eliminar </button>
             </form>
           </div>

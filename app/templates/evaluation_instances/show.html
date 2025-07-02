@@ -23,8 +23,8 @@
       
       {% if not evaluation_instance.evaluation.section.closed %}
         <div class="btn-group" role="group">
-          <a href="{{ url_for('evaluation_instance.edit', id=evaluation_instance.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
-          <a href="{{ url_for('evaluation_instance.delete', id=evaluation_instance.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta evaluación?');"> 🗑 Eliminar </a>
+          <a href="{{ url_for('evaluation_instance.edit', evaluation_instance_id=evaluation_instance.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
+          <a href="{{ url_for('evaluation_instance.delete', evaluation_instance_id=evaluation_instance.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta evaluación?');"> 🗑 Eliminar </a>
         </div>
       {% endif %}
     </div>

@@ -15,9 +15,9 @@
           <strong class="text-dark">{{ student.user.last_name }}</strong>
           <strong class="text-dark">{{ student.user.email }}</strong>
           <div>
-            <a href="{{ url_for('student.show', id=student.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver alumno {{ student.user.email }}"> Ver </a>
-            <a href="{{ url_for('student.edit', id=student.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar alumno {{ student.user.email }}"> Editar </a>
-            <a href="{{ url_for('student.delete', id=student.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar alumno {{ student.user.email }}" onclick="return confirm('¿Estás seguro de eliminar este alumno?')"> Eliminar </a>
+            <a href="{{ url_for('student.show', student_id=student.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver alumno {{ student.user.email }}"> Ver </a>
+            <a href="{{ url_for('student.edit', student_id=student.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar alumno {{ student.user.email }}"> Editar </a>
+            <a href="{{ url_for('student.delete', student_id=student.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar alumno {{ student.user.email }}" onclick="return confirm('¿Estás seguro de eliminar este alumno?')"> Eliminar </a>
           </div>
         </li>
       {% endfor %}

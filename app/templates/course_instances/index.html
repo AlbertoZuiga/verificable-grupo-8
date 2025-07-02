@@ -15,9 +15,9 @@
         <strong class="text-dark">{{ course_instance.year }}</strong>
         <strong class="text-dark">{{ course_instance.semester }}</strong>
         <div>
-          <a href="{{ url_for('course_instance.show', id=course_instance.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver curso {{ course_instance.title }}"> Ver </a>
-          <a href="{{ url_for('course_instance.edit', id=course_instance.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar curso {{ course_instance.title }}"> Editar </a>
-          <form action="{{ url_for('course_instance.delete', id=course_instance.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro que deseas eliminar esta instancia de curso?');">
+          <a href="{{ url_for('course_instance.show', course_instance_id=course_instance.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver curso {{ course_instance.title }}"> Ver </a>
+          <a href="{{ url_for('course_instance.edit', course_instance_id=course_instance.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar curso {{ course_instance.title }}"> Editar </a>
+          <form action="{{ url_for('course_instance.delete', course_instance_id=course_instance.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro que deseas eliminar esta instancia de curso?');">
             <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
           </form>
         </div>

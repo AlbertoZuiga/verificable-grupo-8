@@ -1,16 +1,25 @@
 <form method="POST">
     {{ form.hidden_tag() }}
     <div class="mb-3">
-    {{ form.course_id.label(class="form-label") }}
-    {{ form.course_id(class="form-select") }}
+        {{ form.course_id.label(class="form-label") }}
+        {{ form.course_id(class="form-select") }}
+        {% for error in form.course_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
     </div>
     <div class="mb-3">
-    {{ form.year.label(class="form-label") }}
-    {{ form.year(class="form-control", required=True) }}
+        {{ form.year.label(class="form-label") }}
+        {{ form.year(class="form-control", required=True) }}
+        {% for error in form.year.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
     </div>
     <div class="mb-3">
-    {{ form.semester.label(class="form-label") }}
-    {{ form.semester(class="form-select", required=True) }}
+        {{ form.semester.label(class="form-label") }}
+        {{ form.semester(class="form-select", required=True) }}
+        {% for error in form.semester.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
     </div>
 
     <a href="{{ url_for('course_instance.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>

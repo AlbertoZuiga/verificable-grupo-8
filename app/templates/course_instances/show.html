@@ -16,8 +16,8 @@
       <div class="mt-4 d-flex justify-content-between">
         <a href="{{ url_for('course_instance.index') }}" class="btn btn-secondary"> ⬅ Volver al listado </a>
         <div class="btn-group" role="group">
-          <a href="{{ url_for('course_instance.edit', id=course_instance.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
-            <form action="{{ url_for('course_instance.delete', id=course_instance.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro que deseas eliminar esta instancia de curso?');">
+          <a href="{{ url_for('course_instance.edit', course_instance_id=course_instance.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
+            <form action="{{ url_for('course_instance.delete', course_instance_id=course_instance.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro que deseas eliminar esta instancia de curso?');">
               <button type="submit" class="btn btn-danger">🗑 Eliminar</button>
             </form>
         </div>
@@ -29,7 +29,7 @@
 <h3 class="mt-5 text-primary">Secciones</h3>
 <div class="list-group mt-3">
   {% for section in course_instance.sections %}  
-    <a href="{{ url_for('section.show', id=section.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+    <a href="{{ url_for('section.show', section_id=section.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
       <span><strong>{{ section.code }}</strong></span>
       <span class="btn btn-sm btn-primary">Ver</span>
     </a>

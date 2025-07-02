@@ -1,5 +1,7 @@
-from app import kanvas_db
-from app.models import Course, Requisite
+from app.extensions import kanvas_db
+from app.models.course import Course
+from app.models.requisite import Requisite
+
 
 # Necessary becuase the json only provides course code. Need ids to create the requisite
 def build_requisite_objects_from_codes(code_pairs):
@@ -17,6 +19,7 @@ def build_requisite_objects_from_codes(code_pairs):
         valid.append(Requisite(course_id=main.id, course_requisite_id=req.id))
 
     return valid, skipped
+
 
 def add_objects_to_session(instances) -> int:
     objects_created_count = 0

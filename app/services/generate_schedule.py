@@ -1,18 +1,15 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-from app import kanvas_db
-from app.models import (
-    AssignedTimeBlock,
-    Classroom,
-    Course,
-    CourseInstance,
-    Section,
-    Student,
-    StudentSection,
-    TimeBlock,
-)
-
+from app.extensions import kanvas_db
+from app.models.assigned_time_block import AssignedTimeBlock
+from app.models.classroom import Classroom
+from app.models.course import Course
+from app.models.course_instance import CourseInstance
+from app.models.section import Section
+from app.models.student import Student
+from app.models.student_section import StudentSection
+from app.models.time_block import TimeBlock
 
 DAYS = {
     1: "Lunes",
@@ -31,6 +28,10 @@ AFTERNOON_END = 18
 BLOCK_DURATION = 60
 
 
+class ScheduleAssignmentError(Exception):
+    pass
+
+
 def delete_assigned_time_blocks():
     """
     Delete all assigned time blocks from the database.
@@ -39,7 +40,7 @@ def delete_assigned_time_blocks():
     kanvas_db.session.commit()
 
 
-def create_block_range(start_hour, end_hour, duration):
+def _create_block_range(start_hour, end_hour, duration):
     """
     Create time blocks between given start and end hours, for each weekday.
     """
@@ -66,12 +67,12 @@ def create_block_range(start_hour, end_hour, duration):
             kanvas_db.session.add(time_block)
 
 
-def create_time_blocks():
+def _create_time_blocks():
     """
     Create all time blocks for morning and afternoon sessions.
     """
-    create_block_range(MORNING_START, MORNING_END, BLOCK_DURATION)
-    create_block_range(AFTERNOON_START, AFTERNOON_END, BLOCK_DURATION)
+    _create_block_range(MORNING_START, MORNING_END, BLOCK_DURATION)
+    _create_block_range(AFTERNOON_START, AFTERNOON_END, BLOCK_DURATION)
     kanvas_db.session.commit()
 
 
@@ -79,7 +80,7 @@ def generate_schedule():
     """
     Generate the schedule by assigning sections to classrooms and time blocks.
     """
-    create_time_blocks()
+    _create_time_blocks()
 
     sections = (
         kanvas_db.session.query(Section)
@@ -98,100 +99,115 @@ def generate_schedule():
     time_blocks = kanvas_db.session.query(TimeBlock).order_by(TimeBlock.id).all()
 
     for section in sections:
-        if assign_section_if_possible(section, classrooms, time_blocks):
+        if _assign_section_if_possible(section, classrooms, time_blocks):
             continue
-        raise Exception(f"No se pudo asignar la sección {section.id}")
+        raise ScheduleAssignmentError(f"No se pudo asignar la sección {section.id}")
 
     kanvas_db.session.commit()
 
 
-def assign_section_if_possible(section, classrooms, time_blocks):
-    """
-    Attempt to assign a section to classrooms and time blocks.
-    """
-    required_blocks = section.course_instance.course.credits
-
+def _group_blocks_by_day(time_blocks):
     blocks_by_day = defaultdict(list)
     for tb in time_blocks:
         blocks_by_day[tb.weekday].append(tb)
+    for blocks in blocks_by_day.values():
+        blocks.sort(key=lambda b: b.start_time)
+    return blocks_by_day
+
+
+def _get_contiguous_sequences(blocks):
+    sequences = []
+    if not blocks:
+        return sequences
+    current_sequence = [blocks[0]]
+    for block in blocks[1:]:
+        prev_end = current_sequence[-1].stop_time
+        current_start = block.start_time
+        if current_start == prev_end:
+            current_sequence.append(block)
+        else:
+            sequences.append(current_sequence)
+            current_sequence = [block]
+    if current_sequence:
+        sequences.append(current_sequence)
+    return sequences
+
+
+def _assign_section_if_possible(section, classrooms, time_blocks):
+    required_blocks = section.course_instance.course.credits
+    blocks_by_day = _group_blocks_by_day(time_blocks)
 
     for day, blocks in blocks_by_day.items():
-        # Ordenar bloques por hora de inicio
-        blocks.sort(key=lambda b: b.start_time)
+        sequences = _get_contiguous_sequences(blocks)
+        if _try_assign_from_sequences(section, classrooms, sequences, required_blocks, day):
+            return True
 
-        # Agrupar en secuencias contiguas
-        if not blocks:
-            continue
-
-        sequences = []
-        current_sequence = [blocks[0]]
-        for block in blocks[1:]:
-            prev_end = current_sequence[-1].stop_time
-            current_start = block.start_time
-            if current_start == prev_end:
-                current_sequence.append(block)
-            else:
-                sequences.append(current_sequence)
-                current_sequence = [block]
-        if current_sequence:
-            sequences.append(current_sequence)
-
-        # Verificar cada secuencia contigua
-        for sequence in sequences:
-            if len(sequence) < required_blocks:
-                continue
-
-            for i in range(len(sequence) - required_blocks + 1):
-                candidate_time_blocks = sequence[i : i + required_blocks]
-
-                for classroom in classrooms:
-                    if is_valid_assignment(section, classroom.id, candidate_time_blocks):
-                        assign_blocks(section.id, classroom.id, candidate_time_blocks)
-                        print(
-                            f"Sección {section.id} asignada en sala {classroom.name}, "
-                            f"{day}, bloques {[tb.id for tb in candidate_time_blocks]}"
-                        )
-                        return True
     return False
 
 
-def is_valid_assignment(section, classroom_id, time_blocks):
+def _try_assign_from_sequences(section, classrooms, sequences, required_blocks, day):
+    for sequence in sequences:
+        if len(sequence) < required_blocks:
+            continue
+
+        if _try_assign_from_sequence(section, classrooms, sequence, required_blocks, day):
+            return True
+
+    return False
+
+
+def _try_assign_from_sequence(section, classrooms, sequence, required_blocks, day):
+    for i in range(len(sequence) - required_blocks + 1):
+        candidate_time_blocks = sequence[i : i + required_blocks]
+
+        for classroom in classrooms:
+            if _is_valid_assignment(section, classroom.id, candidate_time_blocks):
+                _assign_blocks(section.id, classroom.id, candidate_time_blocks)
+                print(
+                    f"Sección {section.id} asignada en sala {classroom.name}, "
+                    f"{day}, bloques {[tb.id for tb in candidate_time_blocks]}"
+                )
+                return True
+    return False
+
+
+def _is_valid_assignment(section, classroom_id, time_blocks):
     """
     Check if the assignment of a section to a classroom and time blocks is valid.
     """
-    classroom = get_classroom(classroom_id)
-    num_students = get_student_count(section.id)
+    classroom = _get_classroom(classroom_id)
+    num_students = _get_student_count(section.id)
 
-    has_enough_capacity = has_capacity(classroom, num_students)
-    blocks_available = not are_blocks_taken(classroom_id, time_blocks)
-    teacher_free = not has_schedule_conflict(section.teacher_id, time_blocks)
-    students_free = not students_have_conflict(section.id, time_blocks)
+    has_enough_capacity = _has_capacity(classroom, num_students)
+    blocks_available = not _are_blocks_taken(classroom_id, time_blocks)
+    teacher_free = not _has_schedule_conflict(section.teacher_id, time_blocks)
+    students_free = not _students_have_conflict(section.id, time_blocks)
 
     return has_enough_capacity and blocks_available and teacher_free and students_free
 
 
-def get_classroom(classroom_id):
+def _get_classroom(classroom_id):
     """
     Retrieve a classroom by its ID.
     """
     return kanvas_db.session.query(Classroom).filter_by(id=classroom_id).first()
 
 
-def get_student_count(section_id):
+def _get_student_count(section_id):
     """
     Return the number of students enrolled in a given section.
     """
     return kanvas_db.session.query(StudentSection).filter_by(section_id=section_id).count()
 
 
-def has_capacity(classroom, num_students):
+def _has_capacity(classroom, num_students):
     """
     Check if the classroom has enough capacity for the number of students.
     """
     return classroom.capacity >= num_students
 
 
-def assign_blocks(section_id, classroom_id, time_blocks):
+def _assign_blocks(section_id, classroom_id, time_blocks):
     """
     Assign given time blocks to a section in a specific classroom.
     """
@@ -204,7 +220,7 @@ def assign_blocks(section_id, classroom_id, time_blocks):
         kanvas_db.session.add(assignment)
 
 
-def are_blocks_taken(classroom_id, time_blocks):
+def _are_blocks_taken(classroom_id, time_blocks):
     """
     Check if any of the given time blocks are already taken in the classroom.
     """
@@ -220,15 +236,15 @@ def are_blocks_taken(classroom_id, time_blocks):
     return assigned is not None
 
 
-def has_schedule_conflict(teacher_id, time_blocks):
+def _has_schedule_conflict(teacher_id, time_blocks):
     """
     Check if the teacher has a scheduling conflict with the given time blocks.
     """
     time_block_ids = [tb.id for tb in time_blocks]
-    return teacher_has_assigned_blocks(teacher_id, time_block_ids)
+    return _teacher_has_assigned_blocks(teacher_id, time_block_ids)
 
 
-def teacher_has_assigned_blocks(teacher_id, time_block_ids):
+def _teacher_has_assigned_blocks(teacher_id, time_block_ids):
     """
     Check if a teacher has been assigned any of the specified time blocks.
     """
@@ -244,17 +260,17 @@ def teacher_has_assigned_blocks(teacher_id, time_block_ids):
     return assigned is not None
 
 
-def students_have_conflict(section_id, time_blocks):
+def _students_have_conflict(section_id, time_blocks):
     """
     Check if any student in the section has a scheduling conflict with the given time blocks.
     """
-    student_ids = get_student_ids_from_section(section_id)
+    student_ids = _get_student_ids_from_section(section_id)
     time_block_ids = [tb.id for tb in time_blocks]
 
-    return has_conflict_with_time_blocks(student_ids, time_block_ids)
+    return _has_conflict_with_time_blocks(student_ids, time_block_ids)
 
 
-def get_student_ids_from_section(section_id):
+def _get_student_ids_from_section(section_id):
     """
     Retrieve a list of student IDs enrolled in a specific section.
     """
@@ -267,7 +283,7 @@ def get_student_ids_from_section(section_id):
     return [sid for (sid,) in student_id_tuples]
 
 
-def has_conflict_with_time_blocks(student_ids, time_block_ids):
+def _has_conflict_with_time_blocks(student_ids, time_block_ids):
     """
     Check if any of the students have already been assigned the given time blocks.
     """
@@ -282,3 +298,40 @@ def has_conflict_with_time_blocks(student_ids, time_block_ids):
         .first()
     )
     return assigned is not None
+
+
+def get_schedule():
+    raw_schedule = _fetch_assigned_time_blocks()
+    return _build_clean_schedule(raw_schedule)
+
+
+def _fetch_assigned_time_blocks():
+    return (
+        kanvas_db.session.query(AssignedTimeBlock)
+        .join(TimeBlock, TimeBlock.id == AssignedTimeBlock.time_block_id)
+        .order_by(TimeBlock.start_time)
+        .all()
+    )
+
+
+def _build_clean_schedule(schedule):
+    clean_schedule = {}
+    for entry in schedule:
+        section_id = entry.section_id
+        if section_id not in clean_schedule:
+            clean_schedule[section_id] = _build_schedule_entry(entry)
+        else:
+            clean_schedule[section_id]["stop_time"] = entry.time_block.stop_time.strftime("%H:%M")
+    return clean_schedule
+
+
+def _build_schedule_entry(entry):
+    return {
+        "course_title": entry.section.course_instance.course.title,
+        "course_code": entry.section.course_instance.course.code,
+        "section_code": entry.section.code,
+        "classroom": entry.classroom.name,
+        "weekday": entry.time_block.weekday,
+        "start_time": entry.time_block.start_time.strftime("%H:%M"),
+        "stop_time": entry.time_block.stop_time.strftime("%H:%M"),
+    }

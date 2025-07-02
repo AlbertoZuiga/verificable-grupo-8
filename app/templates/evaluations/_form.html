@@ -2,18 +2,27 @@
     {{ form.hidden_tag() }}
 
     <div class="mb-3">
-    {{ form.section_id.label(class="form-label") }}
-    {{ form.section_id(class="form-select") }}
+        {{ form.section_id.label(class="form-label") }}
+        {{ form.section_id(class="form-select") }}
+        {% for error in form.section_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
     </div>
 
     <div class="mb-3">
-    {{ form.title.label(class="form-label") }}
-    {{ form.title(class="form-control") }}
+        {{ form.title.label(class="form-label") }}
+        {{ form.title(class="form-control") }}
+        {% for error in form.title.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
     </div>
 
     <div class="mb-3">
-    {{ form.weighing_system.label(class="form-label") }}
-    {{ form.weighing_system(class="form-select") }}
+        {{ form.weighing_system.label(class="form-label") }}
+        {{ form.weighing_system(class="form-select") }}
+        {% for error in form.weighing_system.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
     </div>
 
     <a href="{{ url_for('evaluation.index') }}" class="btn btn-secondary">⬅ Volver al listado</a>

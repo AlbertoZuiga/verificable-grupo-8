@@ -19,8 +19,8 @@
 
       <div class="mt-4 d-flex flex-wrap gap-2">
         <a href="{{ url_for('student.index') }}" class="btn btn-secondary"> ⬅ Volver </a>
-        <a href="{{ url_for('student.edit', id=student.id) }}" class="btn btn-primary"> ✏ Editar </a>
-        <a href="{{ url_for('student.delete', id=student.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este alumno?')"> 🗑 Eliminar </a>
+        <a href="{{ url_for('student.edit', student_id=student.id) }}" class="btn btn-primary"> ✏ Editar </a>
+        <a href="{{ url_for('student.delete', student_id=student.id) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este alumno?')"> 🗑 Eliminar </a>
       </div>
     </div>
   </div>

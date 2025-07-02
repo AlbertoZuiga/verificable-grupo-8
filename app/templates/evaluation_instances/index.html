@@ -14,9 +14,9 @@
           <strong class="text-dark">{{ evaluation_instance.title }} - {{ evaluation_instance.evaluation.section.course_instance.course.title }} ({{ evaluation_instance.evaluation.section.code }})</strong>
           <strong class="text-dark">{{ evaluation_instance.weighing }}</strong>
           <div>
-            <a href="{{ url_for('evaluation_instance.show', id=evaluation_instance.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver instancia de evaluación {{ evaluation_instance.title }}"> Ver </a>
-            <a href="{{ url_for('evaluation_instance.edit', id=evaluation_instance.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar instancia de evaluación {{ evaluation_instance.title }}"> Editar </a>
-            <a href="{{ url_for('evaluation_instance.delete', id=evaluation_instance.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar instancia de evaluación {{ evaluation_instance.title }}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta instancia de evaluación?');"> Eliminar </a>
+            <a href="{{ url_for('evaluation_instance.show', evaluation_instance_id=evaluation_instance.id) }}" class="btn btn-sm btn-info text-white" aria-label="Ver instancia de evaluación {{ evaluation_instance.title }}"> Ver </a>
+            <a href="{{ url_for('evaluation_instance.edit', evaluation_instance_id=evaluation_instance.id) }}" class="btn btn-sm btn-warning text-dark" aria-label="Editar instancia de evaluación {{ evaluation_instance.title }}"> Editar </a>
+            <a href="{{ url_for('evaluation_instance.delete', evaluation_instance_id=evaluation_instance.id) }}" class="btn btn-sm btn-danger" aria-label="Eliminar instancia de evaluación {{ evaluation_instance.title }}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta instancia de evaluación?');"> Eliminar </a>
           </div>
         </li>
       {% endfor %}

@@ -1,10 +1,15 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, BooleanField, SubmitField
+from wtforms import BooleanField, SelectField, StringField, SubmitField
 from wtforms.validators import DataRequired, Length
-from app.models import Evaluation
+
+from app.models.evaluation import Evaluation
+
 
 class EvaluationInstanceForm(FlaskForm):
-    title = StringField("Título de la Instancia de Evaluación", validators=[DataRequired(), Length(max=60)])
+    title = StringField(
+        "Título de la Instancia de Evaluación",
+        validators=[DataRequired(), Length(max=60)],
+    )
     evaluation_id = SelectField("Evaluación", coerce=int, validators=[DataRequired()])
     optional = BooleanField("¿Es opcional?")
     submit = SubmitField("💾 Guardar Cambios")

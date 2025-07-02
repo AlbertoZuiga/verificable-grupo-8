@@ -20,8 +20,8 @@
       <a href="{{ url_for('evaluation.index') }}" class="btn btn-secondary"> ⬅ Volver al listado </a>
       {% if not evaluation.section.closed %}
         <div class="btn-group" role="group">
-          <a href="{{ url_for('evaluation.edit', id=evaluation.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
-          <form action="{{ url_for('evaluation.delete', id=evaluation.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta evaluación?');">
+          <a href="{{ url_for('evaluation.edit', evaluation_id=evaluation.id) }}" class="btn btn-warning text-dark"> ✏ Editar </a>
+          <form action="{{ url_for('evaluation.delete', evaluation_id=evaluation.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta evaluación?');">
             <button type="submit" class="btn btn-danger"> 🗑 Eliminar </button>
           </form>
         </div>
@@ -33,7 +33,7 @@
 
   <h3 class="mt-5 text-primary">Instancias</h3>
 
-  <a href="{{ url_for('evaluation.edit_instance_weights', id=evaluation.id) }}" class="btn btn-sm btn-success"> Editar pesos de instancias</a>
+  <a href="{{ url_for('evaluation.edit_instance_weights', evaluation_id=evaluation.id) }}" class="btn btn-sm btn-success"> Editar pesos de instancias</a>
   <div class="list-group mt-3 shadow-sm rounded-3">
     {% for instance in evaluation.instances %}
       <div class="list-group-item d-flex justify-content-between align-items-center">
@@ -45,7 +45,7 @@
             <span class="badge bg-primary ms-2">{{ instance.instance_weighing }}%</span>
           {% endif %}
         </div>
-        <a href="{{ url_for('evaluation_instance.show', id=instance.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+        <a href="{{ url_for('evaluation_instance.show', evaluation_instance_id=instance.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
       </div>    
     {% else %}
       <p class="text-muted">No hay tareas para esta evaluación.</p>
