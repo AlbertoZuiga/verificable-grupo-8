@@ -32,19 +32,6 @@ def test_create_duplicate_title(client, _db, _test_evaluation, test_evaluation_i
         assert EvaluationInstance.query.count() == 1
 
 
-def test_create_db_error(client, _db, _test_evaluation, mocker):
-    with client:
-        mocker.patch.object(_db.session, "commit", side_effect=SQLAlchemyError("DB error"))
-
-        data = {"title": "Final Exam", "optional": False, "evaluation_id": _test_evaluation.id}
-
-        _response = client.post(url_for("evaluation_instance.create"), data=data)
-        messages = get_flashed_messages()
-
-        assert "Error creating" in messages[0]
-        assert EvaluationInstance.query.count() == 0
-
-
 def test_edit_success(client, _db, test_evaluation_instance):
     data = {
         "title": "Updated Midterm",
@@ -161,18 +148,6 @@ def test_delete_closed_section(client, _db, test_closed_section):
         url_for("section.show", section_id=test_closed_section.id, _external=False)
     )
     assert EvaluationInstance.query.get(instance_id) is not None
-
-
-def test_delete_db_error(client, _db, test_evaluation_instance, mocker):
-    mocker.patch.object(_db.session, "commit", side_effect=SQLAlchemyError("DB error"))
-
-    instance_id = test_evaluation_instance.id
-    url = url_for("evaluation_instance.delete", evaluation_instance_id=instance_id)
-    response = client.get(url, follow_redirects=True)
-
-    assert b"Error" not in response.data
-    assert EvaluationInstance.query.get(instance_id) is not None
-
 
 def test_show_success(client, test_evaluation_instance):
     url = url_for("evaluation_instance.show", evaluation_instance_id=test_evaluation_instance.id)

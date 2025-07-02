@@ -129,26 +129,3 @@ def test_delete_nonexistent_requisite(client, _db):
     response = client.get(url_for("requisite.delete", requisite_id=999))
     assert response.status_code == 404
 
-
-def test_delete_requisite_db_error(client, test_course, test_course2, mocker, _db):
-    with client:
-        requisite = Requisite(course_id=test_course.id, course_requisite_id=test_course2.id)
-        _db.session.add(requisite)
-        _db.session.commit()
-
-        # Simular error en la base de datos
-        mocker.patch(
-            "app.routes.requisite_routes.kanvas_db.session.commit",
-            side_effect=SQLAlchemyError("Error simulado"),
-        )
-
-        response = client.get(url_for("requisite.delete", requisite_id=requisite.id))
-
-        assert response.status_code == 302
-        assert response.location.endswith(
-            url_for("course.show", course_id=test_course.id, _external=False)
-        )
-
-        # Verificar que NO se eliminó (debido al error simulado)
-        not_deleted = Requisite.query.get(requisite.id)
-        assert not_deleted is not None

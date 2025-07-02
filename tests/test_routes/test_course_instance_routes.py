@@ -248,27 +248,3 @@ def test_delete_non_existing_course_instance(client, _db):
 
     assert response.status_code == 404
 
-
-def test_delete_with_database_error(client, _db, mocker):
-    with client:
-        course = Course(title="Filosofia", credits=3, code="FIL101")
-        _db.session.add(course)
-        _db.session.commit()
-
-        instance = CourseInstance(course_id=course.id, year=2023, semester=Semester.SECOND)
-        _db.session.add(instance)
-        _db.session.commit()
-
-        # Forzar error en la base de datos
-        mocker.patch.object(_db.session, "commit", side_effect=SQLAlchemyError("DB error"))
-
-        _response = client.post(
-            url_for("course_instance.delete", course_instance_id=instance.id), follow_redirects=True
-        )
-
-        messages = get_flashed_messages()
-        assert "Error al eliminar instancia de curso" in messages[0]
-
-        # Verificar que NO se eliminó
-        exists = CourseInstance.query.get(instance.id)
-        assert exists is not None

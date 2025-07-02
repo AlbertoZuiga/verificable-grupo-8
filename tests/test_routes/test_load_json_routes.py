@@ -141,9 +141,7 @@ def test_load_routes_error_handling(
     if error_type == "ValueError":
         if "students" in route or "teachers" in route:
             monkeypatch.setattr(
-                f"app.routes.load_json_routes.{
-                    'process_students_json' if 'students' in route else 'process_teachers_json'
-                }",
+                f"app.routes.load_json_routes.{'process_students_json' if 'students' in route else 'process_teachers_json'}",
                 lambda x: exec('raise ValueError("' + error_message + '")'),
             )
         else:
